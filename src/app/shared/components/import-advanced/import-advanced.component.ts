@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { MatDialog, ThemePalette } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
+// import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 import { NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
@@ -110,7 +110,7 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
             .pipe(take(1))
             .subscribe(resp => {
                 if (this.pageType === 'catalogues') {
-                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
+                    // this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
                 }
 
                 if (!resp) {

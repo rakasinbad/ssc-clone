@@ -8,7 +8,6 @@ import { ErrorMessageService, HelperService, NoticeService, ScrollService } from
 import { MatAutocomplete, MatAutocompleteTrigger, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
-import { Catalogue as Entity } from './models';
 import { CatalogueApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
@@ -43,13 +42,13 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     dialogRef$: Subject<string> = new Subject<string>();
 
     // Untuk menyimpan entities yang terpilih dan akan dikirim melalui event apply.
-    selectedEntities: Array<Entity> = [];
+    selectedEntities: Array<any> = [];
     // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
-    rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
+    rawAvailableEntities$: BehaviorSubject<Array<any>> = new BehaviorSubject<Array<any>>([]);
     // Untuk menyimpan Entity yang tersedia.
     availableEntities$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Subject untuk mendeteksi adanya perubahan Entity yang terpilih.
-    selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
+    selectedEntity$: BehaviorSubject<Array<any>> = new BehaviorSubject<Array<any>>(null);
     // Menyimpan state loading-nya Entity.
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
@@ -63,7 +62,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
     // Untuk menampung nilai-nilai yang sudah muncul di available selection.
-    cachedEntities: HashTable<Entity> = {};
+    cachedEntities: HashTable<any> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -99,9 +98,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     @Input() segmentationSelectId: string = '';
 
     // Untuk mengirim data berupa catalogue yang telah terpilih.
-    @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+    @Output() selected: EventEmitter<TNullable<Array<any>>> = new EventEmitter<TNullable<Array<any>>>();
     // Untuk mengirim data berupa catalogue yang telah terpilih melalui tombol Apply. (hanya terkirim jika handleEventManually = true)
-    @Output() applied: EventEmitter<Array<Entity>> = new EventEmitter<Array<Entity>>();
+    @Output() applied: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
     // Untuk event ketika menekan close pada dialog. (Dialog tidak tertutup otomatis jika handleEventManually = true)
     @Output() closed: EventEmitter<void> = new EventEmitter<void>();
 
@@ -136,7 +135,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             if (this.mode === 'multi') {
                 this.selected.emit(value);
             } else {
-                this.selected.emit(value ? (value[0] as unknown as Array<Entity>) : null);
+                this.selected.emit(value ? (value[0] as unknown as Array<any>) : null);
             }
         });
 
@@ -214,7 +213,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
             tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE catalogue', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<any>>>(([_, userSupplier]) => {
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
 
@@ -235,7 +234,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                         newQuery['segment']= 'catalogue';
                         // Melakukan request data segment catalogue.
                         return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .findSegmentPromo<IPaginatedResponse<any>>(newQuery)
                             .pipe(
                                 tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                             );
@@ -264,7 +263,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
+                    .find<IPaginatedResponse<any>>(newQuery)
                     .pipe(
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
@@ -276,20 +275,20 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         ).subscribe({
             next: (response) => {
                 let addedAvailableEntities: Array<Selection> = [];
-                let addedRawAvailableEntities: Array<Entity> = [];
+                let addedRawAvailableEntities: Array<any> = [];
 
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
+                    addedAvailableEntities = (response as Array<any>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
 
-                    for (const entity of (response as Array<Entity>)) {
+                    for (const entity of (response as Array<any>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
-                    for (const entity of (response.data as Array<Entity>)) {
+                    addedAvailableEntities = (response.data as Array<any>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
+                    for (const entity of (response.data as Array<any>)) {
                         this.upsertEntity(entity);
                     }
                 }
@@ -309,7 +308,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     
                     // Menyimpan total entities yang baru.
                     if (Array.isArray(response)) {
-                        this.totalEntities$.next((response as Array<Entity>).length);
+                        this.totalEntities$.next((response as Array<any>).length);
                     } else {
                         this.totalEntities$.next(response.total);
                     }
@@ -356,7 +355,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.requestEntity(params);
     }
 
-    private upsertEntity(entity: Entity): void {
+    private upsertEntity(entity: any): void {
         this.cachedEntities[String(entity.id)] = entity;
     }
 
@@ -468,7 +467,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
 
-        this.selectedEntities = added as unknown as Array<Entity>;
+        this.selectedEntities = added as unknown as Array<any>;
         this.cdRef.markForCheck();
     }
 
@@ -691,7 +690,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
         //         return true;
         //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
+        //     tap<[string | Entity, TNullable<any>]>(([formValue, selectedEntity]) => {
         //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
         //     }),
         //     takeUntil(this.subs$)

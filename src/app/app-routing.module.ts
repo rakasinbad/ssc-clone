@@ -153,12 +153,12 @@ const routes: Routes = [
             //     canLoad: [AuthGuard],
             // },
             {
-                path: 'catalogues',
-                loadChildren: () =>
-                    import('./main/pages/catalogues/catalogues.module').then(
-                        (m) => m.CataloguesModule
-                    ),
-                canLoad: [AuthGuard],
+                // path: 'catalogues',
+                // loadChildren: () =>
+                //     import('./main/pages/catalogues/catalogues.module').then(
+                //         (m) => m.CataloguesModule
+                //     ),
+                // canLoad: [AuthGuard],
                 // data: {
                 //     permissions: {
                 //         only: getRoleByRouter('catalogues'),
@@ -172,13 +172,13 @@ const routes: Routes = [
                 //     },
                 // },
             },
-            // {
-            //     path: 'in-store-inventories',
-            //     loadChildren: () =>
-            //         import('./main/pages/in-store-inventories/in-store-inventories.module').then(
-            //             (m) => m.InStoreInventoriesModule
-            //         ),
-            //     canLoad: [AuthGuard],
+            {
+                path: 'in-store-inventories',
+                loadChildren: () =>
+                    import('./main/pages/in-store-inventories/in-store-inventories.module').then(
+                        (m) => m.InStoreInventoriesModule
+                    ),
+                canLoad: [AuthGuard],
             //     // data: {
             //     //     permissions: {
             //     //         only: getRoleByRouter('in-store-inventories'),
@@ -191,7 +191,7 @@ const routes: Routes = [
             //     //         },
             //     //     },
             //     // },
-            // },
+            },
             // {
             //     path: 'sales-force',
             //     loadChildren: () =>
@@ -283,12 +283,12 @@ const routes: Routes = [
             //     // },
             // },
             {
-                path: 'catalogue-segmentations',
-                loadChildren: () =>
-                    import(
-                        './main/pages/catalogue-segmentation/catalogue-segmentation.module'
-                    ).then((m) => m.CatalogueSegmentationModule),
-                canLoad: [AuthGuard],
+                // path: 'catalogue-segmentations',
+                // loadChildren: () =>
+                //     import(
+                //         './main/pages/catalogue-segmentation/catalogue-segmentation.module'
+                //     ).then((m) => m.CatalogueSegmentationModule),
+                // canLoad: [AuthGuard],
                 // data: {
                 //     permissions: {
                 //         only: getRoleByRouter('catalogue-segmentations'),

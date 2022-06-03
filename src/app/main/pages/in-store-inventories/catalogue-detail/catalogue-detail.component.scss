@@ -1,0 +1,215 @@
+app-catalogue-detail {
+    #catalogue-detail {
+        .header {
+            .attendance-image {
+                overflow: hidden;
+                width: 56px;
+                min-width: 56px;
+                max-width: 56px;
+                height: 56px;
+                min-height: 56px;
+                max-height: 56px;
+                border-radius: 4px;
+
+                img {
+                    height: 100%;
+                    width: auto;
+                    max-width: none;
+                }
+            }
+
+            .subtitle {
+                margin: 6px 0 0 0;
+            }
+        }
+
+        // .content {
+        //     .mat-tab-group,
+        //     .mat-tab-body-wrapper,
+        //     .tab-content {
+        //         flex: 1 1 auto;
+        //         max-width: 100%;
+        //     }
+
+        //     .mat-tab-body-content {
+        //         display: flex;
+        //     }
+
+        //     .mat-tab-label {
+        //         height: 64px;
+        //     }
+
+        //     .attendance-image {
+        //         overflow: hidden;
+        //         width: 128px;
+        //         height: 128px;
+        //         margin-right: 16px;
+        //         margin-bottom: 16px;
+        //         border-radius: 4px;
+
+        //         img {
+        //             height: 100%;
+        //             width: auto;
+        //             max-width: none;
+        //         }
+        //     }
+
+        //     // Temporary prefix alignment fix
+        //     .mat-form-field-appearance-outline .mat-form-field-prefix,
+        //     .mat-form-field-appearance-outline .mat-form-field-suffix {
+        //         top: 0;
+        //     }
+        // }
+
+        .catalogue-histories-table {
+            flex: 1 1 auto;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+            overflow: auto;
+            display: contents;
+            -webkit-overflow-scrolling: touch;
+
+            .catalogue-detail-row {
+                position: relative;
+                // cursor: pointer;
+                height: 120px;
+            }
+
+            .mat-cell {
+                font-size: 12px;
+                min-width: 0;
+                display: flex;
+                // text-align: center;
+                // padding-top: 8px;
+                // padding-bottom: 8px;
+                // padding-right: 8px;
+                // align-items: center;
+            }
+            
+            mat-header-cell {
+                // display: flex;
+                // justify-content: flex-start;
+                display: flex;
+                justify-content: flex-start;
+                // text-align: left;
+                font-weight: 700;
+                // padding-right: 8px;
+                // .mat-header-cell {
+                //     text-align: left;
+                //     font-weight: 700;
+                //     padding-right: 8px;
+                // }
+        
+            }
+
+            // .mat-sort-header-container {
+            //     display: flex;
+            //     justify-content: center;
+            // }
+
+            .mat-header-row {
+                min-height: 64px;
+            }
+
+            // public displayedColumns = [
+            //     'skuName',
+            //     'skuId',
+            //     'price',
+            //     'addition',
+            //     'subtraction',
+            //     'stockOnHand',
+            //     'stockType',
+            //     'condition',
+            //     'employeeName',
+            //     'role',
+            //     'date',
+            //     // 'actions',
+            // ];
+
+            .mat-column-skuName {
+                flex: 0 1 13%;
+                padding-left: 12px;
+            }
+            .mat-column-skuId {
+                flex: 0 1 12%;
+                padding-left: 12px;
+            }
+            .mat-column-price {
+                flex: 0 1 12%;
+                // padding-left: 12px;
+            }
+            .mat-column-addition {
+                flex: 0 1 7%;
+                justify-content: center;
+            }
+            .mat-column-subtraction {
+                flex: 0 1 7%;
+                justify-content: center;
+            }
+            .mat-column-stockOnHand {
+                flex: 0 1 5%;
+                // display: flex;
+                padding-right: 20px;
+                justify-content: center;
+            }
+            .mat-column-stockType {
+                flex: 0 1 8%;
+            }
+            .mat-column-condition {
+                flex: 0 1 8%;
+            }
+            .mat-column-employeeName {
+                flex: 0 1 11%;
+            }
+            .mat-column-role {
+                flex: 0 1 7%;
+            }
+            // .mat-column-date {
+            //     flex: 0 1 6%;
+            // }
+            // .mat-column-actions {
+            //     flex: 0 1 8%;
+            // }
+
+            // .mat-column-stockOnHand {
+            //     align-items: center !important;
+            // }
+
+            // .mat-column-number {
+            //     flex: 0 1 10%;
+            // }
+
+            // .mat-column-employee {
+            //     flex: 0 1 22%;
+            //     // justify-content: flex-end;
+            // }
+
+            // .mat-column-role {
+            //     flex: 0 1 15%;
+            //     // justify-content: flex-end;
+            // }
+
+            // .mat-column-locationType {
+            //     flex: 0 1 10%;
+            //     // justify-content: flex-end;
+            // }
+
+            // .mat-column-checkDate {
+            //     flex: 0 1 10%;
+            //     // justify-content: flex-end;
+            // }
+
+            // .mat-column-checkIn {
+            //     flex: 0 1 12.5%;
+            // }
+
+            // .mat-column-checkOut {
+            //     flex: 0 1 12.5%;
+            // }
+
+            // .mat-column-actions {
+            //     flex: 0 1 8%;
+            //     justify-content: flex-end;
+            // }
+        }
+    }
+}

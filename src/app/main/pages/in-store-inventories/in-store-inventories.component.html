@@ -1,0 +1,262 @@
+<div id="in-store-inventories" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
+
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-8">
+        <div class="content-card mat-elevation-z1">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <mat-table class="merchants-table grey-300-border mx-16" #table [dataSource]="dataSource$ | async" matSort
+                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+                <!-- Store ID Column -->
+                <ng-container matColumnDef="storeId">
+                    <mat-header-cell *matHeaderCellDef>
+                        Supplier's Store ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.store?.supplierStores[0]?.externalId || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- SKU ID Column -->
+                <ng-container matColumnDef="skuId">
+                    <mat-header-cell *matHeaderCellDef>
+                        SKU Code
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.catalogue?.sku }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- SKU Name Column -->
+                <ng-container matColumnDef="skuName">
+                    <mat-header-cell *matHeaderCellDef>
+                        SKU Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.catalogue?.name | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Price Column -->
+                <ng-container matColumnDef="price">
+                    <mat-header-cell *matHeaderCellDef>
+                        Price
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.catalogue?.retailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Addition Number Column -->
+                <ng-container matColumnDef="addition">
+                    <mat-header-cell *matHeaderCellDef>
+                        Addition
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.store?.phoneNo }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Subtraction Column -->
+                <ng-container matColumnDef="subtraction">
+                    <mat-header-cell *matHeaderCellDef>
+                        Subtraction
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.store?.storeSegment?.name }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Stock on Hand Column -->
+                <ng-container matColumnDef="stockOnHand">
+                    <mat-header-cell *matHeaderCellDef>
+                        Store Type
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.store?.stock | number: '1.0-0' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Stock Type Column -->
+                <ng-container matColumnDef="stockType">
+                    <mat-header-cell *matHeaderCellDef>
+                        Status
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Condition Column -->
+                <ng-container matColumnDef="condition">
+                    <mat-header-cell *matHeaderCellDef>
+                        Condition
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Employee Name Column -->
+                <ng-container matColumnDef="employeeName">
+                    <mat-header-cell *matHeaderCellDef>
+                        Employee Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Role Column -->
+                <ng-container matColumnDef="role">
+                    <mat-header-cell *matHeaderCellDef>
+                        Role
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                                (click)="$event.stopPropagation()">
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <ng-template [ngxPermissionsOnly]="['INVENTORY.ISI.UPDATE']">
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Edit"
+                                        [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
+
+                                <!-- <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Delete"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete</span>
+                                </button> -->
+
+                                <!-- <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Deactivate"
+                                >
+                                    <mat-icon>archive</mat-icon>
+                                    <span>Deactivate</span>
+                                </button> -->
+
+                                <!-- <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
+                                >
+                                    <mat-icon>{{
+                                        row?.status === 'active'
+                                            ? 'archive'
+                                            : 'check_circle_outline'
+                                    }}</mat-icon>
+                                    <span>{{
+                                        (row?.status === 'active'
+                                            ? 'ACTION.INACTIVE'
+                                            : 'ACTION.ACTIVE'
+                                        ) | translate
+                                    }}</span>
+                                </button> -->
+                            </mat-menu>
+                        </div>
+                        <!-- <div
+                            *ngIf="!row?.store"
+                            style="text-align: right; margin-right: 15px;"
+                            fxFlex
+                        >
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '50%', 'margin-top': '10px' }"
+                            ></ngx-skeleton-loader>
+                        </div> -->
+                        <!-- <div *ngIf="!row?.store" class="skeleton w-25-p"></div> -->
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row *matRowDef="let row; columns: displayedColumns" class="merchant h-40" matRipple
+                    (click)="openStoreHistoryInventories(row?.id)">
+                </mat-row>
+            </mat-table>
+
+            <!-- <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
+
+            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+                No records found
+            </div>
+
+            <mat-paginator [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                " [length]="totalDataSource$ | async" [pageSize]="environment.pageSize"
+                [pageSizeOptions]="defaultPageOpts" (page)="onChangePage($event)" showFirstLastButtons>
+            </mat-paginator>
+
+            <div class="loader" *ngIf="(isLoading$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
