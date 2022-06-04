@@ -1,0 +1,205 @@
+<div id="attendances" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-8">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <mat-table
+                class="attendances-table sinbad-table grey-300-border mx-12"
+                [class.sinbad-table-no-record]="
+                    !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                "
+                #table
+                [dataSource]="dataSource$ | async"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Supplier Store ID Column -->
+                <ng-container matColumnDef="store-code">
+                    <mat-header-cell *matHeaderCellDef>
+                        Supplier Store ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.externalId || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="store-name">
+                    <mat-header-cell *matHeaderCellDef>
+                        Store Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.name || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Address Column -->
+                <ng-container matColumnDef="store-address">
+                    <mat-header-cell *matHeaderCellDef>
+                        Store Address
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.address || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Phone No Column -->
+                <ng-container matColumnDef="store-phone-no">
+                    <mat-header-cell *matHeaderCellDef>
+                        Store Phone Number
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.phoneNo || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- GS Column -->
+                <!-- <ng-container matColumnDef="GS">
+                    <mat-header-cell *matHeaderCellDef>
+                        GS
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.user?.fullName }}</p>
+                    </mat-cell>
+                </ng-container> -->
+
+                <!-- SPV Column -->
+                <!-- <ng-container matColumnDef="SPV">
+                    <mat-header-cell *matHeaderCellDef>
+                        SPV
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.user?.fullName }}</p>
+                    </mat-cell>
+                </ng-container> -->
+
+                <!-- Sum of Check-in Column -->
+                <!-- <ng-container matColumnDef="check-in">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sum of Check-in
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{ row?.checkIn }}
+                    </mat-cell>
+                </ng-container> -->
+
+                <!-- Sum of Check-out Column -->
+                <!-- <ng-container matColumnDef="check-out">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sum of Check-out
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{ (row?.checkOut | date: 'MMM dd, yyyy HH:mm:ss') || '-' }}
+                    </mat-cell>
+                </ng-container> -->
+
+                <!-- Inventory Column -->
+                <!-- <ng-container matColumnDef="inventory">
+                    <mat-header-cell *matHeaderCellDef>
+                        Inventory
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        {{ (row?.checkDate | date: 'mediumDate') || '-' }}
+                    </mat-cell>
+                </ng-container> -->
+
+                <!-- Action Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Actions
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <ng-template [ngxPermissionsOnly]="['ATTENDANCE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        aria-label="edit"
+                                        (click)="openStoreAttendanceDetail(row)"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
+
+                                <!-- <ng-template [ngxPermissionsOnly]="['ATTENDANCE.DELETE']">
+                                    <button mat-menu-item aria-label="remove" disabled>
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Remove</span>
+                                    </button>
+                                </ng-template> -->
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="5">
+                        No records found
+                    </mat-footer-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="attendance"
+                    matRipple
+                    (click)="openStoreAttendanceDetail(row)"
+                ></mat-row>
+                <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row>
+            </mat-table>
+
+            <mat-paginator
+                [disabled]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                (page)="onChangePage()"
+                showFirstLastButtons
+            ></mat-paginator>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<div
+    class="loader"
+    *ngIf="
+        (isLoading$ | async) &&
+        (!(totalDataSource$ | async) || (totalDataSource$ | async))
+    "
+>
+    <mat-spinner color="accent"></mat-spinner>
+</div>

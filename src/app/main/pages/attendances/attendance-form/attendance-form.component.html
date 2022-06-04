@@ -1,0 +1,507 @@
+<div id="attendance" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/attendances']">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="attendance-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        *ngIf="(attendance$ | async)?.user?.image"
+                        [src]="(attendance$ | async)?.user?.image"
+                    />
+                    <img
+                        *ngIf="!(attendance$ | async)?.user?.image"
+                        [src]="'assets/images/avatars/profile.jpg'"
+                    />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2" *ngIf="pageType === 'edit'">
+                        {{
+                            form.get('searchAccount')?.value
+                                ? form.get('searchAccount')?.value?.email
+                                    ? form.get('searchAccount')?.value?.email
+                                    : form.get('searchAccount')?.value
+                                : (attendance$ | async)?.user?.email
+                        }}
+                    </div>
+
+                    <div class="h2" *ngIf="pageType === 'new'">
+                        {{
+                            form.get('searchAccount')?.value
+                                ? form.get('searchAccount')?.value?.email
+                                    ? form.get('searchAccount')?.value?.email
+                                    : form.get('searchAccount')?.value
+                                : 'New Attendance'
+                        }}
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span>Attendance Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button
+                mat-raised-button
+                type="submit"
+                class="save-product-button"
+                [disabled]="
+                    form.invalid || !form.get('checkIn').value || !form.get('checkOut').value
+                "
+                *ngIf="pageType === 'new'"
+                form="attendance-form"
+            >
+                <span>ADD</span>
+            </button>
+
+            <button
+                mat-raised-button
+                type="submit"
+                class="save-product-button"
+                [disabled]="
+                    form.invalid ||
+                    form.pristine ||
+                    !form.get('checkIn').value ||
+                    !form.get('checkOut').value
+                "
+                *ngIf="pageType === 'edit'"
+                form="attendance-form"
+            >
+                <span>SAVE</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <form
+                    id="attendance-form"
+                    name="attendanceForm"
+                    class="attendance w-100-p"
+                    [formGroup]="form"
+                    (ngSubmit)="onSubmit(pageType)"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
+                    <mat-tab-group>
+                        <mat-tab label="Basic Info">
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayout="column">
+                                <mat-form-field
+                                    appearance="outline"
+                                    floatLabel="always"
+                                    (click)="onClickAccount()"
+                                >
+                                    <mat-label>Account</mat-label>
+
+                                    <ng-container
+                                        *ngIf="
+                                            filteredAccounts$ | async as accounts;
+                                            else noAccounts
+                                        "
+                                    >
+                                        <input
+                                            matInput
+                                            [matAutocomplete]="autoAccount"
+                                            formControlName="searchAccount"
+                                            (blur)="onBlurAccount()"
+                                        />
+
+                                        <mat-autocomplete
+                                            #autoAccount="matAutocomplete"
+                                            [displayWith]="displayFilterAccount"
+                                            (optionSelected)="onSelectedAccount($event)"
+                                        >
+                                            <mat-option
+                                                *ngFor="let account of accounts"
+                                                [value]="account"
+                                            >
+                                                <span
+                                                    [innerHTML]="
+                                                        account?.email
+                                                            | highlight: toAccountHighlight
+                                                    "
+                                                ></span>
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </ng-container>
+
+                                    <ng-template #noAccounts></ng-template>
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('searchAccount').errors &&
+                                            (form.get('searchAccount').dirty ||
+                                                form.get('searchAccount').touched)
+                                        "
+                                    >
+                                        {{ getErrorMessage('searchAccount') }}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-divider class="p-12"></mat-divider>
+
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+                                    <!-- <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                    >
+                                        <mat-label>Check In - Check Out</mat-label>
+
+                                        <input
+                                            type="text"
+                                            matInput
+                                            ngxDaterangepickerMd
+                                            formControlName="checkTime"
+                                            [locale]="locale"
+                                            [showDropdowns]="true"
+                                            [linkedCalendars]="true"
+                                            [timePicker]="true"
+                                            [timePickerSeconds]="true"
+                                            [timePickerIncrement]="15"
+                                            [timePicker24Hour]="true"
+                                        />
+                                    </mat-form-field> -->
+
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                        (click)="onMarkAsTouched('checkIn')"
+                                    >
+                                        <mat-label>Check In</mat-label>
+                                        <input
+                                            matInput
+                                            #checkInDate
+                                            [matDatetimepicker]="checkInPicker"
+                                            formControlName="checkIn"
+                                            [max]="maxCheckInDate"
+                                            [min]="minCheckInDate"
+                                            (dateChange)="onChangeCheckInDate($event)"
+                                            autocomplete="false"
+                                        />
+                                        <mat-datetimepicker-toggle
+                                            matSuffix
+                                            [for]="checkInPicker"
+                                        ></mat-datetimepicker-toggle>
+                                        <mat-datetimepicker
+                                            touchUi
+                                            #checkInPicker
+                                            [disabled]="false"
+                                            type="datetime"
+                                        >
+                                        </mat-datetimepicker>
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('checkIn').errors &&
+                                                (form.get('checkIn').dirty ||
+                                                    form.get('checkIn').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('checkIn') }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                    >
+                                        <mat-label>Check Out</mat-label>
+                                        <input
+                                            matInput
+                                            [matDatetimepicker]="checkOutPicker"
+                                            formControlName="checkOut"
+                                            [max]="maxCheckOutDate"
+                                            [min]="minCheckOutDate"
+                                            (dateChange)="onChangeCheckOutDate($event)"
+                                            autocomplete="false"
+                                        />
+                                        <mat-datetimepicker-toggle
+                                            matSuffix
+                                            [for]="checkOutPicker"
+                                        ></mat-datetimepicker-toggle>
+                                        <mat-datetimepicker
+                                            touchUi
+                                            #checkOutPicker
+                                            [disabled]="!checkInDate.value"
+                                            type="datetime"
+                                        >
+                                        </mat-datetimepicker>
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('checkOut').errors &&
+                                                (form.get('checkOut').dirty ||
+                                                    form.get('checkOut').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('checkOut') }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                    >
+                                        <mat-label>Check Out</mat-label>
+                                        <input
+                                            matInput
+                                            [matDatepicker]="picker"
+                                            placeholder="Choose a date"
+                                        />
+                                        <mat-datepicker-toggle
+                                            matSuffix
+                                            [for]="picker"
+                                        ></mat-datepicker-toggle>
+                                        <mat-datepicker
+                                            type="datetime"
+                                            touchUi
+                                            twelveHour
+                                            #picker
+                                        ></mat-datepicker>
+                                    </mat-form-field> -->
+
+                                    <!-- <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="30"
+                                    >
+                                        <mat-label>Phone</mat-label>
+                                        <input
+                                            matInput
+                                            placeholder="Phone"
+                                            name="phone"
+                                            formControlName="phone"
+                                            required
+                                        />
+                                    </mat-form-field> -->
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                    >
+                                        <mat-label>Latitude</mat-label>
+
+                                        <input
+                                            matInput
+                                            formControlName="latitude"
+                                            autocomplete="off"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('latitude').errors &&
+                                                (form.get('latitude').dirty ||
+                                                    form.get('latitude').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('latitude') }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="45"
+                                    >
+                                        <mat-label>Longitude</mat-label>
+
+                                        <input
+                                            matInput
+                                            formControlName="longitude"
+                                            autocomplete="off"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('longitude').errors &&
+                                                (form.get('longitude').dirty ||
+                                                    form.get('longitude').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('longitude') }}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Location" *ngIf="pageType !== 'new'">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxFlex fxLayout="column">
+                                    <div class="address h4 py-24">
+                                        377 E South Omaha Bridge Rd, Council Bluffs, IA 51501, USA
+                                    </div>
+
+                                    <!-- <agm-map
+                                        class="w-100-p h-400"
+                                        [zoom]="15"
+                                        [latitude]="(attendance$ | async)?.latitude"
+                                        [longitude]="(attendance$ | async)?.longitude"
+                                    >
+                                        <agm-marker
+                                            [latitude]="(attendance$ | async)?.latitude"
+                                            [longitude]="(attendance$ | async)?.longitude"
+                                        >
+                                        </agm-marker>
+                                    </agm-map> -->
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <!-- <mat-tab label="Pricing">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Tax Excluded Price</mat-label>
+                                    <input matInput placeholder="Tax Excluded Price"
+                                           name="priceTaxExcl"
+                                           formControlName="priceTaxExcl"
+                                           type="number">
+                                    <span matPrefix>$&nbsp;</span>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Tax Included Price</mat-label>
+                                    <input matInput placeholder="Tax Included Price"
+                                           name="priceTaxIncl"
+                                           formControlName="priceTaxIncl"
+                                           type="number">
+                                    <span matPrefix>$&nbsp;</span>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Tax Rate</mat-label>
+                                    <input matInput placeholder="Tax Rate"
+                                           name="taxRate"
+                                           formControlName="taxRate"
+                                           type="number">
+                                    <span matPrefix>&#37;&nbsp;</span>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Compared Price</mat-label>
+                                    <input matInput placeholder="Compared Price"
+                                           name="comparedPrice"
+                                           formControlName="comparedPrice"
+                                           type="number">
+                                    <span matPrefix>$&nbsp;</span>
+                                    <mat-hint align="start">Add a compare price to show next to the real price
+                                    </mat-hint>
+                                </mat-form-field>
+
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Inventory">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>SKU</mat-label>
+                                    <input matInput placeholder="SKU"
+                                           name="sku"
+                                           formControlName="sku">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Quantity</mat-label>
+                                    <input matInput placeholder="Quantity"
+                                           name="quantity"
+                                           formControlName="quantity"
+                                           type="number">
+                                </mat-form-field>
+
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Shipping">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayout="column">
+
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Width</mat-label>
+                                        <input matInput placeholder="Width"
+                                               name="Width"
+                                               formControlName="width">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Height</mat-label>
+                                        <input matInput placeholder="Height"
+                                               name="Height"
+                                               formControlName="height">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Depth</mat-label>
+                                        <input matInput placeholder="Depth"
+                                               name="Depth"
+                                               formControlName="depth">
+                                        <span matSuffix>cm</span>
+                                    </mat-form-field>
+
+                                </div>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Weight</mat-label>
+                                    <input matInput placeholder="Weight"
+                                           name="Weight"
+                                           formControlName="weight">
+                                    <span matSuffix>kg</span>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Extra Shipping Fee</mat-label>
+                                    <input matInput placeholder="Extra Shipping Fee"
+                                           name="extraShippingFee"
+                                           formControlName="extraShippingFee"
+                                           type="number">
+                                    <span matPrefix>$&nbsp;</span>
+                                </mat-form-field>
+
+                            </div>
+
+                        </mat-tab> -->
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

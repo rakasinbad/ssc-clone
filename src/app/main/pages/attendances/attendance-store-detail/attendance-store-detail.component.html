@@ -1,0 +1,304 @@
+<div id="attendance-store-detail" class="page-layout carded fullwidth line-height-1.75" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center px-20">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/attendances']">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="attendance-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        *ngIf="(selectedStore$ | async)?.imageUrl; else noImage;"
+                        [src]="(selectedStore$ | async)?.imageUrl"
+                    />
+                    <ng-template #noImage>
+                        <img [src]="'assets/images/avatars/profile.jpg'"/>
+                    </ng-template>
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        <strong>{{ (selectedStore$ | async)?.name }}</strong>
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span class="fuse-white-fg">{{ (selectedStore$ | async)?.address }}</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card mat-elevation-z1 fuse-white">
+            <!-- MARGIN LEFT ADJUSMENT -->
+            <div class="pl-40 py-20">
+                <!-- CARD TITLE -->
+                <div class="h1 mb-40">Store Information</div>
+                <!-- / CARD TITLE -->
+
+                <div
+                    fxLayout="column"
+                    fxLayoutGap="40px"
+                >
+                    <!-- NAMA TOKO -->
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <label fxFlex="20">
+                            <strong>Store Name</strong>
+                        </label>
+                        <span>
+                            {{ (selectedStore$ | async)?.name }}
+                        </span>
+                    </div>
+                    <!-- / NAMA TOKO -->
+
+                    <!-- JUMLAH KARYAWAN -->
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <label fxFlex="20">
+                            <strong>Number of Employees</strong>
+                        </label>
+                        <span>
+                            {{ (selectedStore$ | async)?.numberOfEmployee }}
+                        </span>
+                    </div>
+                    <!-- / JUMLAH KARYAWAN -->
+                    
+                    <!-- KARYAWAN -->
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <label fxFlex="20">
+                            <strong>Employee</strong>
+                        </label>
+                        <div fxLayout="column" fxLayoutGap="20px">
+                            <span *ngFor="let userStore of ((selectedStore$ | async)?.userStores)">
+                                {{ userStore?.user?.fullName }} ({{ getChainRoles(userStore?.user?.roles) }})
+                            </span>
+                        </div>
+                    </div>
+                    <!-- / KARYAWAN -->
+
+                    <!-- ALAMAT TOKO -->
+                    <div fxLayout="row" fxLayoutGap="20px">
+                        <label fxFlex="20">
+                            <strong>Store Address</strong>
+                        </label>
+                        <span>
+                            {{ (selectedStore$ | async)?.address }}
+                        </span>
+                    </div>
+                    <!-- / ALAMAT TOKO -->
+                </div>
+            </div>
+            <!-- / MARGIN LEFT ADJUSMENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+        
+        <!-- EMPLOYEES ACTIVITY -->
+        <div class="content-card mat-elevation-z1 fuse-white mt-16">
+            <!-- TITLE -->
+            <div class="h1 px-40 py-20">Employees Activity</div>
+            <!-- / TITLE -->
+
+            <!-- CONTENT -->
+            <div>
+                <mat-table
+                    class="employees-activity-table mx-12 sinbad-table"
+                    #table
+                    [dataSource]="employeesActivities$ | async"
+                    [class.h-464]="(totalEmployeesActivities$ | async) > 0"
+                    matSort
+                    fusePerfectScrollbar
+                >
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="number">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as $index">
+                            <p>{{ (paginator?.pageSize * paginator?.pageIndex) + $index + 1 }}</p>
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- "ID Toko" Column -->
+                    <ng-container matColumnDef="employee">
+                        <mat-header-cell *matHeaderCellDef>Employee</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.fullName || row?.user?.fullName || '-' }}</p>
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- Store Name Column -->
+                    <ng-container matColumnDef="role">
+                        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
+    
+                        <mat-cell *matCellDef="let row" fxLayout="column" fxLayoutAlign="center start">
+                            <div *ngIf="row?.roles; else multipleRoles;">
+                                <span>{{ row?.roles || '-' }}</span>
+                            </div>
+                            <ng-template #multipleRoles>
+                                <div *ngFor="let role of row?.user?.roles; last as $last;">
+                                    <ng-container *ngIf="!$last; else lastElement;">
+                                        <span>{{ role.role || '-' }},</span>
+                                    </ng-container>
+                                    <ng-template #lastElement>
+                                        <span>{{ role.role || '-' }}</span>
+                                    </ng-template>
+                                </div>
+                            </ng-template>
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- Attendance Column -->
+                    <ng-container matColumnDef="attendanceType">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Attendance</mat-header-cell>
+    
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ getAttendanceType(row?.attendanceType) }}</p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Location Column -->
+                    <ng-container matColumnDef="locationType">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Location</mat-header-cell>
+    
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ getLocationType(row?.locationType) }}</p>
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- Sum of Check-in Column -->
+                    <ng-container matColumnDef="checkDate">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Date
+                        </mat-header-cell>
+    
+                        <mat-cell *matCellDef="let row">
+                            {{ row?.date | date: 'd MMM yyyy' }}
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- Sum of Check-out Column -->
+                    <ng-container matColumnDef="checkIn">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Check-in
+                        </mat-header-cell>
+    
+                        <mat-cell class="line-breaker" *matCellDef="let row">
+                            {{ row?.checkIn | date:'d MMM yyyy, HH:mm:ss' }}
+                        </mat-cell>
+                    </ng-container>
+    
+                    <!-- Inventory Column -->
+                    <ng-container matColumnDef="checkOut">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Check-out
+                        </mat-header-cell>
+    
+                        <mat-cell class="line-breaker" *matCellDef="let row">
+                            {{ row?.checkOut | date:'d MMM yyyy, HH:mm:ss' }}
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Duration Column -->
+                    <ng-container matColumnDef="duration">
+                        <mat-header-cell *matHeaderCellDef>
+                            Duration
+                        </mat-header-cell>
+    
+                        <mat-cell class="line-breaker" *matCellDef="let row">
+                            {{ getDuration(row) }}
+                        </mat-cell>
+                    </ng-container>
+                    <!-- / Duration Column -->
+    
+                    <!-- Action Column -->
+                    <ng-container matColumnDef="actions">
+                        <mat-header-cell *matHeaderCellDef>
+                            Action
+                        </mat-header-cell>
+                        <mat-cell class="pr-8" *matCellDef="let row">
+                            <div fxFlex="row" fxLayoutAlign="end center">
+                                <button
+                                    mat-icon-button
+                                    [matMenuTriggerFor]="moreMenu"
+                                    aria-label="More"
+                                    (click)="$event.stopPropagation()"
+                                >
+                                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                                </button>
+    
+                                <mat-menu #moreMenu="matMenu">
+                                    <ng-template [ngxPermissionsOnly]="['ATTENDANCE.UPDATE']">
+                                        <button
+                                            mat-menu-item
+                                            aria-label="edit"
+                                            (click)="openEmployeeAttendanceDetail(row)"
+                                        >
+                                            <mat-icon>edit</mat-icon>
+                                            <span>Edit</span>
+                                        </button>
+                                    </ng-template>
+
+                                    <ng-template [ngxPermissionsOnly]="['ATTENDANCE.DELETE']">
+                                        <button mat-menu-item aria-label="remove" disabled>
+                                            <mat-icon>delete</mat-icon>
+                                            <span>Remove</span>
+                                        </button>
+                                    </ng-template>
+                                </mat-menu>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+    
+                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    
+                    <mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                        class="attendance"
+                        matRipple
+                        (click)="openEmployeeAttendanceDetail(row)"
+                    >
+                    </mat-row>
+
+                </mat-table>
+                
+                <div
+                    class="no-records h-200"
+                    *ngIf="!(isAttendanceLoading$ | async) && (totalEmployeesActivities$ | async) === 0"
+                >
+                    No records found
+                </div>
+    
+                <mat-paginator
+                    [fxHide]="(totalEmployeesActivities$ | async) === 0"
+                    [length]="totalEmployeesActivities$ | async"
+                    [pageSize]="defaultPageSize"
+                    [pageSizeOptions]="defaultPageSizeTable"
+                    (page)="onChangePage()"
+                    showFirstLastButtons
+                >
+                </mat-paginator>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- EMPLOYEES ACTIVITY -->
+    </div>
+    <!-- / CENTER -->
+</div>
+
+
+<div class="loader" *ngIf="(isAttendanceLoading$ | async) || (isStoreLoading$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

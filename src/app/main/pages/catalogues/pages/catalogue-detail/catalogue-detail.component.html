@@ -1,0 +1,193 @@
+<div
+    #catalogueDetails
+    id="catalogue-details"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+>
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg h-188 accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center px-16">
+        <!-- CONTENT HEADER -->
+        <div class="h-120 accent mb-0 mt-20" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" (click)="goBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="img-container mr-24"
+                    style="width: 70px; height: 70px"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        class="fit-image fuse-white"
+                        style="border-radius: 5px"
+                        [defaultImage]="'assets/images/catalogue/no_photo.png'"
+                        [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
+                        [errorImage]="'assets/images/catalogue/no_photo.png'"
+                    />
+                    <!-- <ng-container
+                        *ngIf="
+                            (selectedCatalogue$ | async)?.catalogueImages[0];
+                            else noCatalogueImage
+                        "
+                    >
+                        <img
+                            class="fit-image fuse-white"
+                            style="border-radius: 5px"
+                            [defaultImage]="'assets/images/catalogue/no_photo.png'"
+                            [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
+                            [errorImage]="'assets/images/catalogue/no_photo.png'"
+                        />
+                    </ng-container>
+                    <ng-template #noCatalogueImage>
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </ng-template> -->
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutGap="12px"
+                    fxLayoutAlign="space-between start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        <ng-container
+                            *ngIf="!(selectedCatalogue$ | async); else isCatalogueNameLoading"
+                        >
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                            ></ngx-skeleton-loader>
+                        </ng-container>
+                        <ng-template #isCatalogueNameLoading>
+                            <strong>{{ (selectedCatalogue$ | async)?.name }}</strong>
+                        </ng-template>
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span class="fuse-white-fg">SKU Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                <!-- EDIT BUTTON -->
+                <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+                    <span class="red-500-fg">Edit</span>
+                </button>
+                <!-- / EDIT BUTTON -->
+            </ng-template>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- TAB GROUP -->
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px"
+            class="sinbad-white sinbad-mat-tab-group has-border mat-tab-header-px-12"
+            animationDuration="0ms"
+            dynamicHeight="true"
+            (selectedIndexChange)="onSelectedTab($event)"
+            fusePerfectScrollbar
+        >
+            <!-- SKU INFORMATION TAB -->
+            <mat-tab label="SKU Information" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-sku-information
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-sku-information>
+                </ng-template>
+            </mat-tab>
+            <!-- / SKU INFORMATION TAB -->
+
+            <!-- SEGMENTATION SETTINGS TAB -->
+            <mat-tab label="Segmentation Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-price-settings
+                        #cataloguePriceSettings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                        (changePage)="scrollTop(cataloguePriceSettingRef)"
+                    ></catalogue-price-settings>
+                </ng-template>
+            </mat-tab>
+            <!-- / SEGMENTATION SETTINGS TAB -->
+
+            <!-- MEDIA SETTINGS TAB -->
+            <mat-tab label="Media Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-media-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-media-settings>
+                </ng-template>
+            </mat-tab>
+            <!-- / MEDIA SETTINGS TAB -->
+
+            <!-- DELIVERY TAB -->
+            <mat-tab label="Delivery" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-weight-and-dimension
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-weight-and-dimension>
+                </ng-template>
+            </mat-tab>
+            <!-- / DELIVERY TAB -->
+
+            <!-- AMOUNT SETTINGS TAB -->
+            <mat-tab label="Amount Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-amount-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-amount-settings>
+                </ng-template>
+            </mat-tab>
+            <!-- / AMOUNT SETTINGS TAB -->
+
+            <!-- VISIBILITY TAB -->
+            <mat-tab label="Visibility" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-catalogue-visibility
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></app-catalogue-visibility>
+                </ng-template>
+            </mat-tab>
+            <!-- / VISIBILITY TAB -->
+
+             <!-- MSS SETTINGS TAB -->
+             <mat-tab label="MSS Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-catalogue-mss-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></app-catalogue-mss-settings>
+                </ng-template>
+            </mat-tab>
+            <!-- / MSS SETTINGS TAB -->
+        </mat-tab-group>
+        <!-- / TAB GROUP -->
+    </div>
+    <!-- / CENTER -->
+</div>
+<!-- Spinner Loader -->
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+<!-- Spinner Loader -->

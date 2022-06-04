@@ -133,10 +133,10 @@ $typography: mat-typography-config(
 // @import 'src/app/main/pages/attendances/attendances.theme';
 
 // Catalogues
-@import 'src/app/main/pages/catalogues/catalogues.theme';
+// @import 'src/app/main/pages/catalogues/catalogues.theme';
 
 // Catalogue Segmentation
-@import 'src/app/main/pages/catalogue-segmentation/catalogue-segmentation.theme';
+// @import 'src/app/main/pages/catalogue-segmentation/catalogue-segmentation.theme';
 
 // Finances
 // @import 'src/app/main/pages/finances/banks/banks.theme';
@@ -203,10 +203,10 @@ $typography: mat-typography-config(
     // @include attendances-theme($theme);
 
     // Catalogues
-    @include catalogues-theme($theme);
+    // @include catalogues-theme($theme);
 
     // Catalogue Segmentation
-    @include catalogue-segmentation-theme($theme);
+    // @include catalogue-segmentation-theme($theme);
 
     // Finances
     // @include banks-theme($theme);

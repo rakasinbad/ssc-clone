@@ -1,0 +1,34 @@
+@import 'src/@sinbad/scss/helper';
+
+store-detail-component {
+    .check-icon{
+        background-color:#31B057;
+        color:white;
+        width: 24px;
+        height: 24px;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    .img-container {
+        width: 128px; /*any size*/
+        height: 128px; /*any size*/
+    
+        .fit-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*magic*/
+        }
+    }
+
+    p {
+        margin: 0;
+
+        &.field-label {
+            color: sinbad-color('black', '80');
+        }
+
+        &.field-value {
+            color: sinbad-color('black', '100');
+        }
+    }
+}
