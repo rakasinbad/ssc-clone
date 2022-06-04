@@ -57,24 +57,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'account',
-            //     loadChildren: () =>
-            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('account'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'account',
+                loadChildren: () =>
+                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('account'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -153,12 +153,12 @@ const routes: Routes = [
             //     canLoad: [AuthGuard],
             // },
             {
-                // path: 'catalogues',
-                // loadChildren: () =>
-                //     import('./main/pages/catalogues/catalogues.module').then(
-                //         (m) => m.CataloguesModule
-                //     ),
-                // canLoad: [AuthGuard],
+                path: 'catalogues',
+                loadChildren: () =>
+                    import('./main/pages/catalogues/catalogues.module').then(
+                        (m) => m.CataloguesModule
+                    ),
+                canLoad: [AuthGuard],
                 // data: {
                 //     permissions: {
                 //         only: getRoleByRouter('catalogues'),
@@ -179,18 +179,18 @@ const routes: Routes = [
                         (m) => m.InStoreInventoriesModule
                     ),
                 canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('in-store-inventories'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('in-store-inventories'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
             },
             // {
             //     path: 'sales-force',
@@ -282,26 +282,26 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            {
-                // path: 'catalogue-segmentations',
-                // loadChildren: () =>
-                //     import(
-                //         './main/pages/catalogue-segmentation/catalogue-segmentation.module'
-                //     ).then((m) => m.CatalogueSegmentationModule),
-                // canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogue-segmentations'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'catalogue-segmentations',
+            //     loadChildren: () =>
+            //         import(
+            //             './main/pages/catalogue-segmentation/catalogue-segmentation.module'
+            //         ).then((m) => m.CatalogueSegmentationModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogue-segmentations'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'survey',
             //     loadChildren: () =>
