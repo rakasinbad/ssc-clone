@@ -1,0 +1,313 @@
+<div id="warehouse-coverages-form" class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div class="center p-32" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="10px">
+        <!-- CONTENT CARD (INFORMASI PORTFOLIO TOKO) -->
+        <div class="content-card p-16" fxLayout="column" fxLayoutAlign="start none" fxLayoutGap="25px">
+            <div class="pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutGap="16px" novalidate>
+                    <!-- WAREHOUSE COVERAGE DETAIL -->
+                    <div class="font-weight-600 font-size-24 line-height-20">
+                        Warehouse Coverage Detail
+                    </div>
+                    <!-- / WAREHOUSE COVERAGE DETAIL -->
+                    <!-- WAREHOUSE NAME -->
+                    <div
+                        [class.custom-field]="!isEditMode"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="15"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('warehouse'))"
+                        >
+                            <span
+                                class="sinbad-red-fg"
+                            >* </span> Warehouse<br/> Name
+                        </label>
+
+                        <mat-form-field [fxHide]="isEditMode" fxFlexAlign="center" appearance="outline" fxFlex="50">
+                            <mat-select
+                                #warehouse
+                                name="warehouse"
+                                formControlName="warehouse"
+                                placeholder="Choose Warehouse"
+                            >
+                                <mat-option (click)="onSelectedWarehouse(null)">(None)</mat-option>
+                                <mat-option
+                                    *ngFor="let warehouse of (availableWarehouses$ | async)"
+                                    [value]="warehouse?.id"
+                                    (click)="onSelectedWarehouse(warehouse)"
+                                >
+                                    {{ warehouse?.code || '-' }} - {{ warehouse?.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError(form.get('warehouse'))">
+                                {{ getFormError(form.get('warehouse')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <ng-container *ngIf="isEditMode">
+                            <p fxFlexAlign="center" class="sinbad-black-60-fg">
+                                {{ selectedWarehouse?.code || '-' }} - {{ selectedWarehouse?.name }}
+                            </p>
+                        </ng-container>
+                    </div>
+                    <!-- / WAREHOUSE NAME -->
+                    <!-- WAREHOUSE ADDRESS -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        *ngIf="selectedWarehouse"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="15"
+                            class="pr-0"
+                        >
+                            Warehouse<br/> Address
+                        </label>
+                
+                        <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.address || '-' }}</p>
+                    </div>
+                    <!-- / WAREHOUSE ADDRESS -->
+                    <!-- WAREHOUSE NOTES ADDRESS -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        *ngIf="selectedWarehouse"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="15"
+                            class="pr-0"
+                        >
+                            Warehouse<br/> Notes Address
+                        </label>
+                
+                        <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.noteAddress || '-' }}</p>
+                    </div>
+                    <!-- / WAREHOUSE NOTES ADDRESS -->
+                    <!-- FIND LOCATION -->
+                    <div class="font-weight-600 font-size-24 line-height-20">
+                        Find Location
+                    </div>
+                    <!-- / FIND LOCATION -->
+                    <!-- FIND LOCATION FORM -->
+                    <div
+                        fxLayout="column"
+                    >
+                        <!-- PROVINCE -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                                [class.mat-error]="hasError(form.get('province'))"
+                            >
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> Province
+                            </label>
+                    
+                            <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    autocomplete="new-password"
+                                    placeholder="Search Province"
+                                    formControlName="province"
+                                    [matAutocomplete]="provinceAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #provinceAutoComplete="matAutocomplete"
+                                    [displayWith]="displayProvince"
+                                    (opened)="listenProvinceAutoComplete()"
+                                    (optionSelected)="onSelectedProvince($event)"
+                                >
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="!(isProvinceLoading$ | async)">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let province of (availableProvinces$ | async)"
+                                        [value]="province"
+                                    >
+                                        {{ province?.name }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalProvinces$ | async) && ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
+                                <mat-error *ngIf="hasError(form.get('province'))">
+                                    {{ getFormError(form.get('province')) }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / PROVINCE -->
+                        <!-- CITY -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                                [class.mat-error]="hasError(form.get('city'))"
+                            >
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> City
+                            </label>
+                    
+                            <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    autocomplete="new-password"
+                                    placeholder="Search City"
+                                    formControlName="city"
+                                    [matAutocomplete]="cityAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #cityAutoComplete="matAutocomplete"
+                                    [displayWith]="displayCity"
+                                    (opened)="listenCityAutoComplete()"
+                                    (optionSelected)="onSelectedCity($event)"
+                                >
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="(isCityLoading$ | async) === false">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let city of (availableCities$ | async)"
+                                        [value]="city"
+                                    >
+                                        {{ city }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalCities$ | async) && ((totalCities$ | async) > (availableCities$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
+                                <mat-error *ngIf="hasError(form.get('city'))">
+                                    {{ getFormError(form.get('city')) }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / CITY -->
+                        <!-- DISTRICT -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                                [class.mat-error]="hasError(form.get('district'))"
+                            >
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> District
+                            </label>
+                    
+                            <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    autocomplete="new-password"
+                                    placeholder="Search District"
+                                    formControlName="district"
+                                    [matAutocomplete]="districtAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #districtAutoComplete="matAutocomplete"
+                                    [displayWith]="displayDistrict"
+                                    (opened)="listenDistrictAutoComplete()"
+                                    (optionSelected)="onSelectedDistrict($event)"
+                                >
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="(isDistrictLoading$ | async) === false">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let district of (availableDistricts$ | async)"
+                                        [value]="district"
+                                    >
+                                        {{ district }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalDistricts$ | async) && ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
+                                <mat-error *ngIf="hasError(form.get('district'))">
+                                    {{ getFormError(form.get('district')) }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / DISTRICT -->
+                    </div>
+                    <!-- / FIND LOCATION FORM -->
+                    <!-- MULTIPLE SELECTION -->
+                    <sinbad-multiple-selection
+                        [availableOptions]="availableOptions"
+                        [initialSelectedOptions]="initialSelectedOptions"
+                        [totalAvailableOptions]="(totalUrbans$ | async)"
+                        [warnedOptions]="warnedOptions"
+                        [disabledOptions]="disabledOptions"
+                        [totalInitialSelectedOptions]="(totallInitialSelectedOptions$ | async)"
+                        [isAvailableOptionsLoading]="(isUrbanLoading$ | async)"
+                        [isSelectedOptionsLoading]="(isWarehouseUrbanLoading$ | async)"
+                        (availableReachedBottom)="onAvailableOptionLoadMore()"
+                        (selectedReachedBottom)="onSelectedOptionLoadMore()"
+                        (selectionChanged)="onSelectionChanged($event)"
+                        (selectionListChanged)="onSelectionListChanged($event)"
+                        (clearAll)="onClearAll()"
+                        (search)="onSearch($event)"
+                    ></sinbad-multiple-selection>
+                    <!-- / MULTIPLE SELECTION -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+    </div>
+    <!-- / CENTER -->
+    <!-- Spinner Loader -->
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- Spinner Loader -->
+</div>

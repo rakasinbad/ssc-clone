@@ -1,0 +1,137 @@
+<div id="sku-assignment" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form id="sku-assignment-form" [formGroup]="form" name="skuAssignmentForm" class="merchant pt-24 w-100-p"
+            fxLayout="column" fxFlex novalidate>
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600" *ngIf="!isEditMode">
+                        Choose Warehouse
+                    </span>
+                    <span class="mat-headline font-weight-600" *ngIf="isEditMode">
+                        Warehouse Detail
+                    </span>
+
+                    <div class="form-box" *ngIf="!isEditMode; else editMode;">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label [class.mat-error]="hasError(form.get('warehouse'))" fxFlexAlign="center" fxFlex="12" class="label-form">
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> Warehouse Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select name="warehouse" formControlName="warehouse">
+                                    <mat-option (click)="onSelectedWarehouse(null)">(None)</mat-option>
+                                    <mat-option *ngFor="let rowList of warehouseList$ | async" [value]="rowList" (click)="onSelectedWarehouse(rowList)">
+                                        {{ rowList.name }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="hasError(form.get('warehouse'))">
+                                    {{ getFormError(form.get('warehouse')) }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <ng-template #editMode>
+                        <!-- WAREHOUSE NAME -->
+                        <div
+                            class="mb-16"
+                            [class.custom-field]="!isEditMode"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                                [class.mat-error]="hasError(form.get('warehouse'))"
+                            >
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> Warehouse<br/> Name
+                            </label>
+
+                            <ng-container *ngIf="isEditMode">
+                                <p fxFlexAlign="center" class="sinbad-black-60-fg">
+                                    {{ selectedWarehouse?.code || '-' }} - {{ selectedWarehouse?.name }}
+                                </p>
+                            </ng-container>
+                        </div>
+                        <!-- / WAREHOUSE NAME -->
+                        <!-- WAREHOUSE ADDRESS -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            *ngIf="selectedWarehouse"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                            >
+                                Warehouse<br/> Address
+                            </label>
+                    
+                            <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.address || '-' }}</p>
+                        </div>
+                        <!-- / WAREHOUSE ADDRESS -->
+                        <!-- WAREHOUSE NOTES ADDRESS -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            *ngIf="selectedWarehouse"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="15"
+                                class="pr-0"
+                            >
+                                Warehouse<br/> Notes Address
+                            </label>
+                    
+                            <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.noteAddress || '-' }}</p>
+                        </div>
+                        <!-- / WAREHOUSE NOTES ADDRESS -->
+                    </ng-template>
+
+                    <span class="mat-headline font-weight-600">
+                        Choose SKU
+                    </span>
+
+                    <sinbad-multiple-selection
+                        [availableTitle]="'Available SKU'"
+                        [selectedTitle]="'Chosen SKU'"
+                        [availableOptions]="availableOptions"
+                        [initialSelectedOptions]="initialSelectedOptions"
+                        [totalAvailableOptions]="(totalCatalogues$ | async)"
+                        [totalInitialSelectedOptions]="(totalSelectedCatalogues$ | async)"
+                        [isAvailableOptionsLoading]="(isCatalogueLoading$ | async)"
+                        [isSelectedOptionsLoading]="(isWarehouseCatalogueLoading$ | async)"
+                        (availableReachedBottom)="onAvailableOptionLoadMore()"
+                        (selectedReachedBottom)="onSelectedOptionLoadMore()"
+                        (selectionListChanged)="onSelectionChanged($event)"
+                        (clearAll)="onClearAll()"
+                        (search)="onSearch($event)"
+                    ></sinbad-multiple-selection>
+                </div>
+
+                <!-- <div class="content-card pt-8">
+                    <app-find-sku></app-find-sku>
+                </div> -->
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+    <!-- LOADER -->
+    <div class="loader" *ngIf="(isLoading$ | async)">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- / LOADER -->
+</div>

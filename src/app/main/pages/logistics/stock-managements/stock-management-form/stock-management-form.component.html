@@ -1,0 +1,436 @@
+<div id="stock-management-catalogues" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center pt-12">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <form
+                id="stock-management-form"
+                name="stockManagementForm"
+                class="stock-management w-100-p"
+                [formGroup]="form"
+                fxLayout="column"
+                fxFlex
+                novalidate
+            >
+                <div class="p-16 pb-0" fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Choose Warehouse
+                    </span>
+
+                    <div class="form-box">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="15px"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="8"
+                                class="custom-field__label"
+                                [class.sinbad-red-fg]="hasError('whName')"
+                            >
+                                <ng-container *ngIf="pageType === 'new'">*</ng-container>
+                                Warehouse Name
+                            </label>
+
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="100"
+                                class="custom-field__label"
+                                *ngIf="pageType === 'edit'"
+                            >
+                                <span>{{ selectedWhName || '-' }}</span>
+                            </label>
+
+                            <mat-form-field
+                                appearance="outline"
+                                fxFlex="50"
+                                *ngIf="pageType === 'new'"
+                            >
+                                <ng-container
+                                    *ngIf="warehouses$ | async as warehouses; else noWarehouses"
+                                >
+                                    <mat-select
+                                        formControlName="whName"
+                                        placeholder="Choose Warehouse"
+                                    >
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="let row of warehouses"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name || '-' }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noWarehouses>
+                                    <mat-select placeholder="Warehouse not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error *ngIf="hasError('whName', true)">
+                                    {{ getErrorMessage('whName') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="label-info mb-16">
+                    <mat-icon class="label-info__icon s-16" svgIcon="sinbad-info-2"></mat-icon>
+                    <p class="label-info__text">Quantity Setting in Agent App Unlimited, The stock in Agent app will be unlimited.</p>
+                </div>
+
+                <sinbad-card-header [config]="cardHeaderConfig">
+                    <span first-bottom-left *ngIf="!(isLoading$ | async)">
+                        Total {{ totalDataSource$ | async }} SKU
+                    </span>
+
+                    <span first-bottom-left *ngIf="isLoading$ | async">
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </span>
+                </sinbad-card-header>
+
+                <mat-table
+                    class="stock-management-catalogues-table sinbad-table mx-16"
+                    [class.sinbad-table-no-record]="
+                        !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                    "
+                    #table
+                    [dataSource]="dataSource$ | async"
+                    formArrayName="skus"
+                    matSort
+                    [@animateStagger]="{ value: '50' }"
+                    fusePerfectScrollbar
+                >
+                    <!-- No Column -->
+                    <ng-container matColumnDef="no">
+                        <mat-header-cell *matHeaderCellDef>
+                            No
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as i">
+                            <p class="text-word-break-break-word">
+                                {{ generateNumber(i) }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- SKU ID Column -->
+                    <ng-container matColumnDef="sku-id">
+                        <mat-header-cell *matHeaderCellDef>
+                            SKU ID
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word;">
+                                {{ row?.catalogue?.externalId || '-' }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- SKU Name Column -->
+                    <ng-container matColumnDef="sku-name">
+                        <mat-header-cell *matHeaderCellDef>
+                            SKU Name
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word;">
+                                {{ row?.catalogue?.name || '-' }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Stock Type Column -->
+                    <ng-container matColumnDef="stock-type">
+                        <mat-header-cell *matHeaderCellDef>
+                            Stock Type
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <ng-container *ngIf="form.get('whName').valid">
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <ng-container *ngIf="stockTypes; else noStockTypes">
+                                            <mat-select
+                                                formControlName="unlimitedStock"
+                                                placeholder="Choose Stock Type"
+                                                (selectionChange)="onStockTypeChange($event, i)"
+                                            >
+                                                <mat-option>None</mat-option>
+                                                <mat-option
+                                                    *ngFor="let row of stockTypes"
+                                                    [value]="row?.id"
+                                                >
+                                                    {{ row?.label }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </ng-container>
+
+                                        <ng-template #noStockTypes>
+                                            <mat-select placeholder="Stock Type not found" disabled>
+                                                <mat-option>None</mat-option>
+                                            </mat-select>
+                                        </ng-template>
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container *ngIf="form.get('whName').invalid">
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <mat-select placeholder="Choose Stock Type" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </ng-container>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Qty Change Column -->
+                    <ng-container matColumnDef="qty-change">
+                        <mat-header-cell *matHeaderCellDef>
+                            Qty Change
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="State the quantity you would like to add to&#10;or subtract from the existing stock level.&#10;Enter a number toa add the quantity, enter&#10;a (-) before the number to subtract the&#10;quantity."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <ng-container
+                                    *ngIf="
+                                        form.get(['skus', i, 'unlimitedStock'])?.value ||
+                                        form.get(['skus', i, 'unlimitedStock'])?.value === false
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex="100">
+                                        <input
+                                            type="number"
+                                            matInput
+                                            formControlName="qtyChange"
+                                            step="1"
+                                            autocomplete="off"
+                                            (input)="onQtyChange($event.target.value, i)"
+                                        />
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="!form.get(['skus', i, 'unlimitedStock'])?.value"
+                                >
+                                    <mat-form-field appearance="outline" fxFlex="100">
+                                        <input
+                                            type="number"
+                                            matInput
+                                            step="1"
+                                            autocomplete="off"
+                                            disabled
+                                        />
+                                    </mat-form-field>
+                                </ng-container>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Reason Column -->
+                    <ng-container matColumnDef="reason">
+                        <mat-header-cell *matHeaderCellDef>
+                            Reason
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Reason that affect changes in&#10;particular SKU stock level."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <ng-container
+                                    *ngIf="
+                                        form.get(['skus', i, 'qtyChange'])?.value &&
+                                        form.get(['skus', i, 'qtyChange'])?.valid
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <ng-container
+                                            *ngIf="
+                                                (stockManagementReasons$ | async)(
+                                                    form.get(['skus', i, 'qtyChange']).value > 0
+                                                        ? 'plus'
+                                                        : 'minus'
+                                                ) as stockManagementReasons;
+                                                else noStockManagementReasons
+                                            "
+                                        >
+                                            <mat-select
+                                                formControlName="warehouseCatalogueReasonId"
+                                                placeholder="Choose Reason"
+                                                (selectionChange)="onReasonChange($event, i)"
+                                            >
+                                                <mat-option>None</mat-option>
+                                                <mat-option
+                                                    *ngFor="let row of stockManagementReasons"
+                                                    [value]="row?.id"
+                                                >
+                                                    {{ row?.reason || '-' }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </ng-container>
+
+                                        <ng-template #noStockManagementReasons>
+                                            <mat-select placeholder="Reason not found" disabled>
+                                                <mat-option>None</mat-option>
+                                            </mat-select>
+                                        </ng-template>
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="
+                                        !form.get(['skus', i, 'qtyChange'])?.value ||
+                                        form.get(['skus', i, 'qtyChange'])?.invalid
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <mat-select placeholder="Choose Reason" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </ng-container>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Sellable Column -->
+                    <ng-container matColumnDef="sellable">
+                        <mat-header-cell *matHeaderCellDef>
+                            Sellable
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Sellable stock on hand in the warehouse&#10;that can be sold."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <ng-container *ngIf="row?.unlimitedStock === false">
+                                <p class="text-word-break-break-word">
+                                    {{ row?.stock }}
+                                </p>
+                            </ng-container>
+
+                            <ng-container *ngIf="row?.unlimitedStock === true">
+                                <mat-icon class="active-icon s-14">
+                                    all_inclusive
+                                </mat-icon>
+                            </ng-container>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- After Column -->
+                    <ng-container matColumnDef="after">
+                        <mat-header-cell *matHeaderCellDef>
+                            After
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Sellable stock in the selected warehouse&#10;after the stock adjustment."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; index as i">
+                            <ng-container *ngIf="row?.unlimitedStock === false">
+                                <p class="text-word-break-break-word">
+                                    {{
+                                        afterCalc(row?.stock, i) < 0
+                                            ? '-'
+                                            : afterCalc(row?.stock, i)
+                                    }}
+                                </p>
+                            </ng-container>
+
+                            <ng-container *ngIf="row?.unlimitedStock === true">
+                                <mat-icon class="active-icon s-14">
+                                    all_inclusive
+                                </mat-icon>
+                            </ng-container>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- No Record Column -->
+                    <ng-container matColumnDef="no-record">
+                        <mat-footer-cell *matFooterCellDef colspan="8">
+                            No records found
+                        </mat-footer-cell>
+                    </ng-container>
+
+                    <mat-header-row
+                        *matHeaderRowDef="displayedColumns; sticky: true"
+                    ></mat-header-row>
+
+                    <mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                        class="stock-management-catalogue"
+                    ></mat-row>
+
+                    <mat-footer-row
+                        *matFooterRowDef="['no-record']"
+                        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                    ></mat-footer-row>
+                </mat-table>
+
+                <div
+                    class="loader-content"
+                    *ngIf="
+                        (isLoading$ | async) &&
+                        (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                    "
+                >
+                    <mat-spinner color="accent"></mat-spinner>
+                </div>
+
+                <mat-paginator
+                    [disabled]="
+                        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                    "
+                    [length]="totalDataSource$ | async"
+                    [pageSize]="defaultPageSize"
+                    [pageSizeOptions]="defaultPageOpts"
+                    showFirstLastButtons
+                ></mat-paginator>
+            </form>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

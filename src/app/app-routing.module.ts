@@ -57,24 +57,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -152,46 +152,46 @@ const routes: Routes = [
             //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'catalogues',
-                loadChildren: () =>
-                    import('./main/pages/catalogues/catalogues.module').then(
-                        (m) => m.CataloguesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogues'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'in-store-inventories',
-                loadChildren: () =>
-                    import('./main/pages/in-store-inventories/in-store-inventories.module').then(
-                        (m) => m.InStoreInventoriesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('in-store-inventories'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'catalogues',
+            //     loadChildren: () =>
+            //         import('./main/pages/catalogues/catalogues.module').then(
+            //             (m) => m.CataloguesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogues'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'in-store-inventories',
+            //     loadChildren: () =>
+            //         import('./main/pages/in-store-inventories/in-store-inventories.module').then(
+            //             (m) => m.InStoreInventoriesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('in-store-inventories'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'sales-force',
             //     loadChildren: () =>
@@ -256,14 +256,14 @@ const routes: Routes = [
             //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'logistics',
-            //     loadChildren: () =>
-            //         import('./main/pages/logistics/logistics.module').then(
-            //             (m) => m.LogisticsModule
-            //         ),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'logistics',
+                loadChildren: () =>
+                    import('./main/pages/logistics/logistics.module').then(
+                        (m) => m.LogisticsModule
+                    ),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
