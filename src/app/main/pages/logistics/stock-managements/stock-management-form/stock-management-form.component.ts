@@ -59,7 +59,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'List SKU',
+            label: 'List SKU and Stock',
         },
         search: {
             active: true,

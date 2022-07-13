@@ -144,4 +144,21 @@ app-stock-management-form {
             }
         }
     }
+
+    .label-info {
+        display: flex;
+        border-radius: 4px;
+        background-color: #ebf8ff;
+        width: fit-content;
+        margin-top: 24px;
+        margin-left: 16px;
+        padding-right: 16px;
+        &__icon {
+            margin: 16px 8px auto 16px;
+        }
+        &__text {
+            color: #237ae1;
+        }
+    }
+
 }

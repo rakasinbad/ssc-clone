@@ -201,5 +201,10 @@ export class IconModule {
             'sinbad-check-red',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/check-red.svg')
         );
+        // Info 2 logo - icon color blue
+        this.matIconRegistry.addSvgIcon(
+        'sinbad-info-2',
+        this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/info-2.svg')
+    );
     }
 }
