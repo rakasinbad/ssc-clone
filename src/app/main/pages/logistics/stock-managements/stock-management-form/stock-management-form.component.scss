@@ -145,12 +145,25 @@ app-stock-management-form {
         }
     }
 
+    .custom-field {
+        &__warehouse-title {
+            font-size: 12px;
+        }
+
+        &__warehouse-name {
+            font-size: 16px;
+            margin-top: 4px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(218, 224, 231, 0.5);
+        }
+    }
+
     .label-info {
         display: flex;
         border-radius: 4px;
         background-color: #ebf8ff;
         width: fit-content;
-        margin-top: 24px;
+        margin-top: 16px;
         margin-left: 16px;
         padding-right: 16px;
         &__icon {

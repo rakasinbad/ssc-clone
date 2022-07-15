@@ -18,7 +18,7 @@ import { select, Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IBreadcrumbs, LifecyclePlatform, ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { StockManagementReason } from 'app/shared/models/stock-management-reason.model';
 import {
@@ -32,14 +32,17 @@ import {
 } from 'app/shared/store/selectors/sources';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
+import { merge, Observable, Subject, of, BehaviorSubject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom, switchMap, take, catchError } from 'rxjs/operators';
 
 import { Warehouse } from '../../warehouses/models';
 import { PayloadStockManagementCatalogue, StockManagementCatalogue } from '../models';
 import { StockManagementCatalogueActions } from '../store/actions';
 import * as fromStockManagements from '../store/reducers';
 import { StockManagementCatalogueSelectors } from '../store/selectors';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { QtySettingsApiService } from 'app/main/pages/logistics/stock-managements/services';
 
 @Component({
     selector: 'app-stock-management-form',
@@ -130,6 +133,8 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     stockManagementReasons$: Observable<(method: string) => Array<StockManagementReason>>;
     plusReasons$: Observable<Array<StockManagementReason>>;
 
+    quantityType: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
 
@@ -148,10 +153,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         },
         {
             title: 'Stock Management',
-        },
-        {
-            title: 'Update Stock',
-        },
+        }
     ];
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -165,7 +167,8 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         private ngxPermissions: NgxPermissionsService,
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private qtySettingsApiService: QtySettingsApiService,
     ) {
         // Set footer action
         this.store.dispatch(
@@ -430,6 +433,9 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
+
+                this.quantityType.next('');
+                this.quantityType.complete();
                 break;
 
             default:
@@ -440,13 +446,6 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     start: 'desc',
                     disableClear: true,
                 });
-
-                // Set breadcrumbs
-                this.store.dispatch(
-                    UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs,
-                    })
-                );
 
                 // Fetch request warehouse
                 this.store.dispatch(
@@ -460,6 +459,8 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     })
                 );
 
+                this._fetchSupplierQtySettings();
+
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
@@ -471,6 +472,17 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     });
 
                     this.pageType = 'new';
+                    
+                    this._breadCrumbs[3] = {
+                        title: 'Add Stock',
+                    },
+
+                    // Set breadcrumbs
+                    this.store.dispatch(
+                        UiActions.createBreadcrumb({
+                            payload: this._breadCrumbs,
+                        })
+                    );
                 } else if (Math.sign(id) === 1) {
                     const hasAccess = this.ngxPermissions.hasPermission('WH.SM.UPDATE');
                     hasAccess.then(hasAccess => {
@@ -480,6 +492,17 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     });
                     
                     this.pageType = 'edit';
+
+                    this._breadCrumbs[3] = {
+                        title: 'Update Stock',
+                    },
+
+                    // Set breadcrumbs
+                    this.store.dispatch(
+                        UiActions.createBreadcrumb({
+                            payload: this._breadCrumbs,
+                        })
+                    );
                 } else {
                     this.router.navigateByUrl('/pages/logistics/stock-managements');
                 }
@@ -642,5 +665,59 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         this.store.dispatch(
             StockManagementCatalogueActions.updateStockManagementCatalogueRequest({ payload })
         );
+    }
+
+    private debug(label: string, data: any = {}): void {
+        if (!environment.production) {
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
+        }
+    }
+
+    private _fetchSupplierQtySettings(): void {
+        of(null).pipe(
+            withLatestFrom<any, UserSupplier>(
+                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            ),
+            tap(x => this.debug('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], any>(([_, userSupplier]) => {
+                // Jika user tidak ada data supplier.
+                if (!userSupplier) {
+                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                }
+
+                // Mengambil ID supplier-nya.
+                const { supplierId } = userSupplier;
+                
+                // Melakukan request supplier quantity setting
+                return this.qtySettingsApiService
+                    .get<any>(supplierId)
+                    .pipe(
+                        tap(response => this.debug('FETCH SUPPLIER QUANTITY SETTINGS', { params: supplierId, response }))
+                    );
+            }),
+            take(1),
+            catchError(err => { throw err; }),
+        ).subscribe({
+            next: (response: { unlimitedStock: boolean }) => {
+                if (response.unlimitedStock) {
+                    this.quantityType.next('Unlimited : The stock in Agent app will be unlimited.');
+                } else {
+                    this.quantityType.next('None, The stock in Agent app will be using Stock Information.');
+                }
+            },
+            error: (err) => {
+                this.debug('ERROR FETCH SUPPLIER QUANTITY SETTINGS', { error: err }),
+                this._$helper.showErrorNotification(new ErrorHandler(err));
+            },
+            complete: () => {
+                // this.toggleLoading(false);
+                this.debug('FETCH SUPPLIER QUANTITY SETTINGS COMPLETED');
+            }
+        });
     }
 }

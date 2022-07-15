@@ -24,68 +24,70 @@
                     <div class="form-box">
                         <div
                             class="custom-field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="15px"
                         >
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="8"
-                                class="custom-field__label"
-                                [class.sinbad-red-fg]="hasError('whName')"
-                            >
-                                <ng-container *ngIf="pageType === 'new'">*</ng-container>
-                                Warehouse Name
-                            </label>
-
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="100"
-                                class="custom-field__label"
-                                *ngIf="pageType === 'edit'"
-                            >
-                                <span>{{ selectedWhName || '-' }}</span>
-                            </label>
-
-                            <mat-form-field
-                                appearance="outline"
-                                fxFlex="50"
-                                *ngIf="pageType === 'new'"
-                            >
-                                <ng-container
-                                    *ngIf="warehouses$ | async as warehouses; else noWarehouses"
+                            <div>
+                                <label
+                                    class="custom-field__warehouse-title"
+                                    [class.sinbad-red-fg]="hasError('whName')"
                                 >
-                                    <mat-select
-                                        formControlName="whName"
-                                        placeholder="Choose Warehouse"
+                                    <ng-container *ngIf="pageType === 'new'">*</ng-container>
+                                    Warehouse Name
+                                </label>
+                            </div>
+
+                            <div>
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="60"
+                                    class="custom-field__warehouse-name font-weight-600"
+                                    *ngIf="pageType === 'edit'"
+                                >
+                                    <span>{{ selectedWhName || '-' }}</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <mat-form-field
+                                    appearance="outline"
+                                    fxFlex="50"
+                                    *ngIf="pageType === 'new'"
+                                >
+                                    <ng-container
+                                        *ngIf="warehouses$ | async as warehouses; else noWarehouses"
                                     >
-                                        <mat-option>None</mat-option>
-                                        <mat-option
-                                            *ngFor="let row of warehouses"
-                                            [value]="row?.id"
+                                        <mat-select
+                                            formControlName="whName"
+                                            placeholder="Choose Warehouse"
                                         >
-                                            {{ row?.name || '-' }}
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="let row of warehouses"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.name || '-' }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+    
+                                    <ng-template #noWarehouses>
+                                        <mat-select placeholder="Warehouse not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+    
+                                    <mat-error *ngIf="hasError('whName', true)">
+                                        {{ getErrorMessage('whName') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
 
-                                <ng-template #noWarehouses>
-                                    <mat-select placeholder="Warehouse not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template>
-
-                                <mat-error *ngIf="hasError('whName', true)">
-                                    {{ getErrorMessage('whName') }}
-                                </mat-error>
-                            </mat-form-field>
                         </div>
                     </div>
                 </div>
 
                 <div class="label-info mb-16">
                     <mat-icon class="label-info__icon s-16" svgIcon="sinbad-info-2"></mat-icon>
-                    <p class="label-info__text">Quantity Setting in Agent App<br />ex : None : If the supplier no need to settings unlimited, or<br />ex : Unlimited : If the supplier need to settings the order to be unlimited</p>
+                    <p class="label-info__text">Quantity Setting in Agent App<br />{{ quantityType | async }}</p>
                 </div>
 
                 <sinbad-card-header [config]="cardHeaderConfig">
