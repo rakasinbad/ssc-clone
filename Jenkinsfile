@@ -7,6 +7,8 @@ def getBucketS3(env) {
         return 'web-sellercenter-sandbox'
     } else if(env == 'staging') {
         return 'web-sellercenter-staging'
+    } else if(env == 'canary') {
+        return 'seller-canary.sinbad.web.id'
     } else {
         return 'web-sellercenter-dev'
     }
@@ -21,6 +23,8 @@ def getDomainURL(env) {
         return 'seller-sandbox.sinbad.web.id'
     } else if(env == 'staging') {
         return 'seller-stg.sinbad.web.id'
+    } else if(env == 'canary') {
+        return 'seller-canary.sinbad.web.id'    
     } else {
         return 'seller-dev.sinbad.web.id'
     }
@@ -48,6 +52,21 @@ pipeline {
             defaultValue: '',
             description: 'Which git source?'
         )
+        string(
+            name: 'GIT_TAG',
+            defaultValue: '',
+            description: 'TAG number'
+        )
+        string(
+            name: 'GIT_TAG_TITLE',
+            defaultValue: '',
+            description: 'Release TAG Title'
+        )
+        string(
+            name: 'GIT_TAG_MESSAGE',
+            defaultValue: '',
+            description: 'Release TAG Messages'
+        )
 		choice(
             name: 'DEPLOY_PRODUCTION',
             choices: ['No', 'Yes'],
@@ -62,6 +81,7 @@ pipeline {
         BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
 		CANARY_BUCKET = "seller-canary.sinbad.web.id"
+        JOB_PATH = "MEDEA_Plaftorms/Frontend/web-sinbad-seller-center"
         DOMAIN_URL = getDomainURL(SINBAD_ENV)
     }
     stages {
@@ -104,6 +124,14 @@ pipeline {
                 }
             }
         }
+        stage('Tagging PRODUCTION') {
+             when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
+                steps {
+						script {
+							sh "gh release create ${params.GIT_TAG} --notes '${params.GIT_TAG_MESSAGE}' --title '${params.GIT_TAG_TITLE}'"
+				}	
+			}
+		}
         stage('Deployment PRODUCTION') {
             when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
                 steps {
@@ -115,6 +143,74 @@ pipeline {
 						}
 					}
 				}
+//        stage('Split Deployment') {
+//           when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "canary"} }
+//            parallel {
+//                stage('Deploy Prod Image') {
+//                    steps {
+//                        script{
+//                            build job: "${JOB_PATH}/production", parameters: [
+//                                [$class: 'StringParameterValue', name: 'DEPLOY_PRODUCTION', value: "No"],
+//                                [$class: 'StringParameterValue', name: 'SINBAD_ENV', value: "production"],
+//                            ]
+//                        }
+//                    }
+//                }
+//                stage('Deploy Canary') {
+//                    when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "canary"} }
+//                    stages { 
+//                        stage('Download ENV') {
+//                            steps {
+//                                script{
+//                                    withAWS(credentials: "${AWS_CREDENTIAL}") {
+//                                        s3Download(file: 'src/environments/environment.ts', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/environment.ts", force: true)
+//                                        if(SINBAD_ENV == 'production'){
+//                                            s3Download(file: 'src/assets/js/newrelic.js', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/newrelic.js", force: true)
+//                                        }
+//                                    }
+//                                    sh "sed -i 's/GIT_TAG/${env.GIT_TAG}/g' src/environments/environment.ts"
+//                                    sh "sed -i 's/GIT_COMMIT_SHORT/${env.GIT_COMMIT_SHORT}/g' src/environments/environment.ts"
+//                                }
+//                            }
+//                        }
+//                        stage('Install') {
+//                            steps {
+//                                sh "npm ci"
+//                            }
+//                        }
+//                        stage('Build') {
+//                            steps {
+//                                script{
+//                                    if (SINBAD_ENV == 'production') {
+//                                        sh "npm run build-prod"
+//                                    } else if (SINBAD_ENV == 'demo') {
+//                                        sh "npm run build-demo"
+//                                    } else if(SINBAD_ENV == 'sandbox') {
+//                                        sh "npm run build-sandbox"
+//                                    } else if(SINBAD_ENV == 'stg') {
+//                                        sh "npm run build-stg"
+//                                    } else if(SINBAD_ENV == 'canary') {
+//                                        sh "npm run build-production"
+//                                    }else {
+//                                        sh "npm run build-dev"
+//                                    }
+//                                }
+//                            }
+//                        }  
+//                        stage('Deploy') {
+//                            steps {
+//                                script {
+//                                    sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+//                                    withAWS(credentials: "${AWS_CREDENTIAL}") {
+//                                    s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
+//                                    }
+//                                }
+//                            }
+//                        } 
+//                    }
+//                }
+//            }
+//        }
         stage('Download ENV') {
 			when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
@@ -172,17 +268,6 @@ pipeline {
                 }
             }
         }
-        stage('Deployment CANARY') {
-            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production"} }
-				steps {
-						script {
-							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
-							withAWS(credentials: "${AWS_CREDENTIAL}") {
-							s3Upload(bucket:"${CANARY_BUCKET}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
-							}	
-						}
-					}
-				}		
 		stage('Deploy') {
             when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV != "production"} }
             steps {
@@ -195,12 +280,14 @@ pipeline {
             }
         }
         stage('init Invalidation'){
+            when { expression { SINBAD_ENV != "canary"} }
             steps{
                 // sh 'brew install jq'
                 echo "${DOMAIN_URL}"
             }
         }//stage
         stage('run Invalidation'){
+            when { expression { SINBAD_ENV != "canary"} }
             steps{
                 script{
                     cmd = "aws cloudfront list-distributions | jq '.DistributionList.Items[]|[ .Id, .Status, .Origins.Items[0].DomainName, .Aliases.Items[0] ] | @tsv ' -r"
@@ -228,7 +315,7 @@ pipeline {
             }//steps
         }//stage
         stage('Automation UI Test') {
-            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" && params.DEPLOY_PRODUCTION == "No" } }
+            when { expression { SINBAD_ENV ==~ 'development|staging|sandbox|canary' && params.DEPLOY_PRODUCTION == "No" } }
             agent {
                 docker { 
                         image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
