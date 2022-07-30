@@ -250,12 +250,12 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            // {
-            //     path: 'errors',
-            //     loadChildren: () =>
-            //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'errors',
+                loadChildren: () =>
+                    import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+                canLoad: [AuthGuard],
+            },
             {
                 path: 'logistics',
                 loadChildren: () =>
