@@ -5,6 +5,7 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
 import { RoleGuard } from './main/pages/core/auth/role.guard';
 // import { ReturnsModule } from './main/pages/returns/returns.module';
+import { EmptyRouteComponent } from './empty-route/empty-route.component';
 
 const routes: Routes = [
     {
@@ -369,8 +370,9 @@ const routes: Routes = [
     },
     {
         path: '**',
-        loadChildren: () =>
-            import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+        component: EmptyRouteComponent
+        // loadChildren: () =>
+        //     import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
     },
 ];
 

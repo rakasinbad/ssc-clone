@@ -19,7 +19,7 @@
           "options": {
             "outputPath": "dist/fuse",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "main": "src/main-single.spa.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [

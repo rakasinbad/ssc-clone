@@ -42,6 +42,7 @@ import { HttpConfigInterceptor } from './shared/interceptors/http-config.interce
 import { HttpErrorInterceptor } from './shared/interceptors/http-error.interceptor';
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
+import { EmptyRouteComponent } from './empty-route/empty-route.component';
 
 numeral.register('locale', 'id-sinbad', {
     delimiters: {
@@ -71,7 +72,7 @@ numeral.locale('id-sinbad');
 registerLocaleData(localId, 'id');
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, EmptyRouteComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

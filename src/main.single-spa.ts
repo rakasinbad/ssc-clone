@@ -25,5 +25,11 @@ const lifecycles = singleSpaAngular({
 });
 
 export const bootstrap = lifecycles.bootstrap;
-export const mount = lifecycles.mount;
+export const mount = (props) => {
+  console.log('mounted ssc => ', lifecycles.mount)
+  return new Promise((resolve, reject) => {
+    // Always reject with an Error.
+    reject(new Error('Error mount web sinbad seller center'));
+  });
+};
 export const unmount = lifecycles.unmount;

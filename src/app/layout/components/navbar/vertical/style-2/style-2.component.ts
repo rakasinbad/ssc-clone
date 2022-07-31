@@ -8,6 +8,7 @@ import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FusePerfectScrollbarDirective } from '@fuse/directives/fuse-perfect-scrollbar/fuse-perfect-scrollbar.directive';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'navbar-vertical-style-2',
@@ -21,6 +22,7 @@ export class NavbarVerticalStyle2Component implements OnInit, OnDestroy {
     appVersion = environment.appVersion;
     appHash = environment.appHash;
     isProduction = environment.production;
+    sinbadLogo = assetUrl('images/logos/sinbad.svg')
 
     // Private
     private _fusePerfectScrollbar: FusePerfectScrollbarDirective;
