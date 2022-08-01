@@ -22,9 +22,15 @@
             "main": "src/main.single-spa.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "rebaseRootRelativeCssUrls": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/@material/dist/collection/assets",
+                "output": "/assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
