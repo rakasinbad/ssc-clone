@@ -1,5 +1,5 @@
 import { AgmCoreModule } from '@agm/core';
-import { getCurrencySymbol, registerLocaleData, APP_BASE_HREF } from '@angular/common';
+import { getCurrencySymbol, registerLocaleData } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
@@ -152,8 +152,7 @@ registerLocaleData(localId, 'id');
         { provide: APP_INITIALIZER, useFactory: initPrivileges, deps: [AppService], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
-        { provide: APP_BASE_HREF, useValue: '/' }
+        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],
 })

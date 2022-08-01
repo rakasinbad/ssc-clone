@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { getRoleByRouter } from 'app/shared/helpers';
 import { NgxPermissionsGuard } from 'ngx-permissions';
@@ -379,5 +380,12 @@ const routes: Routes = [
 @NgModule({
     imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, onSameUrlNavigation: 'reload' })],
     exports: [RouterModule],
+    providers: [
+        /*
+         * Should be same as mount in root, but have strange effects when navigate between apps.
+         * https://single-spa.js.org/docs/ecosystem-angular#configure-routes
+         */
+        { provide: APP_BASE_HREF, useValue: '/' },
+      ],
 })
 export class AppRoutingModule {}

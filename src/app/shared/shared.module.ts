@@ -7,7 +7,6 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxMaskModule } from 'ngx-mask';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialog.module';
-import { ExportAdvancedModule } from './components/export-advanced/export-advanced.module';
 import { FilterAdvancedModule } from './components/filter-advanced/filter-advanced.module';
 import { FiltersModule } from './components/filters/filters.module';
 import { ErrorNoticeComponent } from './components/notices/error-notice/error-notice.component';
@@ -29,6 +28,7 @@ import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { PricePipe, ReplacePipe, SafePipe } from './pipes';
+import { SingleSpaModule } from 'single-spa/single-spa.module';
 
 @NgModule({
     declarations: [
@@ -63,7 +63,6 @@ import { PricePipe, ReplacePipe, SafePipe } from './pipes';
     ],
     imports: [
         // Custom Module
-        ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
         ApplyDialogModule,
@@ -81,6 +80,9 @@ import { PricePipe, ReplacePipe, SafePipe } from './pipes';
         // ExportsModule,
         // CardHeaderModule,
         // SharedComponentsModule,
+
+        // single spa
+        SingleSpaModule
     ],
     exports: [
         // Pipe
@@ -96,7 +98,6 @@ import { PricePipe, ReplacePipe, SafePipe } from './pipes';
         TrackScrollDirective,
 
         // Custom Module
-        ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
         ApplyDialogModule,
@@ -122,6 +123,9 @@ import { PricePipe, ReplacePipe, SafePipe } from './pipes';
         DeleteCatalogueSegmentationsComponent,
         ChangeConfirmationComponent,
         ShowImageComponent,
+
+        // single spa
+        SingleSpaModule
     ],
     providers: [TitleCasePipe],
     entryComponents: [
