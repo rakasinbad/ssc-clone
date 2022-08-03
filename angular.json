@@ -74,7 +74,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "fuse:build"
+            "browserTarget": "fuse:build",
+            "publicHost":"http://localhost:4200"
           },
           "configurations": {
             "production": {
@@ -284,7 +285,8 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "supplier-center:build"
+            "browserTarget": "supplier-center:build",
+            "publicHost":"http://localhost:4200"
           },
           "configurations": {
             "production": {

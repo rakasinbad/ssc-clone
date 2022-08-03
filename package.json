@@ -28,7 +28,7 @@
     "start-pwa": "cd dist/admin-portal && http-server -c-1 -P http://localhost:9000",
     "bundle-report": "webpack-bundle-analyzer dist/stats.json",
     "build:single-spa": "ng build --prod --deploy-url http://localhost:4200/",
-    "serve:single-spa": "ng serve --disable-host-check --port 4200 --deploy-url http://localhost:4200/ --live-reload false"
+    "serve:single-spa": "ng serve --disable-host-check --port 4200 --deploy-url http://localhost:4200/ --live-reload true"
   },
   "private": true,
   "dependencies": {
