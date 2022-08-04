@@ -1,0 +1,636 @@
+<sinbad-card-header [config]="cardHeaderConfig">
+    <p first-bottom-left>
+        Description:
+    </p>
+    <p
+        #contentDesc
+        class="font-weight-700 text-truncate"
+        last-bottom-left
+        [matTooltip]="
+            isTextTruncateDesc()
+                ? 'Small scale business targeting the&#10;consumers who opt day to day&#10;purchases in small quantity'
+                : null
+        "
+        [matTooltipClass]="isTextTruncateDesc() ? 'tooltip-br' : null"
+    >
+        Small scale business targeting the consumers who opt day to day purchases in small quantity.
+    </p>
+</sinbad-card-header>
+
+<div class="sinbad-black-5 h-552 p-16">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <span class="sinbad-black-fg font-weight-600 font-size-16">
+                Hierarchy
+            </span>
+
+            <mat-icon
+                class="active-icon s-14 ml-8 cursor-pointer"
+                color="accent"
+                matTooltip="Example for creating segment :&#10;Apotek -> x -> y"
+                matTooltipClass="tooltip-br"
+            >
+                help
+            </mat-icon>
+        </div>
+
+        <div fusePerfectScrollbar *ngIf="!(isLoading$ | async)">
+            <form id="store-group-form" name="storeGroupForm" [formGroup]="form" novalidate>
+                <!-- [fxLayoutAlign]="
+                        segments().length < maxSegment ? 'start stretch' : 'space-between stretch'
+                    " -->
+                <div
+                    class="h-480"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    formArrayName="segments"
+                >
+                    <ng-container
+                        *ngFor="
+                            let segment of segments().controls;
+                            index as segmentIdx;
+                            last as isLast
+                        "
+                    >
+                        <div
+                            [formGroupName]="segmentIdx"
+                            fxLayout="column"
+                            fxLayoutGap="16px"
+                            fxFlex="0 1 calc(200px + 10px)"
+                        >
+                            <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                                {{ 'Lv' + (segmentIdx + 1) }}
+                            </div>
+
+                            <ng-container *ngIf="segmentBranches(segmentIdx).controls.length > 0">
+                                <div
+                                    class="fuse-white h-440 p-16 pl-8"
+                                    fxLayout="column"
+                                    formArrayName="branches"
+                                    fusePerfectScrollbar
+                                >
+                                    <ng-container
+                                        *ngFor="
+                                            let segmentBranch of segmentBranches(segmentIdx)
+                                                .controls;
+                                            index as branchIdx
+                                        "
+                                    >
+                                        <div
+                                            [formGroupName]="branchIdx"
+                                            fxLayout="row"
+                                            fxLayoutAlign="space-between stretch"
+                                            class="h-40 sinbad-nav-item"
+                                        >
+                                            <ng-container *ngIf="!(isLoadingRow$ | async)">
+                                                <!-- FOR STATUS INACTIVE -->
+                                                <ng-container
+                                                    *ngIf="isInactive(segmentIdx, branchIdx)"
+                                                >
+                                                    <div
+                                                        fxFlexAlign="center"
+                                                        [matMenuTriggerFor]="moreMenu"
+                                                        class="cursor-pointer sinbad-nav-action"
+                                                    >
+                                                        <mat-icon>more_vert</mat-icon>
+                                                    </div>
+
+                                                    <mat-menu #moreMenu="matMenu">
+                                                        <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Edit"
+                                                                (click)="onEdit(segmentIdx, branchIdx)"
+                                                            >
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>Edit</span>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                [attr.aria-label]="
+                                                                    getStatus(segmentIdx, branchIdx) ===
+                                                                    'active'
+                                                                        ? 'Inactive'
+                                                                        : 'Active'
+                                                                "
+                                                                (click)="
+                                                                    onSetStatus(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>
+                                                                    {{
+                                                                        getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'archive'
+                                                                            : 'check_circle_outline'
+                                                                    }}
+                                                                </mat-icon>
+                                                                <span>
+                                                                    {{
+                                                                        (getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'ACTION.INACTIVE'
+                                                                            : 'ACTION.ACTIVE'
+                                                                        ) | translate
+                                                                    }}
+                                                                </span>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Rename"
+                                                                (click)="
+                                                                    onRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>title</mat-icon>
+                                                                <span>Rename</span>
+                                                            </button>
+                                                        </ng-template>
+                                                    </mat-menu>
+
+                                                    <div
+                                                        fxFlexAlign="center"
+                                                        class="cursor-pointer sinbad-nav-link"
+                                                        [class.sinbad-nav-link__inactive]="
+                                                            isInactive(segmentIdx, branchIdx)
+                                                        "
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="space-between center"
+                                                        fxFlex
+                                                    >
+                                                        <span>
+                                                            <!-- IF NOT RENAME -->
+                                                            <ng-container
+                                                                *ngIf="
+                                                                    !isRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
+                                                                        branchIdx
+                                                                    "
+                                                                    #tooltip="matTooltip"
+                                                                    #inputName
+                                                                    type="text"
+                                                                    matInput
+                                                                    autocomplete="off"
+                                                                    formControlName="name"
+                                                                    [readonly]="
+                                                                        isInactive(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
+                                                                    "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
+                                                                />
+                                                            </ng-container>
+
+                                                            <!-- IF RENAME -->
+                                                            <ng-container
+                                                                *ngIf="
+                                                                    isRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
+                                                                        branchIdx
+                                                                    "
+                                                                    #tooltip="matTooltip"
+                                                                    #inputName
+                                                                    type="text"
+                                                                    matInput
+                                                                    autocomplete="off"
+                                                                    autocapitalize="on"
+                                                                    formControlName="name"
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
+                                                                    "
+                                                                    (keydown.enter)="
+                                                                        $event.target.blur();
+                                                                        $event.stopPropagation()
+                                                                    "
+                                                                    (blur)="
+                                                                        handleRename(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
+                                                                />
+                                                            </ng-container>
+                                                        </span>
+                                                        <mat-icon
+                                                            *ngIf="hasChild(segmentIdx, branchIdx)"
+                                                        >
+                                                            chevron_right
+                                                        </mat-icon>
+                                                    </div>
+                                                </ng-container>
+
+                                                <!-- FOR STATUS ACTIVE -->
+                                                <ng-container
+                                                    *ngIf="!isInactive(segmentIdx, branchIdx)"
+                                                >
+                                                    <div
+                                                        fxFlexAlign="center"
+                                                        [matMenuTriggerFor]="moreMenu"
+                                                        class="cursor-pointer sinbad-nav-action"
+                                                        [class.sinbad-nav-action__disabled]="
+                                                            !isReadonly(segmentIdx, branchIdx)
+                                                        "
+                                                    >
+                                                        <mat-icon>more_vert</mat-icon>
+                                                    </div>
+
+                                                    <mat-menu #moreMenu="matMenu">
+                                                        <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Edit"
+                                                                (click)="onEdit(segmentIdx, branchIdx)"
+                                                            >
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>Edit</span>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                [attr.aria-label]="
+                                                                    getStatus(segmentIdx, branchIdx) ===
+                                                                    'active'
+                                                                        ? 'Inactive'
+                                                                        : 'Active'
+                                                                "
+                                                                (click)="
+                                                                    onSetStatus(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>
+                                                                    {{
+                                                                        getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'archive'
+                                                                            : 'check_circle_outline'
+                                                                    }}
+                                                                </mat-icon>
+                                                                <span>
+                                                                    {{
+                                                                        (getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'ACTION.INACTIVE'
+                                                                            : 'ACTION.ACTIVE'
+                                                                        ) | translate
+                                                                    }}
+                                                                </span>
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Rename"
+                                                                (click)="
+                                                                    onRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>title</mat-icon>
+                                                                <span>Rename</span>
+                                                            </button>
+                                                        </ng-template>
+                                                    </mat-menu>
+
+                                                    <ng-container
+                                                        *ngIf="isReadonly(segmentIdx, branchIdx)"
+                                                    >
+                                                        <div
+                                                            fxFlexAlign="center"
+                                                            class="cursor-pointer sinbad-nav-link"
+                                                            [class.sinbad-nav-link__focus]="
+                                                                isTyping(segmentIdx, branchIdx)
+                                                            "
+                                                            [class.sinbad-nav-link__readonly]="
+                                                                isReadonly(segmentIdx, branchIdx)
+                                                            "
+                                                            [class.sinbad-red-10-fg]="
+                                                                isSelected(segmentIdx, branchIdx)
+                                                            "
+                                                            fxLayout="row"
+                                                            fxLayoutAlign="space-between center"
+                                                            fxFlex
+                                                            (click)="
+                                                                onShowChild(segmentIdx, branchIdx)
+                                                            "
+                                                        >
+                                                            <span>
+                                                                <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
+                                                                        branchIdx
+                                                                    "
+                                                                    #tooltip="matTooltip"
+                                                                    #inputName
+                                                                    type="text"
+                                                                    matInput
+                                                                    autocomplete="off"
+                                                                    formControlName="name"
+                                                                    [readonly]="
+                                                                        isReadonly(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
+                                                                    "
+                                                                    [class.sinbad-red-10-fg]="
+                                                                        isSelected(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
+                                                                />
+                                                            </span>
+                                                            <mat-icon
+                                                                *ngIf="
+                                                                    hasChild(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                chevron_right
+                                                            </mat-icon>
+                                                        </div>
+                                                    </ng-container>
+
+                                                    <ng-container
+                                                        *ngIf="!isReadonly(segmentIdx, branchIdx)"
+                                                    >
+                                                        <div
+                                                            fxFlexAlign="center"
+                                                            class="cursor-pointer sinbad-nav-link"
+                                                            [class.sinbad-nav-link__focus]="
+                                                                isTyping(segmentIdx, branchIdx) ||
+                                                                isRename(segmentIdx, branchIdx)
+                                                            "
+                                                            fxLayout="row"
+                                                            fxLayoutAlign="space-between center"
+                                                            fxFlex
+                                                        >
+                                                            <span>
+                                                                <!-- IF NOT RENAME -->
+                                                                <ng-container
+                                                                    *ngIf="
+                                                                        !isRename(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                >
+                                                                    <input
+                                                                        [id]="
+                                                                            'input-segment-' +
+                                                                            segmentIdx +
+                                                                            '-branch-' +
+                                                                            branchIdx
+                                                                        "
+                                                                        #tooltip="matTooltip"
+                                                                        #inputName
+                                                                        type="text"
+                                                                        matInput
+                                                                        autocomplete="off"
+                                                                        autocapitalize="on"
+                                                                        formControlName="name"
+                                                                        class="text-truncate"
+                                                                        [matTooltip]="
+                                                                            isTextTruncate(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                                ? inputName.value
+                                                                                : null
+                                                                        "
+                                                                        (keydown.enter)="
+                                                                            $event.target.blur();
+                                                                            $event.stopPropagation()
+                                                                        "
+                                                                        (blur)="
+                                                                            handleEvent(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                        "
+                                                                        (mouseenter)="
+                                                                            tooltip.show()
+                                                                        "
+                                                                        (mouseleave)="
+                                                                            tooltip.hide()
+                                                                        "
+                                                                    />
+                                                                </ng-container>
+
+                                                                <!-- IF RENAME -->
+                                                                <ng-container
+                                                                    *ngIf="
+                                                                        isRename(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                >
+                                                                    <input
+                                                                        [id]="
+                                                                            'input-segment-' +
+                                                                            segmentIdx +
+                                                                            '-branch-' +
+                                                                            branchIdx
+                                                                        "
+                                                                        #tooltip="matTooltip"
+                                                                        #inputName
+                                                                        type="text"
+                                                                        matInput
+                                                                        autocomplete="off"
+                                                                        autocapitalize="on"
+                                                                        formControlName="name"
+                                                                        class="text-truncate"
+                                                                        [matTooltip]="
+                                                                            isTextTruncate(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                                ? inputName.value
+                                                                                : null
+                                                                        "
+                                                                        (keydown.enter)="
+                                                                            $event.target.blur();
+                                                                            $event.stopPropagation()
+                                                                        "
+                                                                        (blur)="
+                                                                            handleRename(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                        "
+                                                                        (mouseenter)="
+                                                                            tooltip.show()
+                                                                        "
+                                                                        (mouseleave)="
+                                                                            tooltip.hide()
+                                                                        "
+                                                                    />
+                                                                </ng-container>
+                                                            </span>
+
+                                                            <mat-icon
+                                                                *ngIf="
+                                                                    hasChild(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                chevron_right
+                                                            </mat-icon>
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </ng-container>
+
+                                            <mat-spinner
+                                                color="accent"
+                                                diameter="25"
+                                                *ngIf="isLoadingRow$ | async"
+                                            ></mat-spinner>
+                                        </div>
+                                    </ng-container>
+
+                                    <button
+                                        type="button"
+                                        mat-button
+                                        class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                                        [class.btn-sinbad-disabled]="isAddDisabled(segmentIdx)"
+                                        (click)="addSegmentBranch(segmentIdx)"
+                                        [disabled]="isAddDisabled(segmentIdx)"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="!segmentBranches(segmentIdx).controls.length">
+                                <div class="fuse-white h-440 p-16" fxLayout="column">
+                                    <span class="sinbad-black-60-fg">
+                                        List are empty. please add through the button below
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        mat-button
+                                        class="btn-sinbad-dashed sinbad-green-60-fg mt-16"
+                                        (click)="addSegmentBranch(segmentIdx)"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutGap="16px"
+                            fxFlex="0 2 calc(1px)"
+                            *ngIf="!isLast"
+                        >
+                            <div class="h-24"></div>
+
+                            <div class="fuse-white h-440 py-16">
+                                <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div
+                        fxLayout="column"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="0 1 calc(200px + 10px)"
+                        [class.btn-sinbad-disabled]="!lastSegmentHasBranchName()"
+                        *ngIf="segments().length < 5"
+                    >
+                        <div class="h-24"></div>
+
+                        <div class="sinbad-black-40 h-440 add-wrapper">
+                            <button
+                                type="button"
+                                mat-button
+                                class="fuse-white"
+                                (click)="addSegment()"
+                                [disabled]="!lastSegmentHasBranchName()"
+                            >
+                                <mat-icon class="sinbad-green-60-fg">
+                                    add_circle
+                                </mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="loader-content" *ngIf="isLoading$ | async">
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
+    </div>
+</div>
+
+<div>
+    <span class="text-semibold">Selected:</span>
+    <span class="sinbad-red-10-fg pl-12">{{ generateSelected() }}</span>
+</div>
