@@ -1,0 +1,68 @@
+<div id="associations" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-8">
+        <!-- VIEW BY "STORE" TABS -->
+        <!-- <mat-tab-group
+            *ngIf="selectedViewBy === 'store'"
+            color="accent" style="border-radius: 4px;"
+            class="px-16 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab label="All"></mat-tab>
+            <mat-tab label="Assigned to SR / In Portfolio"></mat-tab>
+            <mat-tab label="Assigned to SR / Out of Portfolio"></mat-tab>
+            <mat-tab label="Not Assigned to SR / In Portfolio"></mat-tab>
+            <mat-tab label="Not Assigned to SR / Out of Portfolio"></mat-tab>
+        </mat-tab-group> -->
+        <!-- / VIEW BY "STORE" TABS -->
+        <!-- VIEW BY "SALES REP" TABS -->
+        <!-- <mat-tab-group
+            *ngIf="selectedViewBy === 'sales-rep'"
+            color="accent" style="border-radius: 4px;"
+            class="px-16 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab label="All"></mat-tab>
+            <mat-tab label="with assignment"></mat-tab>
+            <mat-tab label="with no assignment"></mat-tab>
+        </mat-tab-group> -->
+        <!-- / VIEW BY "SALES REP" TABS -->
+        <!-- VIEW BY "PORTFOLIO" TABS -->
+        <!-- <mat-tab-group
+            *ngIf="selectedViewBy === 'portfolio'"
+            color="accent" style="border-radius: 4px;"
+            class="px-16 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab label="All"></mat-tab>
+            <mat-tab label="Assigned to SR"></mat-tab>
+            <mat-tab label="Not Assigned to SR"></mat-tab>
+        </mat-tab-group> -->
+        <!-- / VIEW BY "PORTFOLIO" TABS -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- HEADER -->
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+            <!-- / HEADER -->
+
+            <associations-view-by-store *ngIf="selectedViewBy ==='store'">
+            </associations-view-by-store>
+
+            <associations-view-by-portfolio *ngIf="selectedViewBy === 'portfolio'">
+            </associations-view-by-portfolio>
+
+            <associations-view-by-sales-rep *ngIf="selectedViewBy === 'sales-rep'">
+            </associations-view-by-sales-rep>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

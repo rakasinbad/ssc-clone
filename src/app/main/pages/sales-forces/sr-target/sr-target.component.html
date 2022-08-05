@@ -1,0 +1,14 @@
+<ng-container *ngIf="url$ | async">
+    <iframe
+        id="srtarget"
+        [src]="url$ | async"
+        (load)="onLoad()"
+        style="width: 100%; height: 100%; border: none;"
+    >
+        <p>Iframe not supported.</p>
+    </iframe>
+</ng-container>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

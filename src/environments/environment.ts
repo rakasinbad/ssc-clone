@@ -3,28 +3,28 @@ export const environment = {
     production: false,
     staging: true,
     hmr: false,
-    environment: 'staging',
+    environment: 'sandbox',
     logRocketId: 'fbtbt4/sinbad-seller-center',
     appVersion: 'GIT_TAG',
     appHash: 'GIT_COMMIT_SHORT',
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50],
-    host: 'https://kong-stg.sinbad.web.id',
+    host: 'https://kong-sandbox.sinbad.web.id',
     hiddenMenu: [
         'dashboard',
         // 'voucher', // Supplier Voucher
         // 'promo',
         // 'warehouse',
     ],
-    microSiteHost: 'https://micro-stg.sinbad.web.id',
+    microSiteHost: 'https://micro-sandbox.sinbad.web.id',
     firebase: {
-        apiKey: "AIzaSyD1Gfa1FCROwDiKkxxVOIV9fLtcr7wbTR0",
-        authDomain: "sinbad-staging.firebaseapp.com",
-        databaseURL: "https://sinbad-staging-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "sinbad-staging",
-        storageBucket: "sinbad-staging.appspot.com",
-        messagingSenderId: "257988437273",
-        appId: "1:257988437273:web:6ff57abf77df357a2b9188",
-        measurementId: "G-VNJMV0HHZY"
+        apiKey: "AIzaSyCqfOrEqN_vhpDThHwl-qxpw-YDrQksD8c",
+        authDomain: "sinbad-sandbox-308107.firebaseapp.com",
+        databaseURL: "https://sinbad-sandbox-308107-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "sinbad-sandbox-308107",
+        storageBucket: "sinbad-sandbox-308107.appspot.com",
+        messagingSenderId: "902977508851",
+        appId: "1:902977508851:web:ced1d4ed5ba819f22eee86",
+        measurementId: "G-K376KX0R81"
     },
 };

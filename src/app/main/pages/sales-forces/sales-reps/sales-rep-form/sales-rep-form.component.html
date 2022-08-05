@@ -1,0 +1,240 @@
+<div id="sales-rep-form" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/sales-force/sales-rep']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <!-- <div
+                    *ngIf="salesRep$ | async"
+                    class="sales-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        [defaultImage]="'assets/images/avatars/profile.jpg'"
+                        [useSrcset]="true"
+                        [lazyLoad]="(salesRep$ | async)?.user?.imageUrl"
+                        [errorImage]="'assets/images/avatars/profile.jpg'"
+                    />
+                </div>
+
+                <div
+                    *ngIf="pageType === 'new'"
+                    class="sales-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                </div> -->
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2" *ngIf="(salesRep$ | async) && !fullName">
+                        {{ (salesRep$ | async)?.user?.fullName }}
+                    </div>
+
+                    <div class="h2" *ngIf="!(salesRep$ | async) || fullName">
+                        {{ fullName ? fullName : 'New Sales' }}
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <ng-container *ngIf="(salesRep$ | async) && !phone">
+                            <span>{{ (salesRep$ | async)?.user?.mobilePhoneNo }}</span>
+                        </ng-container>
+
+                        <ng-container *ngIf="!(salesRep$ | async) || phone">
+                            <span>{{ phone ? phone : 'Sales Detail' }}</span>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <mat-tab-group color="accent" fxLayout="column" fxFlex>
+                    <mat-tab label="Sales Rep Detail">
+                        <ng-template matTabContent>
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <app-sales-rep-info
+                                    [pageType]="pageType"
+                                    (fullNameValue)="fullName = $event"
+                                    (phoneValue)="phone = $event"
+                                    fxLayout="column"
+                                    fxFlex
+                                ></app-sales-rep-info>
+                            </div>
+                        </ng-template>
+
+                        <!-- <div class="tab-content p-24" fusePerfectScrollbar>
+                            <form id="sales-form" [formGroup]="form" novalidate>
+                                <div class="section pb-48">
+                                    <div
+                                        class="pb-16 section__top--contents"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                    >
+                                        <div class="h2 section__title">Sales Rep Detail</div>
+                                    </div>
+
+                                    <div class="box-info horizontal" fxLayout="column">
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start center"
+                                            fxLayoutGap="15px"
+                                        >
+                                            <label
+                                                class="custom-field__label"
+                                                fxFlexAlign="center"
+                                                fxFlex="12"
+                                            >
+                                                Nama Sales Rep
+                                            </label>
+
+                                            <div class="custom-field__field" fxFlex="100">
+                                                <mat-form-field appearance="outline" fxFlex="50">
+                                                    <input
+                                                        type="text"
+                                                        matInput
+                                                        formControlName="name"
+                                                    />
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start center"
+                                            fxLayoutGap="15px"
+                                        >
+                                            <label
+                                                class="custom-field__label"
+                                                fxFlexAlign="center"
+                                                fxFlex="12"
+                                            >
+                                                Phone Number
+                                            </label>
+
+                                            <div class="custom-field__field" fxFlex="100">
+                                                <mat-form-field appearance="outline" fxFlex="50">
+                                                    <input
+                                                        type="tel"
+                                                        matInput
+                                                        formControlName="phone"
+                                                    />
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start center"
+                                            fxLayoutGap="15px"
+                                        >
+                                            <label
+                                                class="custom-field__label"
+                                                fxFlexAlign="center"
+                                                fxFlex="12"
+                                            >
+                                                NIK
+                                            </label>
+
+                                            <div class="custom-field__field" fxFlex="100">
+                                                <mat-form-field appearance="outline" fxFlex="50">
+                                                    <input
+                                                        type="text"
+                                                        matInput
+                                                        formControlName="nik"
+                                                    />
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start center"
+                                            fxLayoutGap="15px"
+                                        >
+                                            <label
+                                                class="custom-field__label"
+                                                fxFlexAlign="center"
+                                                fxFlex="12"
+                                            >
+                                                Area
+                                            </label>
+
+                                            <div class="custom-field__field" fxFlex="100">
+                                                <mat-form-field appearance="outline" fxFlex="50">
+                                                    <input
+                                                        type="text"
+                                                        matInput
+                                                        formControlName="area"
+                                                    />
+                                                </mat-form-field>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start center"
+                                            fxLayoutGap="15px"
+                                        >
+                                            <label fxFlex="12"></label>
+                                            <div class="custom-field__field" fxFlex="100">
+                                                <mat-slide-toggle formControlName="status">
+                                                    Active
+                                                </mat-slide-toggle>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div> -->
+                    </mat-tab>
+
+                    <mat-tab label="Reset Password" *ngIf="pageType === 'edit'">
+                        <ng-template matTabContent>
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <app-sales-rep-password
+                                    [pageType]="pageType"
+                                    fxLayout="column"
+                                    fxFlex
+                                ></app-sales-rep-password>
+                            </div>
+                        </ng-template>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

@@ -194,26 +194,26 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            // {
-            //     path: 'sales-force',
-            //     loadChildren: () =>
-            //         import('./main/pages/sales-forces/sales-forces.module').then(
-            //             (m) => m.SalesForcesModule
-            //         ),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('sales-force'),
-            //     //     },
-            //     //     redirectTo: {
-            //     //         navigationCommands: ['/pages/errors/403'],
-            //     //         navigationExtras: {
-            //     //             replaceUrl: true,
-            //     //             skipLocationChange: true,
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'sales-force',
+                loadChildren: () =>
+                    import('./main/pages/sales-forces/sales-forces.module').then(
+                        (m) => m.SalesForcesModule
+                    ),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('sales-force'),
+                //     },
+                //     redirectTo: {
+                //         navigationCommands: ['/pages/errors/403'],
+                //         navigationExtras: {
+                //             replaceUrl: true,
+                //             skipLocationChange: true,
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'supplier-inventories',
             //     loadChildren: () =>
