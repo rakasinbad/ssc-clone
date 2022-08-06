@@ -3,6 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { DropdownEffects } from 'app/shared/store/effects';
 import { fromDropdown } from 'app/shared/store/reducers';
 
 import { PortfoliosEffects } from './store/effects/portfolios.effects';
@@ -15,7 +16,7 @@ import { mainFeatureKey, reducers } from './store/reducers';
         StoreModule.forFeature(mainFeatureKey, reducers),
         StoreModule.forFeature(fromDropdown.FEATURE_KEY, fromDropdown.reducer),
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
-        EffectsModule.forFeature([ExportsEffects, StoreEffects, PortfoliosEffects])
+        EffectsModule.forFeature([DropdownEffects, ExportsEffects, StoreEffects, PortfoliosEffects])
     ]
 })
 export class PortfoliosStoreModule {}
