@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
-import { StorageMap } from '@ngx-pwa/local-storage';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
@@ -36,7 +35,6 @@ export class SrTargetComponent implements OnInit, OnDestroy {
     constructor(
         private domSanitizer: DomSanitizer,
         private store: Store<fromRoot.State>,
-        private storage: StorageMap,
         private router: Router
     ) {
         this.navigationSubscription = this.router.events.subscribe((e: any) => {
@@ -70,12 +68,9 @@ export class SrTargetComponent implements OnInit, OnDestroy {
     }
 
     onLoadIframe(): void {
-        this.store.select(AuthSelectors.getUserSupplier).subscribe(({ supplierId }) => {
-           
-        })
-         this.storage.get('user').subscribe((data: any) => {
+        this.store.select(AuthSelectors.getUserState).subscribe(({ token }) => {
             const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `${environment.microSiteHost}/salesmanagement/portfolio?token=${data.token}`
+                `${environment.microSiteHost}/salesmanagement/portfolio?token=${token}`
             );
             
             this.url$.next(safeUrl);
