@@ -194,13 +194,13 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            {
-                path: 'sales-force',
-                loadChildren: () =>
-                    import('./main/pages/sales-forces/sales-forces.module').then(
-                        (m) => m.SalesForcesModule
-                    ),
-                canLoad: [AuthGuard],
+            // {
+                // path: 'sales-force',
+                // loadChildren: () =>
+                //     import('./main/pages/sales-forces/sales-forces.module').then(
+                //         (m) => m.SalesForcesModule
+                //     ),
+                // canLoad: [AuthGuard],
                 // data: {
                 //     permissions: {
                 //         only: getRoleByRouter('sales-force'),
@@ -213,7 +213,7 @@ const routes: Routes = [
                 //         },
                 //     },
                 // },
-            },
+            // },
             // {
             //     path: 'supplier-inventories',
             //     loadChildren: () =>
@@ -258,14 +258,14 @@ const routes: Routes = [
                     import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
                 canLoad: [AuthGuard],
             },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(
-                        (m) => m.LogisticsModule
-                    ),
-                canLoad: [AuthGuard],
-            },
+            // {
+                // path: 'logistics',
+                // loadChildren: () =>
+                //     import('./main/pages/logistics/logistics.module').then(
+                //         (m) => m.LogisticsModule
+                //     ),
+                // canLoad: [AuthGuard],
+            // },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
