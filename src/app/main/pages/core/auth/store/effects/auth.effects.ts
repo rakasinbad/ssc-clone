@@ -462,10 +462,10 @@ export class AuthEffects {
                                         userData: JSON.stringify(user),
                                     });
                                 }
-
-                                this.router.navigateByUrl('/pages', {
-                                    replaceUrl: true,
-                                });
+                                window.location.replace('/pages/account/stores');
+                                // this.router.navigateByUrl('/pages', {
+                                //     replaceUrl: true,
+                                // });
                             },
                         });
 
