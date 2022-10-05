@@ -266,6 +266,5 @@ export class ToolbarComponent implements OnInit, OnDestroy {
      */
     onLogout(): void {
         this.store.dispatch(AuthActions.authLogout());
-        window.location.replace('/auth/login');
     }
 }
