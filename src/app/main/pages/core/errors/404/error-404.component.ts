@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { FuseConfigService } from '@fuse/services/config.service';
 import { Store } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 
 import { AuthSelectors } from '../../auth/store/selectors';
@@ -14,10 +15,11 @@ import { AuthSelectors } from '../../auth/store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Error404Component implements OnInit {
-    isAuth$: Observable<boolean>;
+    isAuth: boolean;
 
     constructor(
         private store: Store<fromRoot.State>,
+        private _cookieService: CookieService,
         private _fuseConfigService: FuseConfigService
     ) {
         // Configure the layout
@@ -43,6 +45,6 @@ export class Error404Component implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.isAuth$ = this.store.select(AuthSelectors.getIsAuth);
+        this.isAuth = this._cookieService.check('ssc-token');
     }
 }

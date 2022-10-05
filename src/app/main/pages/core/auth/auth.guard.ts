@@ -11,6 +11,7 @@ import {
 } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { exhaustMap, map, take } from 'rxjs/operators';
 
@@ -24,6 +25,7 @@ export class AuthGuard implements CanActivate, CanLoad {
         private router: Router,
         private store: Store<fromAuth.FeatureState>,
         private storage: StorageMap,
+        private _cookieService: CookieService,
         private _$auth: AuthService
     ) {}
 
@@ -39,7 +41,7 @@ export class AuthGuard implements CanActivate, CanLoad {
                 // console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
 
                 if (!isLoggedIn) {
-                    this.router.navigateByUrl('/auth/login', {replaceUrl: true});
+                    this.router.navigateByUrl('/login', {replaceUrl: true});
                 }
 
                 return isLoggedIn;

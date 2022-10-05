@@ -462,7 +462,7 @@ export class AuthEffects {
                                         userData: JSON.stringify(user),
                                     });
                                 }
-                                window.location.replace('/pages/account/stores');
+                                // window.location.replace('/pages/account/stores');
                                 // this.router.navigateByUrl('/pages', {
                                 //     replaceUrl: true,
                                 // });
@@ -531,7 +531,7 @@ export class AuthEffects {
                             
                             // this.router.navigate(['/auth/login'], { replaceUrl: true });
 
-                            window.location.replace('/auth/login');
+                            this.router.navigate(['/auth/login'], { replaceUrl: true });
                         },
                         error: (err) => {
                             this._$notice.open('Something wrong with sessions storage', 'error', {

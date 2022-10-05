@@ -9,12 +9,12 @@
             <input placeholder="Search for something" fxFlex />
         </div> -->
 
-        <a class="back-link mt-24" [routerLink]="['/']" *ngIf="isAuth$ | async; else goLogin">
+        <a class="back-link mt-24" [routerLink]="['/']" *ngIf="isAuth; else goLogin">
             Go back to main page
         </a>
 
         <ng-template #goLogin>
-            <a class="back-link mt-24" [routerLink]="['/auth/login']">
+            <a class="back-link mt-24" [routerLink]="['/login']">
                 Go back to sign in
             </a>
         </ng-template>

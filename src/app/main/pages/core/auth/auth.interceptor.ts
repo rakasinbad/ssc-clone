@@ -1,6 +1,7 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { exhaustMap, take } from 'rxjs/operators';
 
@@ -9,7 +10,10 @@ import { AuthSelectors } from './store/selectors';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-    constructor(private store: Store<fromAuth.FeatureState>) {}
+    constructor(
+        private store: Store<fromAuth.FeatureState>,
+        private _cookieService: CookieService,
+    ) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // console.log('AUTH INTERCEPT 1', req.url);
@@ -41,9 +45,12 @@ export class AuthInterceptor implements HttpInterceptor {
                         return next.handle(req);
                     }
                     if (req.url.includes('sinbad.web.id') || req.url.includes('sinbad.co.id')){
-                        req = req.clone({
-                            headers: req.headers.set('Authorization', `Bearer ${user.token}`)
-                        });
+                        if (this._cookieService.check('ssc-token')) {
+                            const token = this._cookieService.get('ssc-token')
+                            req = req.clone({
+                                headers: req.headers.set('Authorization', `Bearer ${token}`)
+                            });
+                        }
                     }
 
                     return next.handle(req);
