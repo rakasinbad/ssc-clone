@@ -23,4 +23,5 @@ export const environment = {
         appId: "1:968992127937:web:5cf0f95b0e43a252614d40",
         measurementId: "G-65VNLCPDNB"
     },
+    isSingleSpa: false
 };

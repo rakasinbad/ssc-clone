@@ -18,6 +18,7 @@ import { exhaustMap, map, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { fromAuth } from './store/reducers';
 import { AuthSelectors } from './store/selectors';
+import { environment } from 'environments/environment'
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate, CanLoad {
@@ -41,7 +42,8 @@ export class AuthGuard implements CanActivate, CanLoad {
                 // console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
 
                 if (!isLoggedIn) {
-                    this.router.navigateByUrl('/login', {replaceUrl: true});
+                    const loginRoute = environment.isSingleSpa ? '/login' : '/auth/login'
+                    this.router.navigateByUrl(loginRoute, {replaceUrl: true});
                 }
 
                 return isLoggedIn;

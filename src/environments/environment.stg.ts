@@ -27,4 +27,5 @@ export const environment = {
         appId: "1:257988437273:web:6ff57abf77df357a2b9188",
         measurementId: "G-VNJMV0HHZY"
     },
+    isSingleSpa: false
 };

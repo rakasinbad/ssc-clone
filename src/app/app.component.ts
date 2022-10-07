@@ -29,6 +29,7 @@ import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
 import { environment } from 'environments/environment';
 import * as LogRocket from 'logrocket';
+import { CookieService } from 'ngx-cookie-service';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
@@ -102,7 +103,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private _$navigation: NavigationService,
         private _$notice: NoticeService,
         private angularFireDatabase: AngularFireDatabase,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private _cookieService: CookieService,
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -256,7 +258,17 @@ export class AppComponent implements OnInit, OnDestroy {
                     // Sets a timeout period of 30 seconds
                     this.idle.setTimeout(30);
                 } else {
-                    this.idle.setTimeout(false);
+                    if (environment.isSingleSpa) {
+                        if (this._cookieService.check('ssc-token')){
+                            const payload = {
+                                token: this._cookieService.get('ssc-token'),
+                                user: JSON.parse(localStorage.getItem('ssc-user'))
+                            }
+                            this.store.dispatch(AuthActions.authLoginSuccess({ payload }));
+                            return this.idle.setTimeout(30)
+                        }
+                    }
+                    return this.idle.setTimeout(false);
                 }
             });
 

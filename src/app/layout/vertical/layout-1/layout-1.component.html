@@ -15,22 +15,22 @@
 
     <div id="container-1" class="container">
         <!-- NAVBAR: Left -->
-        <!-- <ng-container *ngIf="fuseConfig.layout.navbar.position === 'left'">
+        <ng-container *ngIf="fuseConfig.layout.navbar.position === 'left' && isRenderHeaderSidebar()">
             <ng-container *ngTemplateOutlet="leftNavbar"></ng-container>
-        </ng-container> -->
+        </ng-container>
         <!-- / NAVBAR: Left -->
 
         <div id="container-2" class="container">
             <!-- TOOLBAR: Below fixed -->
-            <!-- <ng-container *ngIf="fuseConfig.layout.toolbar.position === 'below-fixed'">
+            <ng-container *ngIf="fuseConfig.layout.toolbar.position === 'below-fixed' && isRenderHeaderSidebar()">
                 <ng-container *ngTemplateOutlet="toolbar"></ng-container>
-            </ng-container> -->
+            </ng-container>
             <!-- / TOOLBAR: Below fixed -->
 
             <!-- CUSTOM NAVBAR: Top -->
-            <!-- <ng-container>
+            <ng-container *ngIf="isRenderHeaderSidebar()">
                 <ng-container *ngTemplateOutlet="topCustomNavbar"></ng-container>
-            </ng-container> -->
+            </ng-container>
             <!-- / CUSTOM NAVBAR: Top -->
 
             <div

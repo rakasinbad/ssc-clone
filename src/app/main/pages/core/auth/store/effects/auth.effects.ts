@@ -462,10 +462,12 @@ export class AuthEffects {
                                         userData: JSON.stringify(user),
                                     });
                                 }
-                                // window.location.replace('/pages/account/stores');
-                                // this.router.navigateByUrl('/pages', {
-                                //     replaceUrl: true,
-                                // });
+                                /** jika bukan single spa, perlu navigate setelah login sukses */
+                                if (!environment.isSingleSpa) {
+                                    this.router.navigateByUrl('/pages', {
+                                        replaceUrl: true,
+                                    });
+                                }
                             },
                         });
 

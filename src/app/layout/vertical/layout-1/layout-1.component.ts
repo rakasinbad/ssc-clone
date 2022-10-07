@@ -8,6 +8,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'vertical-layout-1',
@@ -60,5 +61,10 @@ export class VerticalLayout1Component implements OnInit, OnDestroy {
         // Unsubscribe from all subscriptions
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    /** return true jika bukan single spa */
+    isRenderHeaderSidebar() {
+        return !environment.isSingleSpa
     }
 }

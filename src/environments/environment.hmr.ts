@@ -9,14 +9,14 @@ export const environment = {
     appHash: 'GIT_COMMIT_SHORT',
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50],
-    host: 'https://kong-stg.sinbad.web.id',
+    host: 'https://kong-sandbox.sinbad.web.id',
     hiddenMenu: [
         'dashboard',
         // 'voucher', // Supplier Voucher
         // 'promo',
         // 'warehouse',
     ],
-    microSiteHost: 'https://micro-stg.sinbad.web.id',
+    microSiteHost: 'https://micro-sandbox.sinbad.web.id',
     firebase: {
         apiKey: "AIzaSyD1Gfa1FCROwDiKkxxVOIV9fLtcr7wbTR0",
         authDomain: "sinbad-staging.firebaseapp.com",
@@ -27,4 +27,5 @@ export const environment = {
         appId: "1:257988437273:web:6ff57abf77df357a2b9188",
         measurementId: "G-VNJMV0HHZY"
     },
+    isSingleSpa: false
 };
