@@ -1,0 +1,294 @@
+<div class="box-container" fxLayout="column" fxLayoutGap="16px" fxFlex>
+    <div class="box-container__title m-0">
+        <span class="mat-headline"> Document Order </span>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="40px" fxFlex>
+        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+            <!-- SECTION STORE -->
+            <div class="box-content" fxLayout="column" fxLayoutGap="26px">
+                <div class="box-content__title">
+                    <span class="mat-headline"> Store </span>
+                </div>
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Owner Name</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.order?.user?.fullName || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Store Name</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.order?.store?.name || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Supplier ID</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.supplierStore?.externalId || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Store Address</td>
+                        <td>
+
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.store?.address || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Urban</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.store?.urban?.urban || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- !SECTION STORE -->
+
+            <!-- SECTION SHIPMENT -->
+            <div class="box-content" fxLayout="column" fxLayoutGap="26px">
+                <div class="box-content__title">
+                    <span class="mat-headline"> Shipment </span>
+                </div>
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Delivery Address</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.order?.store?.address || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Geo Coverage</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.order?.store?.urban?.urban || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- !SECTION SHIPMENT -->
+
+            <!-- SECTION ORDER -->
+            <div class="box-content" fxLayout="column" fxLayoutGap="26px">
+                <div class="box-content__title">
+                    <span class="mat-headline"> Order </span>
+                </div>
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Order Date</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ (data?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- !SECTION ORDER -->
+        </div>
+
+        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+            <!-- SECTION PAYMENT -->
+            <div class="box-content" fxLayout="column" fxLayoutGap="26px">
+                <div class="box-content__title">
+                    <span class="mat-headline"> Payment </span>
+                </div>
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Payment Status</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.statusPaymentName || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Due Date</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ (data?.dueDate | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Date</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ (data?.paidTime | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Term</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{
+                                    data?.paymentTypeSupplierMethod?.paymentTypeSupplier
+                                        ?.paymentType?.name || '-'
+                                }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Paylater Type</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{
+                                    data?.paylaterType?.name || '-'
+                                }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Method</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.paymentChannel?.name || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- !SECTION PAYMENT -->
+
+            <!-- SECTION INVOICE -->
+            <div class="box-content" fxLayout="column" fxLayoutGap="26px">
+                <div class="box-content__title">
+                    <span class="mat-headline"> Invoice </span>
+                </div>
+
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Order ID</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.orderCode || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Order Reference</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.orderRef || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Group Faktur Name</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.invoiceGroup?.name || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- !SECTION INVOICE -->
+        </div>
+    </div>
+</div>

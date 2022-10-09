@@ -1,0 +1,83 @@
+<div id="order-detail" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center px-16">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" (click)="goBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <ng-container>
+                        <div class="h2">
+                            <ngx-skeleton-loader
+                                [theme]="{
+                                    width: '150px',
+                                    height: '25px',
+                                    'margin-bottom': '-5px'
+                                }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.orderCode || '-' }}
+                            </ng-container>
+                        </div>
+                        <div class="subtitle secondary-text">
+                            <ngx-skeleton-loader
+                                [theme]="{
+                                    width: '100px',
+                                    height: '25px',
+                                    'margin-bottom': '-5px'
+                                }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                <span>{{ data?.orderRef || '-' }}</span>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content" fusePerfectScrollbar>
+                <app-order-detail
+                    [data]="data"
+                    [loading]="loading"
+                    fxLayout="column"
+                    (onSubmit)="onSubmit($event)"
+                    fxFlex
+                    (onChangeOrderStatus)="onChangeOrderStatus($event)"
+                ></app-order-detail>
+
+                <!-- <app-order-management-detail
+                    [data]="data$ | async"
+                    [isLoading]="isLoading$ | async"
+                    (onClickResendOrder)="resendOrder($event)"
+                    fxLayout="column"
+                    fxFlex
+                ></app-order-management-detail> -->
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

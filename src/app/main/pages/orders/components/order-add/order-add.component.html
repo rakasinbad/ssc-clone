@@ -1,0 +1,19 @@
+<div
+    id="order-add"
+    class="page-layout carded fullwidth inner-scroll"
+    cdkScrollable
+    fusePerfectScrollbar
+>
+    <div class="sc-store-shipment">
+        <app-order-store-shipment (formStatusChange)=formStatusChangeOrderStoreAndShipment($event)></app-order-store-shipment>
+    </div>
+
+    <div class="sc-order-list">
+        <app-order-list 
+            (formStatusChange)="formStatusOrderDataList($event)" 
+            [onChangeFormOrderStoreAndShipment]="onChangeFormOrderStoreAndShipment"
+        ></app-order-list>
+    </div>
+    <!-- <app-order-preview-confirm></app-order-preview-confirm> -->
+
+</div>

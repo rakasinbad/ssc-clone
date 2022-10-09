@@ -17,6 +17,10 @@ export class PricePipe implements PipeTransform {
     ): string | number | null {
         let newValue;
 
+        if (value === null) {
+            return '-';
+        }
+
         switch (type) {
             case 'short': {
                 // if (Number.isInteger(value)) {
