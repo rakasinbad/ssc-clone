@@ -4,7 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
+// import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
 
 /**
  *
@@ -83,15 +83,15 @@ export class CreditLimitStoreApiService {
      * @returns {Observable<CreditLimitStore>}
      * @memberof CreditLimitStoreApiService
      */
-    findById(id: string): Observable<CreditLimitStore> {
-        return this.http.get<CreditLimitStore>(`${this._url}/${id}`);
+    findById(id: string): Observable<any> {
+        return this.http.get<any>(`${this._url}/${id}`);
     }
 
-    patch(body: CreditLimitStoreOptions, id: string): Observable<CreditLimitStore> {
-        return this.http.patch<CreditLimitStore>(`${this._url}/${id}`, body);
+    patch(body: any, id: string): Observable<any> {
+        return this.http.patch<any>(`${this._url}/${id}`, body);
     }
 
-    patchCustom<T>(body: T, id: string): Observable<CreditLimitStore> {
-        return this.http.patch<CreditLimitStore>(`${this._url}/${id}`, body);
+    patchCustom<T>(body: T, id: string): Observable<any> {
+        return this.http.patch<any>(`${this._url}/${id}`, body);
     }
 }
