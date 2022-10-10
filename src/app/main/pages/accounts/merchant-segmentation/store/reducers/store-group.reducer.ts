@@ -8,11 +8,13 @@ import { StoreGroupActions } from '../actions';
 export const featureKey = 'storeGroups';
 
 export interface State extends EntityState<StoreGroup> {
+    isError: boolean;
     isLoading: boolean;
     isLoadingRow: boolean;
     isRefresh: boolean;
     selectedId: string;
     deepestLevel: number;
+    deactiveItem: boolean;
 }
 
 // Adapter for store types state
@@ -20,11 +22,13 @@ export const adapter = createEntityAdapter<StoreGroup>({ selectId: row => row.id
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    isError: false,
     isLoading: false,
     isLoadingRow: false,
     isRefresh: undefined,
     selectedId: null,
-    deepestLevel: 0
+    deepestLevel: 0,
+    deactiveItem: false,
 });
 
 // Reducer manage the action
@@ -38,12 +42,12 @@ export const reducer = createReducer<State>(
     on(
         StoreGroupActions.createStoreGroupRequest,
         StoreGroupActions.updateStoreGroupRequest,
-        state => ({ ...state, isLoadingRow: true })
+        state => ({ ...state, isError: false, isLoadingRow: true, deactiveItem: false, selectedId: null })
     ),
     on(
         StoreGroupActions.createStoreGroupFailure,
         StoreGroupActions.updateStoreGroupFailure,
-        state => ({ ...state, isRefresh: true })
+        state => ({ ...state, isError: true, isRefresh: true })
     ),
     on(StoreGroupActions.refreshStoreGroupsRequest, state => ({
         ...state,
@@ -57,8 +61,11 @@ export const reducer = createReducer<State>(
     on(StoreGroupActions.fetchStoreGroupsFailure, state => ({ ...state, isLoading: false })),
     on(
         StoreGroupActions.createStoreGroupSuccess,
-        StoreGroupActions.updateStoreGroupSuccess,
         state => ({ ...state, isRefresh: true })
+    ),
+    on(
+        StoreGroupActions.updateStoreGroupSuccess,
+        (state, { payload }) => ({ ...state, isRefresh: true, deactiveItem: payload.deactive, selectedId: payload.id })
     ),
     on(StoreGroupActions.fetchStoreGroupsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
@@ -77,10 +84,12 @@ export const reducer = createReducer<State>(
     on(StoreGroupActions.clearState, state =>
         adapter.removeAll({
             ...state,
+            isError: false,
             isLoading: false,
             isRefresh: undefined,
             selectedId: null,
-            deepestLevel: 0
+            deepestLevel: 0,
+            deactiveItem: false,
         })
     )
 );

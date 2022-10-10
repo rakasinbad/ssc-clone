@@ -100,7 +100,8 @@ export const updateStoreTypeFailure = createAction(
 );
 
 export const updateStoreTypeSuccess = createAction(
-    '[Store Segmentation] Update Store Type Success'
+    '[Store Segmentation] Update Store Type Success',
+    props<{ payload: { id: string, deactive: boolean } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -417,7 +417,7 @@ export class StoreGroupEffects {
             map(resp => {
                 return StoreGroupActions.createStoreGroupSuccess();
             }),
-            catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
+            catchError(err => this._sendErrorToState$(err, 'createStoreGroupFailure'))
         );
     };
 
@@ -434,7 +434,16 @@ export class StoreGroupEffects {
 
         return this._$storeGroupCrudApi.patch<PayloadStoreGroupPatch>(body, id).pipe(
             map(resp => {
-                return StoreGroupActions.updateStoreGroupSuccess();
+                let deactive = false
+                if (body.status) {
+                    deactive = body.status === 'active' ? false : true
+                }
+                return StoreGroupActions.updateStoreGroupSuccess({
+                    payload: {
+                        id,
+                        deactive
+                    }
+                });
             }),
             catchError(err => this._sendErrorToState$(err, 'updateStoreGroupFailure'))
         );
@@ -467,7 +476,7 @@ export class StoreGroupEffects {
                     payload: new StoreSegment(newResp.deepestLevel, newResp.data)
                 });
             }),
-            catchError(err => this._sendErrorToState$(err, 'fetchStoreTypesFailure'))
+            catchError(err => this._sendErrorToState$(err, 'fetchStoreGroupsFailure'))
         );
     };
 
@@ -531,7 +540,7 @@ export class StoreGroupEffects {
                     payload: new StoreSegment(newResp.deepestLevel, newResp.data)
                 });
             }),
-            catchError(err => this._sendErrorToState$(err, 'refreshStoreTypesFailure'))
+            catchError(err => this._sendErrorToState$(err, 'refreshStoreGroupsFailure'))
         );
     };
 

@@ -40,6 +40,8 @@ const getIsLoadingRow = createSelector(getStoreTypeEntitiesState, state => state
 
 const getIsRefresh = createSelector(getStoreTypeEntitiesState, state => state.isRefresh);
 
+const getDeactiveItem = createSelector(getStoreTypeEntitiesState, state => state.deactiveItem)
+
 const getChild = (parentId: string) =>
     createSelector(selectAll, state => {
         if (!parentId) {
@@ -67,6 +69,7 @@ export {
     getIsLoading,
     getIsLoadingRow,
     getIsRefresh,
+    getDeactiveItem,
     getSelectedId,
     getSelectedItem,
     getTotalLevelItem

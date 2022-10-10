@@ -38,6 +38,8 @@ const getIsLoadingRow = createSelector(getStoreClusterEntitiesState, state => st
 
 const getIsRefresh = createSelector(getStoreClusterEntitiesState, state => state.isRefresh);
 
+const getDeactiveItem = createSelector(getStoreClusterEntitiesState, state => state.deactiveItem);
+
 const getIsError = createSelector(getStoreClusterEntitiesState, state => state.isError);
 
 const getChild = (parentId: string) =>
@@ -67,6 +69,7 @@ export {
     getIsLoading,
     getIsLoadingRow,
     getIsRefresh,
+    getDeactiveItem,
     getSelectedId,
     getSelectedItem,
     getTotalLevelItem

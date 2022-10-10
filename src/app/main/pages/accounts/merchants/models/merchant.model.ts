@@ -1,4 +1,4 @@
-// import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
+import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import { HelperService } from 'app/shared/helpers';
 import { CustomerHierarchy, Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { TNullable, TStatus } from 'app/shared/models/global.model';
@@ -111,7 +111,7 @@ export class StorePortfolio implements IStorePortfolio {
 export interface IStore extends ITimestamp {
     readonly id: NonNullable<string>;
     address: string;
-    creditLimitStores?: Array<any>;
+    creditLimitStores?: Array<CreditLimitStore>;
     customerHierarchies?: Array<CustomerHierarchy>;
     externalId: string;
     hierarchy: Hierarchy;
@@ -158,7 +158,7 @@ export interface IStore extends ITimestamp {
 export class Store implements IStore {
     readonly id: NonNullable<string>;
     address: string;
-    creditLimitStores?: Array<any>;
+    creditLimitStores?: Array<CreditLimitStore>;
     customerHierarchies?: Array<CustomerHierarchy>;
     externalId: string;
     hierarchy: Hierarchy;
@@ -415,10 +415,10 @@ export class Store implements IStore {
         this.isSelected = value;
     }
 
-    set setCreditLimitStores(value: any[]) {
+    set setCreditLimitStores(value: CreditLimitStore[]) {
         if (value && value.length > 0) {
             const newCreditLimitStores = value.map((row) => {
-                return new row;
+                return new CreditLimitStore(row);
             });
 
             this.creditLimitStores = newCreditLimitStores;

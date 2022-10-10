@@ -8,11 +8,13 @@ import { StoreChannelActions } from '../actions';
 export const featureKey = 'storeChannels';
 
 export interface State extends EntityState<StoreChannel> {
+    isError: boolean;
     isLoading: boolean;
     isLoadingRow: boolean;
     isRefresh: boolean;
     selectedId: string;
     deepestLevel: number;
+    deactiveItem: boolean;
 }
 
 // Adapter for storeChannels state
@@ -20,11 +22,13 @@ export const adapter = createEntityAdapter<StoreChannel>({ selectId: row => row.
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    isError: false,
     isLoading: false,
     isLoadingRow: false,
     isRefresh: undefined,
     selectedId: null,
-    deepestLevel: 0
+    deepestLevel: 0,
+    deactiveItem: false,
 });
 
 // Reducer manage the action
@@ -38,12 +42,12 @@ export const reducer = createReducer<State>(
     on(
         StoreChannelActions.createStoreChannelRequest,
         StoreChannelActions.updateStoreChannelRequest,
-        state => ({ ...state, isLoadingRow: true })
+        state => ({ ...state, isError: false, isLoadingRow: true, deactiveItem: false, selectedId: null })
     ),
     on(
         StoreChannelActions.createStoreChannelFailure,
         StoreChannelActions.updateStoreChannelFailure,
-        state => ({ ...state, isRefresh: true })
+        state => ({ ...state, isError: true, isRefresh: true })
     ),
     on(StoreChannelActions.refreshStoreChannelsRequest, state => ({
         ...state,
@@ -63,8 +67,11 @@ export const reducer = createReducer<State>(
     })),
     on(
         StoreChannelActions.createStoreChannelSuccess,
-        StoreChannelActions.updateStoreChannelSuccess,
         state => ({ ...state, isRefresh: true })
+    ),
+    on(
+        StoreChannelActions.updateStoreChannelSuccess,
+        (state, { payload }) => ({ ...state, isRefresh: true, deactiveItem: payload.deactive, selectedId: payload.id })
     ),
     on(StoreChannelActions.fetchStoreChannelsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
@@ -83,10 +90,12 @@ export const reducer = createReducer<State>(
     on(StoreChannelActions.clearState, state =>
         adapter.removeAll({
             ...state,
+            isError: false,
             isLoading: false,
             isRefresh: undefined,
             selectedId: null,
-            deepestLevel: 0
+            deepestLevel: 0,
+            deactiveItem: false,
         })
     )
 );

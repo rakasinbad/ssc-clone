@@ -100,7 +100,8 @@ export const updateStoreClusterFailure = createAction(
 );
 
 export const updateStoreClusterSuccess = createAction(
-    '[Store Segmentation] Update Store Cluster Success'
+    '[Store Segmentation] Update Store Cluster Success',
+    props<{ payload: { id: string, deactive: boolean } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -430,7 +430,16 @@ export class StoreTypeEffects {
 
         return this._$storeTypeCrudApi.patch<PayloadStoreTypePatch>(body, id).pipe(
             map(resp => {
-                return StoreTypeActions.updateStoreTypeSuccess();
+                let deactive = false;
+                if (body.status) {
+                    deactive = body.status === 'active' ? false : true
+                }
+                return StoreTypeActions.updateStoreTypeSuccess({
+                    payload: {
+                        id,
+                        deactive
+                    }
+                });
             }),
             catchError(err => this._sendErrorToState$(err, 'updateStoreTypeFailure'))
         );

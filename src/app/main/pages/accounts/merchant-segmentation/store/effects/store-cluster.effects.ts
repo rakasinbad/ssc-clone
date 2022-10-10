@@ -29,7 +29,7 @@ import {
     StoreSegmentApiService
 } from '../../services';
 import { StoreClusterActions, StoreSegmentationFailureActions } from '../actions';
-import * as fromStoreChannels from '../reducers';
+import * as fromStoreClusters from '../reducers';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
@@ -87,7 +87,7 @@ export class StoreClusterEffects {
         { dispatch: false }
     );
 
-    createStoreChannelSuccess$ = createEffect(
+    createStoreClusterSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(StoreClusterActions.createStoreClusterSuccess),
@@ -386,7 +386,7 @@ export class StoreClusterEffects {
         private actions$: Actions,
         private matDialog: MatDialog,
         private router: Router,
-        private store: Store<fromStoreChannels.FeatureState>,
+        private store: Store<fromStoreClusters.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
         private _$storeSegmentApi: StoreSegmentApiService,
@@ -438,7 +438,16 @@ export class StoreClusterEffects {
 
         return this._$storeClusterCrudCrudApi.patch<PayloadStoreClusterPatch>(body, id).pipe(
             map(resp => {
-                return StoreClusterActions.updateStoreClusterSuccess();
+                let deactive = false
+                if (body.status) {
+                    deactive = body.status === 'active' ? false : true
+                }
+                return StoreClusterActions.updateStoreClusterSuccess({
+                    payload: {
+                        id,
+                        deactive
+                    }
+                });
             }),
             catchError(err => this._sendErrorToState$(err, 'updateStoreClusterFailure'))
         );

@@ -18,6 +18,7 @@ import { Warehouse } from '../../models/warehouse.model';
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
+import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'app-merchant-info-detail',
@@ -32,6 +33,9 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void> = new Subject<void>();
+
+    // Assets
+    sinbadProfileDefault = assetUrl('images/avatars/profile.jpg');
 
     constructor(
         private matDialog: MatDialog,

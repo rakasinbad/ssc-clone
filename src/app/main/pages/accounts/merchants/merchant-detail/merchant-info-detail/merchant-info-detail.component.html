@@ -8,10 +8,10 @@
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
                     <img
-                        [defaultImage]="'assets/images/avatars/profile.jpg'"
+                        [defaultImage]="sinbadProfileDefault"
                         [useSrcset]="true"
                         [lazyLoad]="(store$ | async)?.store?.imageUrl"
-                        [errorImage]="'assets/images/avatars/profile.jpg'"
+                        [errorImage]="sinbadProfileDefault"
                     />
                 </div>
 

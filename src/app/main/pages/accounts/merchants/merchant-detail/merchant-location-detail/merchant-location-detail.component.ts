@@ -39,6 +39,7 @@ import {
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
+import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'app-merchant-location-detail',
@@ -71,7 +72,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
         lat: -2.5,
         lng: 117.86,
         icon: {
-            url: 'assets/images/marker.png',
+            url: assetUrl('images/marker.png'),
             scaledSize: {
                 width: 18,
                 height: 30

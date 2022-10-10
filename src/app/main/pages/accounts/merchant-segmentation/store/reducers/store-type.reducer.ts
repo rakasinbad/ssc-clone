@@ -14,6 +14,7 @@ export interface State extends EntityState<StoreType> {
     isRefresh: boolean;
     selectedId: string;
     deepestLevel: number;
+    deactiveItem: boolean;
 }
 
 // Adapter for store types state
@@ -26,7 +27,8 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
     isLoadingRow: false,
     isRefresh: undefined,
     selectedId: null,
-    deepestLevel: 0
+    deepestLevel: 0,
+    deactiveItem: false,
 });
 
 // Reducer manage the action
@@ -39,6 +41,8 @@ export const reducer = createReducer<State>(
     })),
     on(StoreTypeActions.createStoreTypeRequest, StoreTypeActions.updateStoreTypeRequest, state => ({
         ...state,
+        selectedId: null,
+        deactiveItem: false,
         isError: false,
         isLoadingRow: true
     })),
@@ -54,8 +58,11 @@ export const reducer = createReducer<State>(
     })),
     on(StoreTypeActions.fetchStoreTypesRequest, state => ({ ...state, isLoading: true })),
     on(StoreTypeActions.fetchStoreTypesFailure, state => ({ ...state, isLoading: false })),
-    on(StoreTypeActions.createStoreTypeSuccess, StoreTypeActions.updateStoreTypeSuccess, state => ({
+    on(StoreTypeActions.createStoreTypeSuccess, state => ({ ...state, isRefresh: true })),
+    on(StoreTypeActions.updateStoreTypeSuccess, (state, { payload }) => ({
         ...state,
+        selectedId: payload.id,
+        deactiveItem: payload.deactive,
         isRefresh: true
     })),
     on(StoreTypeActions.fetchStoreTypesSuccess, (state, { payload }) =>
@@ -79,7 +86,8 @@ export const reducer = createReducer<State>(
             isLoading: false,
             isRefresh: undefined,
             selectedId: null,
-            deepestLevel: 0
+            deepestLevel: 0,
+            deactiveItem: false,
         })
     )
 );

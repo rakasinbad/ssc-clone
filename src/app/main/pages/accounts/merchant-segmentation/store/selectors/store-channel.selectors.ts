@@ -34,9 +34,13 @@ const getSelectedItem = createSelector(
 
 const getIsLoading = createSelector(getStoreChannelEntitiesState, state => state.isLoading);
 
+const getIsError = createSelector(getStoreChannelEntitiesState, state => state.isError);
+
 const getIsLoadingRow = createSelector(getStoreChannelEntitiesState, state => state.isLoadingRow);
 
 const getIsRefresh = createSelector(getStoreChannelEntitiesState, state => state.isRefresh);
+
+const getDeactiveItem = createSelector(getStoreChannelEntitiesState, state => state.deactiveItem);
 
 const getChild = (parentId: string) =>
     createSelector(selectAll, state => {
@@ -62,8 +66,10 @@ const searchChild = (items: Array<StoreChannel>): Array<StoreChannel> => {
 export {
     getChild,
     getIsLoading,
+    getIsError,
     getIsLoadingRow,
     getIsRefresh,
+    getDeactiveItem,
     getSelectedId,
     getSelectedItem,
     getTotalLevelItem

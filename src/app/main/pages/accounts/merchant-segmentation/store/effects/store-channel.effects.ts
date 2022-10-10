@@ -438,7 +438,16 @@ export class StoreChannelEffects {
 
         return this._$storeChannelCrudCrudApi.patch<PayloadStoreChannelPatch>(body, id).pipe(
             map(resp => {
-                return StoreChannelActions.updateStoreChannelSuccess();
+                let deactive = false
+                if (body.status) {
+                    deactive = body.status === 'active' ? false : true
+                }
+                return StoreChannelActions.updateStoreChannelSuccess({
+                    payload: {
+                        id,
+                        deactive
+                    }
+                });
             }),
             catchError(err => this._sendErrorToState$(err, 'updateStoreChannelFailure'))
         );

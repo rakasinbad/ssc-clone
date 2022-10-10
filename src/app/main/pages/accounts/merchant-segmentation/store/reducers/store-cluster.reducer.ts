@@ -14,6 +14,7 @@ export interface State extends EntityState<StoreCluster> {
     isRefresh: boolean;
     selectedId: string;
     deepestLevel: number;
+    deactiveItem: boolean;
 }
 
 // Adapter for storeClusters state
@@ -26,7 +27,8 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
     isLoadingRow: false,
     isRefresh: undefined,
     selectedId: null,
-    deepestLevel: 0
+    deepestLevel: 0,
+    deactiveItem: false,
 });
 
 // Reducer manage the action
@@ -40,7 +42,7 @@ export const reducer = createReducer<State>(
     on(
         StoreClusterActions.createStoreClusterRequest,
         StoreClusterActions.updateStoreClusterRequest,
-        state => ({ ...state, isLoadingRow: true, isError: false })
+        state => ({ ...state, isLoadingRow: true, isError: false, selectedId: null, deactiveItem: false })
     ),
     on(
         StoreClusterActions.createStoreClusterFailure,
@@ -65,8 +67,11 @@ export const reducer = createReducer<State>(
     })),
     on(
         StoreClusterActions.createStoreClusterSuccess,
-        StoreClusterActions.updateStoreClusterSuccess,
         state => ({ ...state, isRefresh: true })
+    ),
+    on(
+        StoreClusterActions.updateStoreClusterSuccess,
+        (state, { payload }) => ({ ...state, isRefresh: true, selectedId: payload.id, deactiveItem: payload.deactive })
     ),
     on(StoreClusterActions.fetchStoreClustersSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
@@ -89,7 +94,8 @@ export const reducer = createReducer<State>(
             isLoading: false,
             isRefresh: undefined,
             selectedId: null,
-            deepestLevel: 0
+            deepestLevel: 0,
+            deactiveItem: false,
         })
     )
 );

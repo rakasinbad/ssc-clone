@@ -76,6 +76,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         sequence4Id: null,
         sequence5Id: null,
     }
+    selectedId: string = null;
 
     items$: Observable<Array<StoreType>>;
     isLoading$: Observable<boolean>;
@@ -234,7 +235,6 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     }
 
     handleRename(segmentIdx: number, branchIdx: number): void {
-        this.lastEvent = JSON.parse(JSON.stringify({segmentIdx, branchIdx, type: 'update'}));
         this.triggerSegment[segmentIdx] = false;
 
         if (!this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'name']).value) {
@@ -350,14 +350,14 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     onEdit(segmentIdx: number, branchIdx: number): void {
         const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
 
-        const parentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id']).value;
+        // const parentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id']).value;
         const currLastSegment = +this.form.get('lastSegment').value;
 
         if (segmentIdx >= currLastSegment) {
             this.form.get('lastSegment').patchValue(segmentIdx);
         }
 
-        this.setSequence(segmentIdx, parentId)
+        // this.setSequence(segmentIdx, parentId)
 
         const dialogRef = this.matDialog.open(MerchantSegmentationFormComponent, {
             data: {
@@ -392,7 +392,9 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     }
 
     onRename(segmentIdx: number, branchIdx: number): void {
-        
+        const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
+        this.lastEvent = JSON.parse(JSON.stringify({segmentIdx, branchIdx, type: 'update', lastName: formValue.name}));
+
         this.onFocus(segmentIdx, branchIdx);
 
         this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).setValue('rename');
@@ -459,14 +461,14 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     onSetStatus(segmentIdx: number, branchIdx: number): void {
         const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
 
-        const parentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id']).value;
+        // const parentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id']).value;
         const currLastSegment = +this.form.get('lastSegment').value;
 
         if (segmentIdx >= currLastSegment) {
             this.form.get('lastSegment').patchValue(segmentIdx);
         }
 
-        this.setSequence(segmentIdx, parentId)
+        // this.setSequence(segmentIdx, parentId)
 
         this.store.dispatch(
             StoreTypeActions.confirmChangeStatusStoreType({
@@ -477,6 +479,29 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
                 })
             })
         );
+    }
+
+    checkSegmentIdx(key: string) {
+        let segmentIdx: number;
+        switch (key) {
+            case 'sequence2Id':
+                segmentIdx = 1
+                break;
+            case 'sequence3Id':
+                segmentIdx = 2
+                break;
+            case 'sequence4Id':
+                segmentIdx = 3
+                break;
+            case 'sequence5Id':
+                segmentIdx = 4
+                break;
+            default:
+                segmentIdx = 0
+                break;
+        }
+
+        return segmentIdx
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -591,7 +616,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
                     const itemSegments = formValue.segments[formValue.lastSegment - 1];
 
                     if (hasChild) {
-
+                        
                         // >= second run after update generate level 2 to 3, 3 to 4, 4 to 5
                         if (itemSegments.level >= 2 && item.sequence >= 2) {
                             // 2 to 3
@@ -668,6 +693,37 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
                     .subscribe(() => {
                         this._onRefreshHierarchy()
                     });
+
+                this.store
+                    .select(StoreTypeSelectors.getSelectedId)
+                    .pipe(
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(id => {
+                        if (id) {
+                            this.selectedId = id
+                        }
+                    });
+
+
+                this.store
+                    .select(StoreTypeSelectors.getDeactiveItem)
+                    .pipe(
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(value => {
+                        if (value && this.selectedId) {
+                            const key = Object.keys(this.selectedSegment).find(key => this.selectedSegment[key] === this.selectedId)
+                            this.selectedSegment[key] = null
+                            const segmentIdx = this.checkSegmentIdx(key)
+                            if (this.form.get(['segments', segmentIdx, 'selectedId']).value === this.selectedId) {
+                                this._resetSegment(segmentIdx); // reset segment (level auto close)
+                                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
+                            }
+                        }
+                    });
                 break;
         }
     }
@@ -701,7 +757,11 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     private _onRefreshHierarchy(): void {
         this.store.select(StoreTypeSelectors.getIsError).subscribe(isError => {
             if (isError){
-                this.deleteSegmentBranch(this.lastEvent.segmentIdx, this.lastEvent.branchIdx);
+                if (this.lastEvent.type === 'create') {
+                    this.deleteSegmentBranch(this.lastEvent.segmentIdx, this.lastEvent.branchIdx);
+                } else {
+                    this.form.get(['segments', this.lastEvent.segmentIdx, 'branches', this.lastEvent.branchIdx, 'name']).setValue(this.lastEvent.lastName);
+                }
                 this.cdRef.detectChanges();
             }
         });

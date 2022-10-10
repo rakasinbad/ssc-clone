@@ -23,6 +23,7 @@ import { locale as indonesian } from '../i18n/id';
 import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
+import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'app-merchant-employee',
@@ -39,6 +40,9 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
     employee$: Observable<User>;
     isLoading$: Observable<boolean>;
     roles$: Observable<Array<Role>>;
+
+    // Assets
+    sinbadProfileDefault = assetUrl('images/avatars/profile.jpg');
 
     private _unSubs$: Subject<void> = new Subject<void>();
 

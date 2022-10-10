@@ -26,9 +26,9 @@
                         <img
                             class="fit-image fuse-white"
                             style="border-radius: 5px;"
-                            [defaultImage]="'assets/images/catalogue/no_photo.png'"
+                            [defaultImage]="sinbadNoPhoto"
                             [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
-                            [errorImage]="'assets/images/catalogue/no_photo.png'"
+                            [errorImage]="sinbadNoPhoto"
                         />
                     </ng-container>
                     <ng-template #noCatalogueImage>

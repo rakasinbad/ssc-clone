@@ -100,7 +100,8 @@ export const updateStoreChannelFailure = createAction(
 );
 
 export const updateStoreChannelSuccess = createAction(
-    '[Store Segmentation] Update Store Channel Success'
+    '[Store Segmentation] Update Store Channel Success',
+    props<{ payload: { id: string, deactive: boolean } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
