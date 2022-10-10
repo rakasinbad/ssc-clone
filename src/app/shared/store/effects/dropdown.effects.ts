@@ -6,7 +6,7 @@ import { catchOffline, Network } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 // import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
-// import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
+import { CreditLimitGroupApiService } from 'app/shared/helpers/credit-limit-balance';
 import {
     ClusterApiService,
     DistrictApiService,
@@ -176,52 +176,52 @@ export class DropdownEffects {
      * [REQUEST] Credit Limit Group
      * @memberof DropdownEffects
      */
-    // fetchDropdownCreditLimitGroupRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(DropdownActions.fetchDropdownCreditLimitGroupRequest),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([_, { supplierId }]) => {
-    //             if (!supplierId) {
-    //                 return of(
-    //                     DropdownActions.fetchDropdownCreditLimitGroupFailure({
-    //                         payload: {
-    //                             id: 'fetchDropdownCreditLimitGroupFailure',
-    //                             errors: 'Not Found!'
-    //                         }
-    //                     })
-    //                 );
-    //             }
+    fetchDropdownCreditLimitGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownCreditLimitGroupRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                            payload: {
+                                id: 'fetchDropdownCreditLimitGroupFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
 
-    //             return this._$creditLimitGroupApi
-    //                 .findAll<Array<any>>({ paginate: false }, supplierId)
-    //                 .pipe(
-    //                     catchOffline(),
-    //                     retry(3),
-    //                     map(resp => {
-    //                         const sources = resp.map(row => {
-    //                             const newCreditLimitGroup = row;
+                return this._$creditLimitGroupApi
+                    .findAll<Array<any>>({ paginate: false }, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map(resp => {
+                            const sources = resp.map(row => {
+                                const newCreditLimitGroup = row;
 
-    //                             return newCreditLimitGroup;
-    //                         });
+                                return newCreditLimitGroup;
+                            });
 
-    //                         return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
-    //                             payload: sortBy(sources, ['name'], ['asc'])
-    //                         });
-    //                     }),
-    //                     catchError(err =>
-    //                         of(
-    //                             DropdownActions.fetchDropdownCreditLimitGroupFailure({
-    //                                 payload: {
-    //                                     id: 'fetchDropdownCreditLimitGroupFailure',
-    //                                     errors: err
-    //                                 }
-    //                             })
-    //                         )
-    //                     )
-    //                 );
-    //         })
-    //     )
-    // );
+                            return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
+                                payload: sortBy(sources, ['name'], ['asc'])
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                                    payload: {
+                                        id: 'fetchDropdownCreditLimitGroupFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Geo Parameter]
@@ -983,7 +983,7 @@ export class DropdownEffects {
         private _$log: LogService,
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
-        private _$creditLimitGroupApi: any,
+        private _$creditLimitGroupApi: CreditLimitGroupApiService,
         private _$districtApi: DistrictApiService,
         private _$hierarchyApi: HierarchyApiService,
         private _$invoiceGroupApi: InvoiceGroupApiService,

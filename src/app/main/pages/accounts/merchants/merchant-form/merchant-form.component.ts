@@ -24,13 +24,13 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
-import {
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-    StoreSegmentationGroup,
-} from 'app/main/pages/catalogues/models';
+// import {
+//     StoreSegmentationChannel,
+//     StoreSegmentationCluster,
+//     StoreSegmentationGroup,
+// } from 'app/main/pages/catalogues/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { CreditLimitGroup, CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
+// import { CreditLimitGroup, CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/models';
@@ -142,7 +142,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     storeTypes$: BehaviorSubject<StoreType[]> = new BehaviorSubject<StoreType[]>([]);
     // hierarchies$: Observable<Hierarchy[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
-    creditLimitGroups$: Observable<CreditLimitGroup[]>;
+    creditLimitGroups$: Observable<any[]>;
     // d2Source$: DistrictDataSource;
 
     reset$: BehaviorSubject<string> = new BehaviorSubject<string>('reset');
@@ -162,9 +162,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private _timer: Array<NodeJS.Timer> = [];
 
     selectedStoreType: Array<StoreSegmentationType> = [];
-    selectedStoreGroup: Array<StoreSegmentationGroup> = [];
-    selectedStoreChannel: Array<StoreSegmentationChannel> = [];
-    selectedStoreCluster: Array<StoreSegmentationCluster> = [];
+    selectedStoreGroup: Array<any> = [];
+    selectedStoreChannel: Array<any> = [];
+    selectedStoreCluster: Array<any> = [];
 
     selectedStoreType$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
         RecordedSelection<string>
@@ -934,7 +934,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    onStoreGroupSelected($event: Array<StoreSegmentationGroup>): void {
+    onStoreGroupSelected($event: Array<any>): void {
         this.selectedStoreGroup = $event;
         HelperService.debug('onStoreGroupSelected', $event);
     }
@@ -993,7 +993,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    onStoreChannelSelected($event: Array<StoreSegmentationChannel>): void {
+    onStoreChannelSelected($event: Array<any>): void {
         this.selectedStoreChannel = $event;
         HelperService.debug('onStoreChannelSelected', $event);
     }
@@ -1052,7 +1052,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    onStoreClusterSelected($event: Array<StoreSegmentationCluster>): void {
+    onStoreClusterSelected($event: Array<any>): void {
         this.selectedStoreCluster = $event;
         HelperService.debug('onStoreClusterSelected', $event);
     }
@@ -2990,7 +2990,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         if (data['store']['creditLimitStores'] && data['store']['creditLimitStores'].length > 0) {
-            const creditLimitStores = data['store']['creditLimitStores'] as Array<CreditLimitStore>;
+            const creditLimitStores = data['store']['creditLimitStores'] as Array<any>;
             const availableCreditLimitStores: Array<any> = this.formCreditLimits.getRawValue();
 
             for (const [idx, row] of creditLimitStores.entries()) {

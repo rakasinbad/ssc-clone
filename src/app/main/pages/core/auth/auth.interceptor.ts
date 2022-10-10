@@ -53,6 +53,10 @@ export class AuthInterceptor implements HttpInterceptor {
                                     headers: req.headers.set('Authorization', `Bearer ${token}`)
                                 });
                             }
+                        } else {
+                            req = req.clone({
+                                headers: req.headers.set('Authorization', `Bearer ${user.token}`)
+                            });
                         }
                     }
 
