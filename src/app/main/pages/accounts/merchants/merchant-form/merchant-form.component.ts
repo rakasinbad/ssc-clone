@@ -575,7 +575,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (value === 'reset') {
                     const supplierId = this.form.get('supplierId').value;
 
-                    this.form.reset();
+                    if (!this.isEditMode) {
+                        this.form.reset();
+                    }
                     this.resetTemporaryPhotoForms();
 
                     this.form.get('supplierId').setValue(supplierId);
@@ -2183,7 +2185,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private restoreInvoiceGroups(data: Array<InvoiceGroup>): void {
-        if (data && data.length > 0) {
+        if (data && data.length > 0 && data.length !== this.tempInvoiceGroupName.length) {
             for (const [idx, row] of data.entries()) {
                 if (row.id) {
                     this.tempInvoiceGroupName[idx] = row.name || '-';
@@ -2996,7 +2998,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             for (const [idx, row] of creditLimitStores.entries()) {
                 if (typeof row.allowCreditLimit === 'boolean') {
                     const foundIdx = availableCreditLimitStores.findIndex(cl => cl.invoiceGroup === row.invoiceGroupId);
-
+                    
                     if (foundIdx >= 0) {
                         this.tempInvoiceGroupName[foundIdx] = !row.invoiceGroup ? '-' : row.invoiceGroup.name;
 
