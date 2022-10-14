@@ -8,6 +8,7 @@ import * as fromAddProduct from './add-product.reducer';
 import * as fromOrderCheckout from './order-checkout.reducer'
 import * as fromPaymentOption from './payment-options.reducer';
 import * as fromConfirmOrderPayment from './confirm-order-payment.reducer';
+import * as fromCancelOrderReason from './cancel-order-reason.reducer';
 
 export { 
     fromOrder,
@@ -19,5 +20,6 @@ export {
     fromImportProductsProgress,
     fromOrderCheckout, 
     fromPaymentOption,
-    fromConfirmOrderPayment
+    fromConfirmOrderPayment,
+    fromCancelOrderReason
 };

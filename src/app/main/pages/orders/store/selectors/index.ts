@@ -8,6 +8,7 @@ import * as AddProductSelectors from './add-product.selector';
 import * as OrderCheckoutSelectors from './order-checkout.selector';
 import * as ConfirmOrderPaymentSelectors from './confirm-order-payment.selectors';
 import * as PaymentOptionSelectors from './payment-options.selector';
+import * as CancelOrderReasonSelectors from './cancel-order-reason.selectors';
 
 export { 
     OrderSelectors, 
@@ -19,5 +20,6 @@ export {
     ImportProductsProgressSelectors,
     OrderCheckoutSelectors,
     ConfirmOrderPaymentSelectors,
-    PaymentOptionSelectors
+    PaymentOptionSelectors,
+    CancelOrderReasonSelectors
 };

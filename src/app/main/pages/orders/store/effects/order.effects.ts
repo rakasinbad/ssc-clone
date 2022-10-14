@@ -31,7 +31,7 @@ import {
 } from 'rxjs/operators';
 
 import { IStatusOMS } from '../../models';
-import { OrderApiService } from '../../services';
+import { OrderApiService, CancelOrderReasonApiService } from '../../services';
 import { OrderActions } from '../actions';
 import { fromOrder } from '../reducers';
 
@@ -533,6 +533,147 @@ export class OrderEffects {
             )
     );
 
+    /**
+     *
+     * [UPDATE - DIALOG] Status Order With Reason
+     * @memberof OrderEffects
+     */
+    confirmChangeStatusOrderWithReason$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.confirmChangeStatusOrderWithReason),
+            map(action => action.payload),
+            exhaustMap(({id, orderCode, cancelReason}) => {
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: any } // selectedReason
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Set as Cancel`,
+                        message: `Are you sure want to change <strong>${orderCode}</strong> status ?`,
+                        id: id,
+                        change: cancelReason
+                    },
+                    disableClose: true
+                });
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return OrderActions.updateStatusOrderWithReasonRequest({
+                        payload: { id, body: change }
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+    
+    /**
+     *
+     * [UPDATE - REQUEST] Status Order With Reason
+     * @memberof OrderEffects
+     */
+     updateStatusOrderWithReasonRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.updateStatusOrderWithReasonRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                const change = { status: body };
+                /** TODO: patch cancel order with real api */
+                return this._$orderApi.patchV2(change, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST UPDATE STATUS ORDER WITH REASON]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return OrderActions.updateStatusOrderWithReasonSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...change,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.updateStatusOrderWithReasonFailure({
+                                payload: { id: 'updateStatusOrderWithReasonFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Status Order With Reason
+     * @memberof OrderEffects
+     */
+    updateStatusOrderWithReasonFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateStatusOrderWithReasonFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('[REQUEST UPDATE STATUS ORDER WITH REASON FAILURE]', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update status gagal', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Status Order With Reason
+     * @memberof OrderEffects
+     */
+    updateStatusOrderWithReasonSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateStatusOrderWithReasonSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('[REQUEST UPDATE STATUS ORDER WITH REASON SUCCESS]', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update status berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+
+                    return resp;
+                }),
+                map(({id}) => {
+                    return OrderActions.fetchOrderRequest({ payload: String(id) });
+                })
+            )
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
@@ -900,6 +1041,80 @@ export class OrderEffects {
 
     /**
      *
+     * [REQUEST] Order
+     * @memberof OrderEffects
+     */
+    fetchCancelOrderReasonRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.fetchCancelOrderReasonRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$cancelOrderReasonApi.findAll({}).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        /** TODO: get data from real api */
+                        const payload = {
+                            data: [
+                                {
+                                    id: 4234,
+                                    reason: 'Toko tidak order (partially reject)',
+                                    cancelReasonCode: 'PD38'
+                                },
+                                {
+                                    id: 4235,
+                                    reason: 'Toko salah order SKU',
+                                    cancelReasonCode: 'PD39'
+                                }
+                            ]
+                        }
+                        this._$log.generateGroup('[RESPONSE REQUEST FETCH ORDER]', {
+                            response: {
+                                type: 'log',
+                                value: payload
+                            }
+                        });
+
+                        return OrderActions.fetchCancelOrderReasonSuccess({ payload });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.fetchCancelOrderReasonFailure({
+                                payload: { id: 'fetchCancelOrderReasonFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Order
+     * @memberof OrderEffects
+     */
+    fetchCancelOrderReasonFailure$ = createEffect(
+        () =>
+        this.actions$.pipe(
+            ofType(OrderActions.fetchCancelOrderReasonFailure),
+            map(action => action.payload),
+            tap(resp => {
+                const message =
+                    typeof resp.errors === 'string'
+                        ? resp.errors
+                        : resp.errors.error.message || resp.errors.message;
+
+                this._$notice.open(message, 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ),
+        { dispatch: false }
+    );
+
+    /**
+     *
      * [REQUEST - SUCCESS] Export
      * @memberof OrderEffects
      */
@@ -1163,6 +1378,7 @@ export class OrderEffects {
         private _$downloadApi: DownloadApiService,
         private _$orderApi: OrderApiService,
         private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService,
-        private _$uploadApi: UploadApiService
+        private _$uploadApi: UploadApiService,
+        private _$cancelOrderReasonApi: CancelOrderReasonApiService
     ) {}
 }

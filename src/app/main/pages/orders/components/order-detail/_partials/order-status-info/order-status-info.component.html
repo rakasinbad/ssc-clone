@@ -58,7 +58,7 @@
                 Mark as Cancel
             </button>
         </ng-container>
-        <button
+        <!-- <button
             type="button"
             mat-button
             class="btn-cancel-status sinbad-black-fg ml-8"
@@ -66,7 +66,7 @@
             (click)="orderStatus.emit('cancel')"
         >
             Cancel
-        </button>
+        </button> -->
     </ng-container>
 
     <!-- Current Status -->
@@ -111,5 +111,48 @@
             </div>    
         </div>
     </div>
+    
+    <ng-container *ngIf="!loading && isShowCancelOrder()">
+        <div fxFlex fxLayout="column">
+            <div class="custom-field" fxLayoutAlign="start center">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-select
+                        placeholder="Choose Cancellation Reason"
+                        [(ngModel)]="selectedCancelReason" 
+                        [ngModelOptions]="{standalone: true}"
+                        [disabled]="(isLoadingCancelOrderReasons$ | async) || isDisabledCancelReasonOrder()"
+                    >
+                        <ng-container>
+                            <mat-option>None</mat-option>
+                            <mat-option
+                                *ngFor="let row of (cancelOrderReasons$ | async)"
+                                [value]="row"
+                            >
+                                {{ row?.reason || '-' }}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            
+            <div>
+                <button
+                    type="button"
+                    mat-button
+                    fxFlex
+                    class="sinbad-white-fg sinbad-red-50-bg"
+                    (click)="orderStatus.emit(selectedCancelReason)"
+                    [disabled]="!selectedCancelReason || (isLoadingCancelOrderReasons$ | async) || isDisabledCancelReasonOrder()"
+                >
+                    <ng-container *ngIf="!(isLoadingCancelOrderReasons$ | async); else loadingButton">
+                        Cancel Order
+                    </ng-container>
+                    <ng-template #loadingButton>
+                        <mat-spinner color="accent" [diameter]="30" style="margin: 8px auto;"></mat-spinner>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+    </ng-container>
 
 </div>

@@ -12,3 +12,4 @@ export * from './import-products-progress.service';
 export * from './payment-list.service';
 export * from './confirm-order-payment.service';
 export * from './order-helper.service';
+export * from './cancel-order-reason.service';

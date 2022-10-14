@@ -45,7 +45,7 @@ import {
     ImportProductsProgressEffects,
     ConfirmOrderPaymentEffects
 } from './store/effects';
-import { fromOrder, fromImportProducts, fromAddProduct, fromAvailableSupplierStore, fromImportProductsProgress, fromOrderCheckout, fromPaymentOption, fromConfirmOrderPayment } from './store/reducers';
+import { fromOrder, fromImportProducts, fromAddProduct, fromAvailableSupplierStore, fromImportProductsProgress, fromOrderCheckout, fromPaymentOption, fromConfirmOrderPayment, fromCancelOrderReason } from './store/reducers';
 import { FuseSidebarModule } from '@fuse/components';
 import { OrderPreviewConfirmComponentGuard } from './components/order-add/order-preview-confirm/order-preview-confirm.guard';
 
@@ -95,6 +95,7 @@ import { OrderPreviewConfirmComponentGuard } from './components/order-add/order-
         StoreModule.forFeature(fromOrderCheckout.orderCheckoutFeatureKey, fromOrderCheckout.reducer),
         StoreModule.forFeature(fromPaymentOption.paymentOptionFeatureKey, fromPaymentOption.reducer),
         StoreModule.forFeature(fromConfirmOrderPayment.FEATURE_KEY, fromConfirmOrderPayment.reducer),
+        StoreModule.forFeature(fromCancelOrderReason.FEATURE_KEY, fromCancelOrderReason.reducer),
         EffectsModule.forFeature([
             ExportsEffects,
             OrderEffects,

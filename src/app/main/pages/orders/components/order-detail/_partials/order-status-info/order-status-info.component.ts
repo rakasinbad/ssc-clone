@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-
+import { Observable, Subject } from 'rxjs';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ICancelReason } from 'app/main/pages/orders/models';
+import { OrderFacadeService } from 'app/main/pages/orders/services';
+import { takeUntil } from 'rxjs/operators';
 @Component({
     selector: 'app-order-status-info',
     templateUrl: './order-status-info.component.html',
@@ -7,7 +10,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEn
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderStatusInfoComponent {
+export class OrderStatusInfoComponent implements  OnDestroy, OnInit {
+    console = console;
     @Input()
     data: any;
 
@@ -15,7 +19,38 @@ export class OrderStatusInfoComponent {
     loading: boolean;
 
     @Output('onChangeOrderStatus')
-    orderStatus: EventEmitter<string> = new EventEmitter();;
+    orderStatus: EventEmitter<ICancelReason> = new EventEmitter();
+
+    selectedCancelReason: ICancelReason;
+    cancelOrderReasons$: Observable<ICancelReason[]> = this.orderFacade.cancelOrderReason$;
+    isLoadingCancelOrderReasons$: Observable<boolean> = this.orderFacade.isLoadingCancelOrderReason$;
+    isConfirmedCancelOrder$: Observable<boolean> = this.orderFacade.isConfirmedCancelOrder$;
+    private subs$ = new Subject<void>();
+
+    constructor(
+        private orderFacade: OrderFacadeService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
+
+    ngOnInit(): void {
+        this.orderFacade.getCancelOrderReason();
+        this.isConfirmedCancelOrder$
+            .pipe(
+                takeUntil(this.subs$)
+            )
+            .subscribe(confirmed => {
+                if (confirmed) {
+                    this.selectedCancelReason = null;
+                    this.changeDetectorRef.markForCheck();
+                }
+            })
+        this.changeDetectorRef.detectChanges();
+    }
+
+    ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+    }
 
     check(index, status):boolean {
         switch (status) {
@@ -77,5 +112,25 @@ export class OrderStatusInfoComponent {
             default:
                 return false;
         }
+    }
+    
+    isShowCancelOrder(): boolean {
+        /** show button or no, default is false */
+        return {
+            'pending': true,
+            'pending_payment': true,
+            'pending_partial': true,
+            'confirm': true,
+            'packing': true,
+            'shipping': true,
+            'cancel': true,
+            'delivered': false,
+            'done': false,
+            'default': false,
+        }[this.data ? this.data.status : 'default'] || false
+    }
+
+    isDisabledCancelReasonOrder(): boolean {
+        return this.data.status === 'cancel';
     }
 }

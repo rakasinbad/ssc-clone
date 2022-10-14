@@ -3,7 +3,7 @@ import { createAction, props } from '@ngrx/store';
 import { IErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { IStatusOMS } from '../../models';
+import { IStatusOMS, ICancelReason } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Orders
@@ -59,6 +59,25 @@ export const fetchCalculateOrdersFailure = createAction(
 export const fetchCalculateOrdersSuccess = createAction(
     '[Calculate Orders API] Fetch Calculate Orders Success',
     props<{ payload: IStatusOMS }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch CAncel Order Reason
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCancelOrderReasonRequest = createAction(
+    '[Orders API] Fetch Cancel Order Reason Request',
+    props<{ payload: any }>()
+);
+
+export const fetchCancelOrderReasonFailure = createAction(
+    '[Orders API] Fetch Cancel Order Reason Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCancelOrderReasonSuccess = createAction(
+    '[Orders API] Fetch Cancel Order Reason Success',
+    props<{ payload: { data: ICancelReason[]; total?: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -182,6 +201,26 @@ export const updateStatusOrderFailure = createAction(
 
 export const updateStatusOrderSuccess = createAction(
     '[Orders API] Update Status Order Success',
+    props<{ payload: Update<any> }>()
+);
+
+export const confirmChangeStatusOrderWithReason = createAction(
+    '[Orders Page] Confirm Change Status Order With Reason',
+    props<{ payload: any }>()
+);
+
+export const updateStatusOrderWithReasonRequest = createAction(
+    '[Orders API] Update Status Order With Reason Request',
+    props<{ payload: { body: string; id: string } }>()
+);
+
+export const updateStatusOrderWithReasonFailure = createAction(
+    '[Orders API] Update Status Order With Reason Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStatusOrderWithReasonSuccess = createAction(
+    '[Orders API] Update Status Order With Reason Success',
     props<{ payload: Update<any> }>()
 );
 

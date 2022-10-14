@@ -88,4 +88,10 @@ export class OrderApiService {
         this._url = this._$helper.handleApiRouter(this._endpointPartialOrder);
         return this.http.patch(`${this._url}/${id}`, body);
     }
+
+    patchV2(body: any, id: string): Observable<any> {
+        /** TODO: integrate with real api */
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch(`${this._url}/${id}`, body);
+    }
 }

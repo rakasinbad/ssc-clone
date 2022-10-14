@@ -9,6 +9,7 @@ import { combineLatest, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
+import { ICancelReason } from '../../models';
 import { OrderFacadeService } from '../../services';
 
 @Component({
@@ -81,10 +82,9 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
         this.orderFacade.changeCataloguesQty(id, value);
     }
         
-    onChangeOrderStatus(status):void {
+    onChangeOrderStatus(selectedReason: ICancelReason):void {
         const { id } = this.route.snapshot.params;
         const orderCode = this.data.orderCode;
-
-        this.orderFacade.changeOrderStatus(id, orderCode, status);
+        this.orderFacade.changeOrderStatusWithReason(id, orderCode, selectedReason);
     }
 }
