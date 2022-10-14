@@ -13,7 +13,6 @@ import { StoreSelectors } from '../../store/selectors';
 import { takeUntil, withLatestFrom, switchMap, map, retry, tap } from 'rxjs/operators';
 import { StoreActions } from '../../store/actions';
 import { StoreSegmentationTypesApiService } from 'app/shared/components/selection-tree/store-segmentation/services';
-import { assetUrl } from 'single-spa/asset-url';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -38,9 +37,6 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
     isLoading$: Observable<boolean>;
     isEditLocation$: Observable<boolean>;
     selectedSupplierStore$: Observable<SupplierStore>;
-    
-    // Assets
-    sinbadNoPhoto = assetUrl('images/catalogue/no_photo.png');
     
     constructor(
         private route: ActivatedRoute,

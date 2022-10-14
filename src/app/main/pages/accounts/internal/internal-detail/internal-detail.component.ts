@@ -18,7 +18,6 @@ import { InternalActions } from '../store/actions';
 import { UiActions } from 'app/shared/store/actions';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { HelperService } from 'app/shared/helpers';
-import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'app-internal-detail',
@@ -33,9 +32,6 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
 
     employee$ : Observable<IInternalEmployeeDetails>;
     isLoading$: Observable<boolean>;
-
-    // Assets
-    sinbadProfileDefault = assetUrl('images/avatars/profile.jpg');
 
     private createBreadcrumbs(): void {
         // Menyiapkan breadcrumb-nya.

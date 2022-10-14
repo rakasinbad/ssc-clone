@@ -21,7 +21,7 @@
                     class="employee-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <img [src]="(employee$ | async)?.imageUrl || sinbadProfileDefault" />
+                    <img [src]="(employee$ | async)?.imageUrl || 'assets/images/avatars/profile.jpg'" />
                 </div>
 
                 <div

@@ -25,9 +25,9 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 // import {
-//     StoreSegmentationChannel,
-//     StoreSegmentationCluster,
-//     StoreSegmentationGroup,
+//     any,
+//     any,
+//     any,
 // } from 'app/main/pages/catalogues/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 // import { CreditLimitGroup, CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
@@ -2998,7 +2998,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             for (const [idx, row] of creditLimitStores.entries()) {
                 if (typeof row.allowCreditLimit === 'boolean') {
                     const foundIdx = availableCreditLimitStores.findIndex(cl => cl.invoiceGroup === row.invoiceGroupId);
-                    
+
                     if (foundIdx >= 0) {
                         this.tempInvoiceGroupName[foundIdx] = !row.invoiceGroup ? '-' : row.invoiceGroup.name;
 
@@ -3058,32 +3058,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             tap(value => HelperService.debug('PERIOD TARGET PROMO FORM VALUE CHANGED', { form: this.form, value })),
             takeUntil(this._unSubs$)
         ).subscribe();
-
-        this.form.get('storeInfo.storeId.id').valueChanges
-        .pipe(
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(value => HelperService.debug('STORE ID VALUE CHANGED', { form: this.form, value })),
-            takeUntil(this._unSubs$)
-        ).subscribe(value => {
-            const prefix = String(value).match(/[a-zA-Z]+/);
-
-            if (!this.storeIdNextNumber) {
-                return;
-            }
-
-            if (prefix) {
-                // Tidak boleh menentukan ID store secara manual dengan prefix yang sama dengan auto generate.
-                if (this.storeIdNextNumber.match(prefix[0]) && this.storeIdType.value !== 'auto') {
-                    this.form.get('storeInfo.storeId.id').setErrors({
-                        forbiddenPrefix: {
-                            message: 'This Store ID prefix can\'t be assigned manually.',
-                            refValues: [value]
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private resetTemporaryPhotoForms(): void {

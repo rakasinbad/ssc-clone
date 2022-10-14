@@ -29,7 +29,6 @@ import { IInternalEmployeeDetails } from '../models';
 import { InternalActions } from '../store/actions';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
-import { assetUrl } from 'single-spa/asset-url';
 
 @Component({
     selector: 'app-internal-form',
@@ -49,9 +48,6 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     roles$: Observable<Array<Role>>;
 
     private _unSubs$: Subject<void> = new Subject<void>();
-
-    // Assets
-    sinbadProfileDefault = assetUrl('images/avatars/profile.jpg');
 
     constructor(
         private formBuilder: FormBuilder,

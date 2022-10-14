@@ -418,7 +418,7 @@ export class Store implements IStore {
     set setCreditLimitStores(value: any[]) {
         if (value && value.length > 0) {
             const newCreditLimitStores = value.map((row) => {
-                return row;
+                return new row;
             });
 
             this.creditLimitStores = newCreditLimitStores;

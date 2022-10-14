@@ -23,10 +23,10 @@
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
                     <img
-                        [defaultImage]="sinbadProfileDefault"
+                        [defaultImage]="'assets/images/avatars/profile.jpg'"
                         [useSrcset]="true"
                         [lazyLoad]="(employee$ | async)?.imageUrl"
-                        [errorImage]="sinbadProfileDefault"
+                        [errorImage]="'assets/images/avatars/profile.jpg'"
                     />
                 </div>
 
