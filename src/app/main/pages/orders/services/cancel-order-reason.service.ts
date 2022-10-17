@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
@@ -23,7 +23,7 @@ export class CancelOrderReasonApiService {
     * @private
     * @memberof CancelOrderReasonApiService
     */
-  private readonly _endpoint = '/cancel-order-reason';
+  private readonly _endpoint = '/order-cancel-reasons';
 
   /**
    * Creates an instance of CancelOrderReasonApiService

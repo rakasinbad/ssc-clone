@@ -1056,14 +1056,12 @@ export class OrderEffects {
                         const payload = {
                             data: [
                                 {
-                                    id: 4234,
-                                    reason: 'Toko tidak order (partially reject)',
-                                    cancelReasonCode: 'PD38'
+                                    reasonId: 4234,
+                                    reasonName: 'Toko tidak order (partially reject)'
                                 },
                                 {
-                                    id: 4235,
-                                    reason: 'Toko salah order SKU',
-                                    cancelReasonCode: 'PD39'
+                                    reasonId: 4235,
+                                    reasonName: 'Toko salah order SKU'
                                 }
                             ]
                         }

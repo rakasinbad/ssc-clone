@@ -1,5 +1,4 @@
 export interface ICancelReason {
-    id: number;
-    reason: string;
-    cancelReasonCode: string;
+    reasonId: number;
+    reasonName: string;
 }

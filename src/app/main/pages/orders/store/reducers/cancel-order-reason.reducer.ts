@@ -26,7 +26,7 @@ export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
 }
 
-export const adapterCancelOrderReason = createEntityAdapter<ICancelReason>({ selectId: (row) => row.id });
+export const adapterCancelOrderReason = createEntityAdapter<ICancelReason>({ selectId: (row) => row.reasonId });
 
 export const initialStateCancelOrderReasonList: CancelOrderReasonState = adapterCancelOrderReason.getInitialState({
     selectedId: null,

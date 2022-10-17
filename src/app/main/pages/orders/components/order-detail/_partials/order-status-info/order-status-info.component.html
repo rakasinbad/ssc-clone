@@ -128,7 +128,7 @@
                                 *ngFor="let row of (cancelOrderReasons$ | async)"
                                 [value]="row"
                             >
-                                {{ row?.reason || '-' }}
+                                {{ row?.reasonName || '-' }}
                             </mat-option>
                         </ng-container>
                     </mat-select>
