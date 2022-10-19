@@ -26,6 +26,7 @@ export class OrderApiService {
     private readonly _endpoint = '/order-parcels';
     private readonly _endpointPayment = '/payment/v1/order/parcel';
     private readonly _endpointPartialOrder = '/partial-order';
+    private readonly _endpointCancelOrder = '/order-parcels-cancel';
 
     private readonly _listEndpoint = '/order-view/ssc';
 
@@ -89,9 +90,8 @@ export class OrderApiService {
         return this.http.patch(`${this._url}/${id}`, body);
     }
 
-    patchV2(body: any, id: string): Observable<any> {
-        /** TODO: integrate with real api */
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+    cancelOrderWithReason(body: any, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointCancelOrder);
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }

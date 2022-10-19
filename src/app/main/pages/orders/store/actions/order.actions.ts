@@ -211,7 +211,7 @@ export const confirmChangeStatusOrderWithReason = createAction(
 
 export const updateStatusOrderWithReasonRequest = createAction(
     '[Orders API] Update Status Order With Reason Request',
-    props<{ payload: { body: string; id: string } }>()
+    props<{ payload: { body: ICancelReason; id: string } }>()
 );
 
 export const updateStatusOrderWithReasonFailure = createAction(

@@ -23,7 +23,7 @@ export class CancelOrderReasonApiService {
     * @private
     * @memberof CancelOrderReasonApiService
     */
-  private readonly _endpoint = '/order-cancel-reasons';
+  private readonly _endpoint = '/order-cancel-reasons-v2';
 
   /**
    * Creates an instance of CancelOrderReasonApiService
@@ -36,8 +36,7 @@ export class CancelOrderReasonApiService {
   }
 
   findAll(params?: IQueryParams): Observable<any> {
-   /** TODO: integrate with real api */
-    this._url = 'https://httpbin.org/get'//this._$helper.handleApiRouter(this._endpoint);
+    this._url = this._$helper.handleApiRouter(this._endpoint);
     return this.http.get(`${this._url}`);
   }
 }

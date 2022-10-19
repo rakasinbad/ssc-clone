@@ -579,10 +579,9 @@ export class OrderEffects {
         this.actions$.pipe(
             ofType(OrderActions.updateStatusOrderWithReasonRequest),
             map(action => action.payload),
-            switchMap(({ body, id }) => {
-                const change = { status: body };
-                /** TODO: patch cancel order with real api */
-                return this._$orderApi.patchV2(change, id).pipe(
+            switchMap(({ body: { reasonId }, id }) => {
+                const change = { reasonId  };
+                return this._$orderApi.cancelOrderWithReason(change, id).pipe(
                     map(resp => {
                         this._$log.generateGroup(`[RESPONSE REQUEST UPDATE STATUS ORDER WITH REASON]`, {
                             response: {
@@ -1052,18 +1051,8 @@ export class OrderEffects {
                 return this._$cancelOrderReasonApi.findAll({}).pipe(
                     catchOffline(),
                     map(resp => {
-                        /** TODO: get data from real api */
                         const payload = {
-                            data: [
-                                {
-                                    reasonId: 4234,
-                                    reasonName: 'Toko tidak order (partially reject)'
-                                },
-                                {
-                                    reasonId: 4235,
-                                    reasonName: 'Toko salah order SKU'
-                                }
-                            ]
+                            data: resp
                         }
                         this._$log.generateGroup('[RESPONSE REQUEST FETCH ORDER]', {
                             response: {
