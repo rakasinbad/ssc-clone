@@ -18,6 +18,7 @@ import { HelperService, LogService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ICancelReason } from '../../models';
 import { OrderQtyFormComponent } from '../../order-qty-form/order-qty-form.component';
 import { OrderActions } from '../../store/actions';
 import { fromOrder } from '../../store/reducers';
@@ -45,6 +46,9 @@ export class OrderDetailComponent implements OnInit, OnDestroy, OnChanges {
 
     @Output('onChangeOrderStatus')
     orderStatus: EventEmitter<string> = new EventEmitter();
+
+    @Output('onCancelOrder')
+    cancelReason: EventEmitter<ICancelReason> = new EventEmitter();
 
     type: string = 'original';
     onEditValue: any;

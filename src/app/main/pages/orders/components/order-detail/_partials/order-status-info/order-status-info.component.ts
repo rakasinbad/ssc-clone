@@ -11,7 +11,6 @@ import { takeUntil } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderStatusInfoComponent implements  OnDestroy, OnInit {
-    console = console;
     @Input()
     data: any;
 
@@ -20,6 +19,9 @@ export class OrderStatusInfoComponent implements  OnDestroy, OnInit {
 
     @Output('onChangeOrderStatus')
     orderStatus: EventEmitter<ICancelReason> = new EventEmitter();
+
+    @Output('onCancelOrder')
+    cancelReason: EventEmitter<ICancelReason> = new EventEmitter();
 
     selectedCancelReason: ICancelReason;
     cancelOrderReasons$: Observable<ICancelReason[]> = this.orderFacade.cancelOrderReason$;

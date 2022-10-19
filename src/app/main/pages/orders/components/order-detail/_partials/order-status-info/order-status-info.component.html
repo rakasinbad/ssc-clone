@@ -141,7 +141,7 @@
                     mat-button
                     fxFlex
                     class="sinbad-white-fg sinbad-red-50-bg"
-                    (click)="orderStatus.emit(selectedCancelReason)"
+                    (click)="cancelReason.emit(selectedCancelReason)"
                     [disabled]="!selectedCancelReason || (isLoadingCancelOrderReasons$ | async) || isDisabledCancelReasonOrder()"
                 >
                     <ng-container *ngIf="!(isLoadingCancelOrderReasons$ | async); else loadingButton">

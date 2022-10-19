@@ -26,6 +26,7 @@
             fxLayoutGap="16px"
             fxFlex
             (onChangeOrderStatus)="orderStatus.emit($event)"
+            (onCancelOrder)="cancelReason.emit($event)"
         ></app-order-status-info>
         <!-- / ORDER STATUS -->
     </div>

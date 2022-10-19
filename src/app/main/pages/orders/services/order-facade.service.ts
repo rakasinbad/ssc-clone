@@ -32,6 +32,12 @@ export class OrderFacadeService {
         this.store.dispatch(OrderActions.resetOrders());
     }
 
+    changeOrderStatus(id: string, orderCode: string, status :any): void {
+        this.store.dispatch(OrderActions.confirmChangeStatusOrder({payload: {
+            id, orderCode, status
+        }}));
+    }
+
     changeOrderStatusWithReason(id: string, orderCode: string, cancelReason: ICancelReason): void {
         this.store.dispatch(OrderActions.confirmChangeStatusOrderWithReason({payload: {
             id, orderCode, cancelReason

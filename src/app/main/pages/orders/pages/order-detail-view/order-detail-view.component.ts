@@ -85,6 +85,12 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
     onChangeOrderStatus(selectedReason: ICancelReason):void {
         const { id } = this.route.snapshot.params;
         const orderCode = this.data.orderCode;
+        this.orderFacade.changeOrderStatus(id, orderCode, selectedReason);
+    }
+
+    onCancelOrderStatus(selectedReason: ICancelReason):void {
+        const { id } = this.route.snapshot.params;
+        const orderCode = this.data.orderCode;
         this.orderFacade.changeOrderStatusWithReason(id, orderCode, selectedReason);
     }
 }
