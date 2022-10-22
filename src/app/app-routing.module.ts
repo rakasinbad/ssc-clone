@@ -148,12 +148,12 @@ const routes: Routes = [
                 //     },
                 // },
             },
-            // {
-            //     path: 'returns',
-            //     loadChildren: () =>
-            //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'returns',
+                loadChildren: () =>
+                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'catalogues',
             //     loadChildren: () =>

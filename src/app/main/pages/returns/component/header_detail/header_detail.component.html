@@ -1,0 +1,56 @@
+<div class="header accent" fxLayout="row" fxLayoutAlign="start stretch">
+    <div
+        fxLayout="column"
+        fxLayoutAlign="center start">
+        <button type="button" mat-icon-button class="mr-0 mr-sm-16" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+    </div>
+
+    <div
+        fxLayout="column"
+        fxLayoutAlign="center start"
+        [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+    >
+        <ng-container>
+            <div class="h2">
+                <ngx-skeleton-loader
+                    [theme]="{
+                                    width: '150px',
+                                    height: '25px',
+                                    'margin-bottom': '-5px'
+                                }"
+                    *ngIf="isLoading"
+                ></ngx-skeleton-loader>
+
+                <ng-container *ngIf="title && !isLoading">
+                    {{ title || '' }}
+                </ng-container>
+            </div>
+            <div class="subtitle secondary-text" *ngIf="withDesc">
+                <ngx-skeleton-loader
+                    [theme]="{
+                                    width: '100px',
+                                    height: '25px',
+                                    'margin-bottom': '-5px'
+                                }"
+                    *ngIf="isLoading"
+                ></ngx-skeleton-loader>
+
+                <ng-container *ngIf="description && !isLoading">
+                    <span>{{ description || '' }}</span>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+
+    <div
+        fxLayout="column"
+        fxLayoutAlign="space-between end"
+    >
+        <ng-container>
+            <ng-content>
+            </ng-content>
+        </ng-container>
+    </div>
+</div>

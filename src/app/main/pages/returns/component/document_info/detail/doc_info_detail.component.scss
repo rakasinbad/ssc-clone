@@ -1,0 +1,38 @@
+@import '../../../../../../../@fuse/scss/fuse';
+
+app-document-info-detail {
+    .return-content {
+        padding: 10px;
+        margin: 16px;
+        border-radius: 2px;
+        border: 1px solid gray;
+    }
+
+    .return-detail-key {
+        color: #52575c;
+    }
+
+    .return-detail-value {
+        color: #222526;
+        opacity: 0.5;
+    }
+
+    .col-space-between {
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+
+    .col-label-width {
+        min-width: 130px !important;
+    }
+
+    .col-value-width {
+        min-width: 135px;
+    }
+
+    .detail {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-right: 10px;
+    }
+}
