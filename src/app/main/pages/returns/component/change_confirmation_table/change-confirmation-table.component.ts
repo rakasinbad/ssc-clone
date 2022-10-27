@@ -196,7 +196,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxNumber({
-                        /** TODO: sesuaikan value max sesuai order */
+                        /** TODO-kanzun-43: sesuaikan value max sesuai order */
                         value: 100,
                         message: this._errorMaxNumber,
                     }),
@@ -204,17 +204,6 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
             ]
         });
         this.returnData.push(row);
-    }
-
-    onReturnQtyChange(value: number, idx: number): void {
-        if (this.qtyChange(idx).invalid) {
-            const message = `${this.getErrorMessage(
-                'qtyChange',
-                'returnData',
-                idx
-            )} at row ${idx + 1}`;
-                
-        }
     }
 
     onCancelEditQty(idx: number) {

@@ -189,7 +189,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                             key: 'Returned By Store',
                             value: data.returned ? 'Yes' : 'No',
                         },
-                        /** TODO: integration with real data */
+                        /** TODO-kanzun-43: integration with real data */
                         {
                             key: 'Order Reference',
                             value: 'SNB12343423',

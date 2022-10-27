@@ -60,7 +60,6 @@
                                 [formControl]="form.get(['returnData', idx, 'qtyChange'])"
                                 autocomplete="off"
                                 style="width: 60%;"
-                                (input)="onReturnQtyChange($event.target.value, idx)"
                                 [class.mat-error]="hasError(qtyChange(idx))"
                             />
                             <div class="ml-8" fxFlex fxLayoutAlign="center center">
