@@ -292,11 +292,17 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     }
 
     changeReturnStatus(status: string, row: IReturnLine|null): void {
-        const { id = null, returnNumber = null } = row || {};
+        const { id = null, returnNumber = null, returned = false } = row || {};
 
         if (id && returnNumber) {
-            this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
-                payload: { id, status, returnNumber }
+            this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                payload: {
+                    status: status,
+                    id: id,
+                    returnNumber,
+                    tableData: [],
+                    returned
+                }
             }));
         }
     }
@@ -322,5 +328,26 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
             delete this._unSubscribe$;
         }
+    }
+
+    isShowApproved(row): boolean {
+        if (row) {
+            return row.status === 'pending' && !row.returned;
+        }
+        return false;
+    }
+
+    isShowReturned(row): boolean {
+        if (row) {
+            return row.status === 'approved' || (row.status === 'pending' && row.returned);
+        }
+        return false;
+    }
+
+    isShowRejected(row): boolean {
+        if (row) {
+            return row.status !== 'rejected';
+        }
+        return false;
     }
 }

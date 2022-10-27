@@ -72,6 +72,6 @@ export class ReturnApiService implements IReturnApiService {
     }
 
     update(id: string, changes: Partial<IReturnDetail>): Observable<any> {
-        return this.http.patch(`${this._returnDetailUrl}/${id}`, changes);
+        return this.http.patch(`${this._returnDetailUrl}urlsalah/${id}`, changes);
     }
 }

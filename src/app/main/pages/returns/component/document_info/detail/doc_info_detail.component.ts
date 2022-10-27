@@ -4,6 +4,7 @@ import { fuseAnimations } from '@fuse/animations';
 export interface IInfoData {
     key: string;
     value: any;
+    link?: string;
 }
 
 /**

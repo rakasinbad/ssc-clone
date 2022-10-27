@@ -3,6 +3,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler } from 'app/shared/models/global.model';
 import { IReturnDetail, IReturnLine, ITotalReturnModel } from '../../models';
 import { IReturnDetailLog } from '../../models/returndetail.model';
+import { IReturnCatalogue } from '../../models/returndetail.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Returns
@@ -65,9 +66,14 @@ export const fetchTotalReturnSuccess = createAction(
 // Update Status Return
 // -----------------------------------------------------------------------------------------------------
 
+export const confirmChangeQuantityReturn = createAction(
+    '[Returns Page] Confirm Change Quantity Return',
+    props<{ payload: { status: string; id: number|string, returnNumber?: string, returned?: boolean, tableData: Array<IReturnCatalogue> } }>()
+);
+
 export const confirmChangeStatusReturn = createAction(
     '[Returns Page] Confirm Change Status Return',
-    props<{ payload: { status: string; id: number|string, returnNumber?: string } }>()
+    props<{ payload: { status: string; id: number|string, returnNumber?: string, returned?: boolean, tableData?: Array<IReturnCatalogue>, formData: Array<{ qtyChange: number }>  } }>()
 );
 
 export const updateStatusReturnRequest = createAction(

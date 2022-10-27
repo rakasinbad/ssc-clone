@@ -19,8 +19,18 @@
                 *ngIf="isLoading"
             ></ngx-skeleton-loader>
 
+
             <ng-container *ngIf="!isLoading">
-                {{ infoData?.value || '-' }}
+                <!-- TODO: link to order detail -->
+                <div *ngIf="infoData.link; else infoDataValue">
+                    <a class="nav-link" [routerLink]="[infoData?.link]" style="cursor: pointer">
+                        {{ infoData?.value || '-' }}
+                    </a>
+                </div>
+                
+                <ng-template #infoDataValue>
+                    {{ infoData?.value || '-' }}
+                </ng-template>
             </ng-container>
         </div>
     </div>

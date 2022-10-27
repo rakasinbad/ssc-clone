@@ -14,6 +14,7 @@ import {
 } from './get_total_returns';
 
 import {
+    createConfirmChangeQuantityReturn,
     createConfirmChangeStatusReturn,
     createUpdateStatusReturnRequest,
     createUpdateStatusReturnFailure,
@@ -29,5 +30,6 @@ export {
     createFetchTotalReturnFailure,
     createFetchTotalReturnRequest,
 
+    createConfirmChangeQuantityReturn,
     createConfirmChangeStatusReturn,
 };

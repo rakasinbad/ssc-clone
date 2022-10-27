@@ -2,13 +2,62 @@ import { Observable, of } from 'rxjs';
 import { createEffect, ofType } from '@ngrx/effects';
 import { catchError, exhaustMap, map, tap, withLatestFrom } from 'rxjs/operators';
 import { ChangeConfirmationComponent } from 'app/shared/modals';
+import { ChangeConfirmationTableComponent } from '../../../component/change_confirmation_table/change-confirmation-table.component';
 import { UiActions } from 'app/shared/store/actions';
 import { IErrorHandler } from 'app/shared/models/global.model';
 import { IReturnsEffects } from '../IReturnsEffects';
 import { ReturnActions } from '../../actions';
 import { ReturnsSelector } from '../../selectors';
-import { getReturnStatusTitle } from '../../../models/returnline.model';
+import { getReturnStatusDescription, getReturnStatusTitle } from '../../../models/returnline.model';
+import { IReturnCatalogue } from '../../../models/returndetail.model';
 
+export function createConfirmChangeQuantityReturn(props: IReturnsEffects):
+    Observable<any>
+{
+    return createEffect(() =>
+        props.actions$.pipe(
+            ofType(ReturnActions.confirmChangeQuantityReturn),
+            map(({ payload }) => payload),
+            withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnDetail)),
+            exhaustMap(([{id, status, returnNumber, returned, tableData}, nReturnDetail]) => {
+                let title: string;
+                let description: string;
+                
+                if (!returned) returned = nReturnDetail.returned;
+
+                if (!returnNumber) {
+                    returnNumber = nReturnDetail.returnNumber;
+                }
+
+                title = getReturnStatusTitle(status);
+                description = getReturnStatusDescription(status);
+
+                const dialogRef = props.matDialog.open<
+                    ChangeConfirmationTableComponent,
+                    any,
+                    { id: string; change: string, returned: boolean, dataSource: IReturnCatalogue[], originalDataSource: IReturnCatalogue[], formData: any }
+                    >(ChangeConfirmationTableComponent, {
+                    data: {
+                        title: `${title} Items`,
+                        message: `Are you sure want to ${description} these following items?`,
+                        id: id,
+                        change: status,
+                        returned: returned,
+                        dataSource: tableData,
+                        originalDataSource: [...tableData],
+                    },
+                    disableClose: true,
+                    width: '80%'
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map((_) => {
+                return UiActions.resetHighlightRow();
+            })
+        )
+    );
+}
 
 export function createConfirmChangeStatusReturn(props: IReturnsEffects):
     Observable<any>
@@ -18,9 +67,10 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
             ofType(ReturnActions.confirmChangeStatusReturn),
             map(({ payload }) => payload),
             withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnDetail)),
-            exhaustMap(([{id, status, returnNumber}, nReturnDetail]) => {
+            exhaustMap(([{id, status, returnNumber, returned, formData}, nReturnDetail]) => {
                 let title: string;
-                const returned: boolean = nReturnDetail.returned;
+                       
+                if (!returned) returned = nReturnDetail.returned;
 
                 if (!returnNumber) {
                     returnNumber = nReturnDetail.returnNumber;
@@ -46,6 +96,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                 return dialogRef.afterClosed();
             }),
             map((data) => {
+                console.log('data => ', data)
                 if (data.id && data.change) {
                     return ReturnActions.updateStatusReturnRequest({
                         payload: { id: data.id, status: data.change, returned: data.returned }

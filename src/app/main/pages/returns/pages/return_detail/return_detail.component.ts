@@ -1,6 +1,6 @@
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import moment from 'moment';
+import * as moment from 'moment';
 import 'moment-timezone';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -188,6 +188,12 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         {
                             key: 'Returned By Store',
                             value: data.returned ? 'Yes' : 'No',
+                        },
+                        /** TODO: integration with real data */
+                        {
+                            key: 'Order Reference',
+                            value: 'SNB12343423',
+                            link: '/profile'
                         }
                     ],
                     returnLines: data.returns || [],
@@ -225,12 +231,16 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     onChangeReturnStatus(status): void {
         const { id } = this.route.snapshot.params;
 
-        this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
-            payload: {
-                status: status,
-                id: id,
-            }
-        }));
+        this.returnInfoViewData$
+        .subscribe(({ returnLines }) => {
+            this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                payload: {
+                    status: status,
+                    id: id,
+                    tableData: [...returnLines]
+                }
+            }));
+        })
     }
 
     ngOnDestroy(): void {
