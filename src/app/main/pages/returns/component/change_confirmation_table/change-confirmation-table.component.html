@@ -69,7 +69,7 @@
                         </div>
                     </mat-cell>
         
-                    <mat-footer-cell *matFooterCellDef [class.mat-error]="haveErrorMinNumber">
+                    <mat-footer-cell *matFooterCellDef [class.mat-error]="haveErrorMinNumber" fxLayoutAlign="start center">
                         {{ getTotal('qty') }}
                     </mat-footer-cell>
                 </ng-container>
@@ -97,7 +97,7 @@
                             {{ formatRp(row?.sumPrice) || '-' }}
                         </p>
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef [class.mat-error]="haveErrorMinNumber">
+                    <mat-footer-cell *matFooterCellDef [class.mat-error]="haveErrorMinNumber" fxLayoutAlign="start center">
                         {{ formatRp( getTotal('sumPrice') ) || '-' }}
                     </mat-footer-cell>
                 </ng-container>
