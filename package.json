@@ -27,8 +27,12 @@
     "start-staging": "ng serve --host 192.168.2.22 --configuration staging",
     "start-pwa": "cd dist/admin-portal && http-server -c-1 -P http://localhost:9000",
     "bundle-report": "webpack-bundle-analyzer dist/stats.json",
-    "build:single-spa": "ng build --prod --deploy-url http://localhost:4200/",
-    "serve:single-spa": "ng serve --disable-host-check --port 4200 --deploy-url http://localhost:4200/ --live-reload true"
+    "build:single-spa": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng --prod --deploy-url http://localhost:4200/",
+    "build:single-spa-production": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration production --deploy-url ./dist",
+    "build:single-spa-staging": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration staging --deploy-url http://localhost:4200/",
+    "build:single-spa-demo": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration demo --deploy-url http://localhost:4200/",
+    "build:single-spa-development": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration development --deploy-url http://localhost:4200/",
+    "serve:single-spa": "node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng serve --disable-host-check --port 4200 --deploy-url http://localhost:4200/ --live-reload true"
   },
   "private": true,
   "dependencies": {
@@ -144,5 +148,8 @@
     "tslint": "5.15.0",
     "typescript": "3.5.3",
     "webpack-bundle-analyzer": "3.3.2"
+  },
+  "volta": {
+    "node": "12.22.12"
   }
 }
