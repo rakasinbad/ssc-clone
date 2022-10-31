@@ -19,7 +19,7 @@
                     </div>
                     <div dir="rtl" class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <div *ngIf='returnInfoViewData$ != null'>
-                            <app-return-status
+                         <app-return-status
                                 [status]='(returnInfoViewData$ | async)?.status'
                                 [returned]='(returnInfoViewData$ | async)?.returned'
                                 (returnStatusHandler)='onChangeReturnStatus($event)'
@@ -28,6 +28,10 @@
                         </div>
                     </div>
                 </div>
+    
+                <div class="stepper-container" *ngIf="!(isLoading$ | async)">
+                    <app-stepper [stepperConfig]="(returnInfoViewData$ | async)?.returnLogsV2" [initialActiveIndex]="activeIndexStepper"></app-stepper>
+                </div>
 
                 <div fxLayout="row" fxLayoutAlign="start stretch">
                     <div class="box-content__container return-content"
@@ -35,7 +39,7 @@
                          fxLayoutAlign="start stretch"
                     >
                         <div class="box-container__title m-0">
-                            <span class="mat-headline"> Return Info </span>
+                            <span class="mat-headline"> Return Detail </span>
                         </div>
 
                         <br/>

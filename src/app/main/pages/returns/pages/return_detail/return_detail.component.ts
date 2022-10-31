@@ -13,6 +13,9 @@ import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
 import { DocumentLogItemViewModel } from '../../component/document_log';
+import { StepConfig } from 'app/shared/components/react-components/Stepper/partials';
+import { IReturnDetailLog, } from '../../models/returndetail.model';
+import { getReturnStatusTitle } from '../../models/returnline.model';
 
 /**
  * @author Mufid Jamaluddin
@@ -97,8 +100,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 },
             ],
             returnLogs: [],
+            returnLogsV2: []
         };
-
         this.displayedReturnLineColumns = [
             'product-name',
             'qty',
@@ -113,6 +116,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     defaultViewData: ReturnDetailComponentViewModel;
 
     displayedReturnLineColumns: Array<string>;
+    activeIndexStepper: number;
     private readonly _unSubscribe$: Subject<any>;
 
     loadData(): void {
@@ -134,6 +138,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
 
                 let createdAtStr;
                 let dataLogs: Array<DocumentLogItemViewModel>|null = null;
+                let returnLogsV2 = this._onBuildStepConfig(data.returnParcelLogs).reverse();
+                this.activeIndexStepper = this._onBuildStepConfig(data.returnParcelLogs).length;
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -209,6 +215,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                     ],
                     returnLogs: dataLogs,
+                    returnLogsV2
                 };
             }),
             takeUntil(this._unSubscribe$),
@@ -254,5 +261,40 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             this._unSubscribe$.next();
             this._unSubscribe$.complete();
         }
+    }
+
+    private _onBuildStepConfig(returnParcelLogs: IReturnDetailLog[]): StepConfig[] {
+        /** TODO: build step config */
+        // let returnParcelLogsStatus = {
+        //     created: [],
+        //     pending: [],
+        //     approved: [],
+        //     approvedReturned: [],
+        //     rejected: [],
+        //     closed: []
+        // };
+
+        // returnParcelLogs.map(data => {
+        //     returnParcelLogsStatus[data.status].push(data);
+        // });
+        // returnParcelLogsStatus = returnParcelLogs.reduce((acc, data) => 
+        //     ({
+        //         ...acc,
+        //         [data.status]: [...acc[data.status], data]
+        //     })
+        // , returnParcelLogsStatus);
+        
+        return returnParcelLogs.reduce((acc, data) => {
+            const { id, status, description } = data
+            return [
+                ...acc, 
+                new StepConfig({
+                    id,
+                    title: getReturnStatusTitle(status),
+                    description,
+                    icon: status !== 'rejected' ? 'check' : 'x'
+                })
+            ]
+        }, []);
     }
 }

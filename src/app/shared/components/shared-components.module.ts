@@ -35,6 +35,9 @@ import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module'
 import { SelectLinkedSkpModule } from './dropdowns/select-linked-skp/select-linked-skp.module';
 import { ExtendPromoModule } from './dropdowns/extend-promo/extend-promo.module';
 
+/** REACT SHARED COMPONENT */
+import { StepperWrapperModule } from './react-components/Stepper/stepper.module';
+
 @NgModule({
     imports: [
         FuseSharedModule,
@@ -72,6 +75,9 @@ import { ExtendPromoModule } from './dropdowns/extend-promo/extend-promo.module'
 
         // Global filter sidebar
         SinbadFilterModule,
+
+        /** React component */
+        StepperWrapperModule
     ],
     exports: [
         CardHeaderModule,
@@ -108,6 +114,9 @@ import { ExtendPromoModule } from './dropdowns/extend-promo/extend-promo.module'
 
         // Global filter sidebar
         SinbadFilterModule,
+
+        /** React component */
+        StepperWrapperModule
     ],
     declarations: [],
 })
