@@ -201,8 +201,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxNumber({
-                        /** TODO-kanzun-43: sesuaikan value max sesuai order */
-                        value: 100,
+                        value: data.deliveredQty,
                         message: this._errorMaxNumber,
                     }),
                 ],
