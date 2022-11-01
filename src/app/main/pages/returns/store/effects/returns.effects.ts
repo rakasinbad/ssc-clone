@@ -16,11 +16,14 @@ import {
     createFetchTotalReturnRequest,
     createConfirmChangeStatusReturn,
     createConfirmChangeQuantityReturn,
+    createFetchReturnAmountFailure,
+    createFetchReturnAmountRequest
 } from './factory_handlers';
 
 import { IReturnsEffects } from './IReturnsEffects';
 
 import {
+    IReturnAmount,
     IReturnDetail,
     IReturnLine,
     ITotalReturnModel,
@@ -59,6 +62,9 @@ export class ReturnEffects implements IReturnsEffects {
     readonly fetchTotalReturnRequest$: Observable<{ payload: ITotalReturnModel | IErrorHandler }>;
     readonly fetchTotalReturnFailure$: Observable<IErrorHandler>;
 
+    readonly fetchReturnAmountRequest$: Observable<{ payload: IReturnAmount | IErrorHandler }>;
+    readonly fetchReturnAmountFailure$: Observable<IErrorHandler>;
+
     readonly confirmChangeQuantityReturn$: Observable<any>;
     readonly confirmChangeStatusReturn$: Observable<any>;
     readonly updateStatusReturnRequest$: Observable<any>;
@@ -91,6 +97,9 @@ export class ReturnEffects implements IReturnsEffects {
 
         this.fetchTotalReturnRequest$ = createFetchTotalReturnRequest(this);
         this.fetchTotalReturnFailure$ = createFetchReturnFailure(this);
+
+        this.fetchReturnAmountRequest$ = createFetchReturnAmountRequest(this);
+        this.fetchReturnAmountFailure$ = createFetchReturnAmountFailure(this);
 
         this.confirmChangeQuantityReturn$ = createConfirmChangeQuantityReturn(this);
         this.confirmChangeStatusReturn$ = createConfirmChangeStatusReturn(this);

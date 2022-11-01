@@ -9,7 +9,7 @@ import { IReturnsEffects } from '../IReturnsEffects';
 import { ReturnActions } from '../../actions';
 import { ReturnsSelector } from '../../selectors';
 import { getReturnStatusDescription, getReturnStatusTitle } from '../../../models/returnline.model';
-import { IReturnCatalogue } from '../../../models/returndetail.model';
+import { IReturnCatalogue, IChangeStatusReturn } from '../../../models/returndetail.model';
 
 export function createConfirmChangeQuantityReturn(props: IReturnsEffects):
     Observable<any>
@@ -22,10 +22,7 @@ export function createConfirmChangeQuantityReturn(props: IReturnsEffects):
             exhaustMap(([{id, status, returnNumber, returned, tableData}, nReturnDetail]) => {
                 let title: string;
                 let description: string;
-                
-                if (!returned) returned = nReturnDetail.returned;
-
-                if (!returnNumber) {
+                if (returnNumber === null || returnNumber === undefined) {
                     returnNumber = nReturnDetail.returnNumber;
                 }
 
@@ -35,16 +32,17 @@ export function createConfirmChangeQuantityReturn(props: IReturnsEffects):
                 const dialogRef = props.matDialog.open<
                     ChangeConfirmationTableComponent,
                     any,
-                    { id: string; change: string, returned: boolean, dataSource: IReturnCatalogue[], originalDataSource: IReturnCatalogue[], formData: any }
+                    { id: string; status: string, returned: boolean, dataSource: IReturnCatalogue[], originalDataSource: IReturnCatalogue[], formData: any }
                     >(ChangeConfirmationTableComponent, {
                     data: {
                         title: `${title} Items`,
                         message: `Are you sure want to ${description} these following items?`,
                         id: id,
-                        change: status,
+                        status,
                         returned: returned,
                         dataSource: tableData,
                         originalDataSource: [...tableData],
+                        returnNumber
                     },
                     disableClose: true,
                     width: '80%'
@@ -67,27 +65,27 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
             ofType(ReturnActions.confirmChangeStatusReturn),
             map(({ payload }) => payload),
             withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnDetail)),
-            exhaustMap(([{id, status, returnNumber, returned, formData}, nReturnDetail]) => {
+            exhaustMap(([{id, change, returnNumber, returned}, nReturnDetail]) => {
                 let title: string;
                        
-                if (!returned) returned = nReturnDetail.returned;
+                if (returned === null || returned === undefined) returned = nReturnDetail.returned;
 
-                if (!returnNumber) {
+                if (returnNumber === null || returnNumber === undefined) {
                     returnNumber = nReturnDetail.returnNumber;
                 }
 
-                title = getReturnStatusTitle(status);
+                title = getReturnStatusTitle(change.status);
 
                 const dialogRef = props.matDialog.open<
                     ChangeConfirmationComponent,
                     any,
-                    { id: string; change: string, returned: boolean, }
+                    { id: string; change: IChangeStatusReturn, returned: boolean, }
                     >(ChangeConfirmationComponent, {
                     data: {
                         title: `Set as ${title}`,
                         message: `Are you sure want to change <strong>${returnNumber}</strong> status to ${title.toLowerCase()}?`,
                         id: id,
-                        change: status,
+                        change,
                         returned: returned,
                     },
                     disableClose: true
@@ -99,7 +97,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                 console.log('data => ', data)
                 if (data.id && data.change) {
                     return ReturnActions.updateStatusReturnRequest({
-                        payload: { id: data.id, status: data.change, returned: data.returned }
+                        payload: { id: data.id, change: data.change, returned: data.returned }
                     });
                 } else {
                     return UiActions.resetHighlightRow();
@@ -117,8 +115,8 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
             ofType(ReturnActions.updateStatusReturnRequest),
             map(({ payload }) => payload),
             withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnLogs)),
-            exhaustMap(([{ id, status, returned }, lastReturnParcelLogs]) => {
-                return props.returnApiService.update(id, { status })
+            exhaustMap(([{ id, change, returned }, lastReturnParcelLogs]) => {
+                return props.returnApiService.update(id, change)
                     .pipe(
                         map((resp) => {
                            props.$log.generateGroup(`[RESPONSE REQUEST UPDATE STATUS RETURN]`, {

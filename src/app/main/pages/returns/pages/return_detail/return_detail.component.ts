@@ -1,5 +1,5 @@
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, takeUntil, take } from 'rxjs/operators';
 import * as moment from 'moment';
 import 'moment-timezone';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
@@ -106,6 +106,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             'product-name',
             'qty',
             'unit-price',
+            'total-price',
             'return-reason',
             'note',
         ];
@@ -138,8 +139,9 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
 
                 let createdAtStr;
                 let dataLogs: Array<DocumentLogItemViewModel>|null = null;
-                let returnLogsV2 = this._onBuildStepConfig(data.returnParcelLogs).reverse();
-                this.activeIndexStepper = this._onBuildStepConfig(data.returnParcelLogs).length;
+                /** TODO-kanzun-43: build step config */
+                let returnLogsV2 = []//this._onBuildStepConfig(data.returnParcelLogs).reverse();
+                this.activeIndexStepper = 1//this._onBuildStepConfig(data.returnParcelLogs).length;
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -176,7 +178,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Created By',
-                            value: data.userName,
+                            value: data.steps.created.by,
                         },
                         {
                             key: 'Store Address',
@@ -195,15 +197,14 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                             key: 'Returned By Store',
                             value: data.returned ? 'Yes' : 'No',
                         },
-                        /** TODO-kanzun-43: integration with real data */
                         {
                             key: 'Order Reference',
-                            value: 'SNB12343423',
-                            link: '/profile'
+                            value: data.orderCode,
+                            link: `/pages/orders/${data.orderParcelId}/detail`
                         }
                     ],
-                    returnLines: data.returns || [],
-                    totalReturnLine: (data.returns || []).length,
+                    returnLines: data.returnItems || [],
+                    totalReturnLine: (data.returnItems || []).length,
                     returnSummaries: [
                         {
                             key: 'Return Quantity',
@@ -211,7 +212,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Return Amount',
-                            value: this.formatRp(data.amount) || '-',
+                            value: this.formatRp(data.totalAmount) || '-',
                         },
                     ],
                     returnLogs: dataLogs,
@@ -239,14 +240,31 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         this.returnInfoViewData$
+        .pipe(
+            distinctUntilChanged(),
+            takeUntil(this._unSubscribe$),
+            take(1)
+        )
         .subscribe(({ returnLines }) => {
-            this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
-                payload: {
-                    status: status,
-                    id: id,
-                    tableData: [...returnLines]
-                }
-            }));
+            if (status !== 'closed') {
+                this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                    payload: {
+                        status: status,
+                        id: id,
+                        tableData: [...returnLines]
+                    }
+                }));
+            } else {
+                this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+                    payload: { 
+                        id, 
+                        change: {
+                            status
+                        }, 
+                        tableData: [...returnLines], 
+                    }
+                }));
+            }
         })
     }
 
@@ -264,7 +282,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     }
 
     private _onBuildStepConfig(returnParcelLogs: IReturnDetailLog[]): StepConfig[] {
-        /** TODO: build step config */
+        /** TODO-kanzun-43: build step config */
         // let returnParcelLogsStatus = {
         //     created: [],
         //     pending: [],

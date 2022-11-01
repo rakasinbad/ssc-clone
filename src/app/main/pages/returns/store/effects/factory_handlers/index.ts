@@ -14,6 +14,11 @@ import {
 } from './get_total_returns';
 
 import {
+    createFetchReturnAmountFailure,
+    createFetchReturnAmountRequest
+} from './get_return_amount';
+
+import {
     createConfirmChangeQuantityReturn,
     createConfirmChangeStatusReturn,
     createUpdateStatusReturnRequest,
@@ -30,6 +35,10 @@ export {
     createFetchTotalReturnFailure,
     createFetchTotalReturnRequest,
 
+    createFetchReturnAmountFailure,
+    createFetchReturnAmountRequest,
+
     createConfirmChangeQuantityReturn,
     createConfirmChangeStatusReturn,
+
 };

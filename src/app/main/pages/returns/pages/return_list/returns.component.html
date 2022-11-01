@@ -109,8 +109,7 @@
                             fxLayoutAlign="end center"
                             *ngIf="
                                 row?.status !== 'rejected' &&
-                                row?.status !== 'closed' &&
-                                row?.status !== 'approved_returned'
+                                row?.status !== 'closed'
                             "
                         >
                             <button
@@ -158,6 +157,18 @@
                                     >
                                         <mat-icon>highlight_off</mat-icon>
                                         <span>Rejected</span>
+                                    </button>
+
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Close"
+                                        *ngIf="isShowClosed(row)"
+                                        (click)="changeReturnStatus('closed', row)"
+                                    >
+                                        <mat-icon>highlight_off</mat-icon>
+                                        <span>Closed</span>
                                     </button>
                                 </ng-template>
                             </mat-menu>

@@ -26,8 +26,9 @@ interface IData {
     dataSource: Array<IReturnCatalogue>;
     originalDataSource: Array<IReturnCatalogue>;
     id: string;
-    change: string;
+    status: string;
     returned: boolean;
+    returnNumber: string;
 }
 
 @Component({
@@ -104,8 +105,12 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
         this.data.dataSource = [...this.data.originalDataSource];
     }
 
-    qtyChange(idx): AbstractControl {
-        return this.form.get(['returnData', idx, 'qtyChange']) as AbstractControl;
+    approvedQty(idx): AbstractControl {
+        return this.form.get(['returnData', idx, 'approvedQty']) as AbstractControl;
+    }
+
+    approvedUnitPrice(idx): AbstractControl {
+        return this.form.get(['returnData', idx, 'approvedUnitPrice']) as AbstractControl;
     }
 
     private _initFormDatasource(): void {
@@ -153,7 +158,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
 
     onClickEdit(row: IReturnCatalogue, idx: number) {
         this.formMode[idx] = 'edit';
-        this.formValueBeforeSave[idx] = this.qtyChange(idx).value;
+        this.formValueBeforeSave[idx] = this.approvedQty(idx).value;
     }
 
     getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
@@ -187,8 +192,8 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
 
     private createReturnDataForm(data: IReturnCatalogue): void {
         const row = this.formBuilder.group({
-            qtyChange: [
-                { value: data.qty, disabled: false },
+            approvedQty: [
+                { value: data.returnQty, disabled: false },
                 [
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.Both,
@@ -201,24 +206,31 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
                         message: this._errorMaxNumber,
                     }),
                 ],
-            ]
+            ],
+            approvedUnitPrice: [
+                { value: data.unitPrice, disabled: false }
+            ],
+            id: [
+                { value: data.id, disabled: false }
+            ],
         });
         this.returnData.push(row);
     }
 
     onCancelEditQty(idx: number) {
-        this.qtyChange(idx).setValue(this.formValueBeforeSave[idx]);
+        this.approvedQty(idx).setValue(this.formValueBeforeSave[idx]);
         this.formMode[idx] = 'view';
     }
 
     onSaveEditQty(row, idx: number) {
         this.checkMinNumber();
         this.checkMaxNumber(idx);
-
+        const totalPrice = this.approvedQty(idx).value * row.unitPrice;
+        /** update datasource */
         this.data.dataSource[idx] = {
             ...row,
-            qty: this.qtyChange(idx).value,
-            sumPrice: this.qtyChange(idx).value * row.unitPrice
+            returnQty: this.approvedQty(idx).value,
+            totalPrice
         };
         this.data.dataSource = [...this.dialogRef.componentInstance.data.dataSource];
         this._changeDetectorRef.markForCheck();
@@ -235,7 +247,16 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
 
     onOkButton() {
         this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
-            payload: { id: this.data.id, status: this.data.change, returned: this.data.returned, tableData: this.data.dataSource, formData: this.returnData.value }
+            payload: { 
+                id: this.data.id, 
+                change: {
+                    status: this.data.status,
+                    returnItems: this.returnData.value
+                }, 
+                returned: this.data.returned, 
+                tableData: this.data.dataSource, 
+                returnNumber: this.data.returnNumber 
+            }
         }));
     }
 
@@ -255,7 +276,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
     }
 
     checkMinNumber(): void {
-        const haveError: boolean = this.returnData.value.every(data => data.qtyChange === 0);
+        const haveError: boolean = this.returnData.value.every(data => data.approvedQty === 0);
         const isErrorExist: boolean = this.errorMessages.includes(this._errorMinNumber);
         if (haveError && !isErrorExist) {
             this.errorMessages.push(this._errorMinNumber);

@@ -132,7 +132,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.qty || '-' }}
+                                    {{ row?.returnQty || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>
@@ -154,7 +154,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ formatRp(row?.sumPrice) || '-' }}
+                                    {{ formatRp(row?.totalPrice) || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>
@@ -165,7 +165,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.reason || '-' }}
+                                    {{ row?.returnReason || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>

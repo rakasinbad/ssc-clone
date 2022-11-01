@@ -28,3 +28,5 @@ export const getActiveReturnLogs = createSelector(
     getActiveReturnDetail,
     (state) => state ? state.returnParcelLogs : []
 );
+
+export const getReturnAmount = createSelector(getReturnState, (state) => state.returns.returnAmount);

@@ -1,4 +1,4 @@
-import { merge, Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject, combineLatest } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute } from '@angular/router';
@@ -20,6 +20,7 @@ import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
 import { getReturnStatusTitle } from '../../models/returnline.model';
+import { IConfirmChangeQuantityReturn } from '../../models/returndetail.model';
 
 /**
  * @author Mufid Jamaluddin
@@ -104,6 +105,8 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     totalStatus$: Observable<ITotalReturnModel>;
+
+    payloadConfirmChangeQuantity: IConfirmChangeQuantityReturn;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -197,6 +200,21 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
         this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
+        
+
+        this.store
+            .select(ReturnsSelector.getReturnAmount)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubscribe$))
+            .subscribe((data) => {
+                if (this.payloadConfirmChangeQuantity) {
+                    this.payloadConfirmChangeQuantity.tableData = data.returnItems;
+                    this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                        payload: this.payloadConfirmChangeQuantity
+                    })); 
+                    
+                    this.payloadConfirmChangeQuantity = null;
+                }
+            });
 
         this.loadData(true);
     }
@@ -295,15 +313,28 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         const { id = null, returnNumber = null, returned = false } = row || {};
 
         if (id && returnNumber) {
-            this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
-                payload: {
-                    status: status,
-                    id: id,
-                    returnNumber,
-                    tableData: [],
-                    returned
-                }
-            }));
+            this.payloadConfirmChangeQuantity = {
+                status,
+                id,
+                returnNumber,
+                returned,
+                tableData: []
+            }
+
+            if (status === 'closed') {
+                this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+                    payload: { 
+                        ...this.payloadConfirmChangeQuantity,
+                        change: {
+                            status: this.payloadConfirmChangeQuantity.status
+                        }
+                    }
+                }));
+            } else {
+                this.store.dispatch(ReturnActions.fetchReturnAmountRequest({
+                    payload: id
+                }))
+            }
         }
     }
 
@@ -346,7 +377,14 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     isShowRejected(row): boolean {
         if (row) {
-            return row.status !== 'rejected';
+            return row.status !== 'rejected' && row.status !== 'approved_returned';
+        }
+        return false;
+    }
+
+    isShowClosed(row): boolean {
+        if (row) {
+            return row.status === 'approved_returned';
         }
         return false;
     }
