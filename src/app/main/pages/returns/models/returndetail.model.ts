@@ -71,9 +71,9 @@ export interface IReturnAmount {
 
 export interface IConfirmChangeQuantityReturn { 
     status: string; 
-    id: number|string, 
-    returnNumber?: string, 
-    returned?: boolean, 
+    id: number|string; 
+    returnNumber?: string; 
+    returned?: boolean; 
     tableData: Array<IReturnCatalogue> 
 }
 

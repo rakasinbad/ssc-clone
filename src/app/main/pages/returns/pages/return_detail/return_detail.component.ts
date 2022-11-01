@@ -14,7 +14,7 @@ import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
 import { DocumentLogItemViewModel } from '../../component/document_log';
 import { StepConfig } from 'app/shared/components/react-components/Stepper/partials';
-import { IReturnDetailLog, } from '../../models/returndetail.model';
+import { ISteps } from '../../models/returndetail.model';
 import { getReturnStatusTitle } from '../../models/returnline.model';
 
 /**
@@ -136,11 +136,11 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 if (!data) {
                     return this.defaultViewData;
                 }
-
+                console.log('data => ', data)
                 let createdAtStr;
                 let dataLogs: Array<DocumentLogItemViewModel>|null = null;
                 /** TODO-kanzun-43: build step config */
-                let returnLogsV2 = []//this._onBuildStepConfig(data.returnParcelLogs).reverse();
+                let returnLogsV2 = this._onBuildStepConfig(data.steps, data.status);
                 this.activeIndexStepper = 1//this._onBuildStepConfig(data.returnParcelLogs).length;
 
                 try {
@@ -223,6 +223,14 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.loadData();
+
+        /** handle refresh after edit data */
+        this.store.select(ReturnsSelector.getIsRefresh)
+            .subscribe((isRefresh) => {
+                if (isRefresh) {
+                    this.loadData();
+                }
+            });
     }
 
     formatRp(data: any): string {
@@ -281,8 +289,14 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         }
     }
 
-    private _onBuildStepConfig(returnParcelLogs: IReturnDetailLog[]): StepConfig[] {
+    private _onBuildStepConfig(steps: ISteps, status: string): StepConfig[] {
         /** TODO-kanzun-43: build step config */
+        let logs = [];
+        // const requestedItem = new StepConfig({})
+        
+        return logs;
+
+
         // let returnParcelLogsStatus = {
         //     created: [],
         //     pending: [],
@@ -302,17 +316,17 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         //     })
         // , returnParcelLogsStatus);
         
-        return returnParcelLogs.reduce((acc, data) => {
-            const { id, status, description } = data
-            return [
-                ...acc, 
-                new StepConfig({
-                    id,
-                    title: getReturnStatusTitle(status),
-                    description,
-                    icon: status !== 'rejected' ? 'check' : 'x'
-                })
-            ]
-        }, []);
+        // return returnParcelLogs.reduce((acc, data) => {
+        //     const { id, status, description } = data
+        //     return [
+        //         ...acc, 
+        //         new StepConfig({
+        //             id,
+        //             title: getReturnStatusTitle(status),
+        //             description,
+        //             icon: status !== 'rejected' ? 'check' : 'x'
+        //         })
+        //     ]
+        // }, []);
     }
 }

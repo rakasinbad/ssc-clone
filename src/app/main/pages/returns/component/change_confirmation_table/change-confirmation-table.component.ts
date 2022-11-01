@@ -254,7 +254,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
                 }, 
                 returned: this.data.returned, 
                 tableData: this.data.dataSource, 
-                returnNumber: this.data.returnNumber 
+                returnNumber: this.data.returnNumber,
             }
         }));
     }
@@ -300,5 +300,20 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
             const indexError = this.errorMessages.findIndex(data => data.includes(this._errorMaxNumber))
             this.errorMessages.splice(indexError, 1);
         }
+    }
+
+    isDisableButtonConfirm(): boolean {
+        return this.formMode.some(form => form === 'edit');
+    }
+
+    getButtonConfirmTitle(): string {
+        const title = {
+            approved: 'Approve',
+            approved_returned: 'Return',
+            rejected: 'Reject',
+            closed: 'Close'
+        }[this.data.status];
+
+        return title ? title : 'Confirm';
     }
 }

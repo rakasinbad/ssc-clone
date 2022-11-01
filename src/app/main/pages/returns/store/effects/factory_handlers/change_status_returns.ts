@@ -87,6 +87,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                         id: id,
                         change,
                         returned: returned,
+                        withIconX: true
                     },
                     disableClose: true
                 });
@@ -94,7 +95,6 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                 return dialogRef.afterClosed();
             }),
             map((data) => {
-                console.log('data => ', data)
                 if (data.id && data.change) {
                     return ReturnActions.updateStatusReturnRequest({
                         payload: { id: data.id, change: data.change, returned: data.returned }
@@ -132,6 +132,11 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
                            if (latestReturned === null || latestReturned === undefined) {
                                latestReturned = resp.status === 'approved_returned' ? true : returned;
                            }
+
+                            props.$notice.open(`Return status success changed to ${getReturnStatusTitle(resp.status)}`, 'success', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right'
+                            });
 
                            return ReturnActions.updateStatusReturnSuccess({
                                payload: {

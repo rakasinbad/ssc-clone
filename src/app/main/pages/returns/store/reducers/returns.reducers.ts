@@ -72,6 +72,7 @@ const returnReducer = createReducer(
         (state) => ({
             ...state,
             isLoading: true,
+            isRefresh: false,
         })
     ),
     on(
@@ -123,7 +124,7 @@ const returnReducer = createReducer(
             ...state,
             isEdit: false,
             isLoading: false,
-            isRefresh: undefined,
+            isRefresh: true,
             returns: adapterReturn.updateOne(
                 {
                     id: payload.id,

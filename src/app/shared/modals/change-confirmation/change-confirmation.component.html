@@ -1,14 +1,37 @@
-<h2 mat-dialog-title *ngIf="data?.title">
-    {{ data?.title | titlecase }}
-</h2>
-
-<mat-dialog-content class="mat-typography">
-    <p [innerHTML]="data?.message"></p>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button [mat-dialog-close]="{ id: data?.id, change: data?.change }" cdkFocusInitial>
-        Yes, confirm.
-    </button>
-</mat-dialog-actions>
+<div class="p-0 m-0">
+    <mat-toolbar class="m-0 fuse-white-bg h-45">
+        <mat-toolbar-row
+            class="p-0 m-0"
+            fxFlex
+            fxLayout="row"
+            fxLayoutAlign="space-between start"
+        >
+            <h2 mat-dialog-title *ngIf="data?.title">
+                {{ data?.title | titlecase }}
+            </h2>
+            <button
+                type="button"
+                mat-icon-button
+                aria-label="Close Dialog"
+                mat-dialog-close
+                disableRipple
+                *ngIf="data?.withIconX"
+                class="m-0 p-0"
+                style="top: -4px"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    
+    <mat-dialog-content class="mat-typography">
+        <p [innerHTML]="data?.message"></p>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <button mat-button [mat-dialog-close]="{ id: data?.id, change: data?.change }" cdkFocusInitial>
+            Yes, confirm.
+        </button>
+    </mat-dialog-actions>
+</div>
