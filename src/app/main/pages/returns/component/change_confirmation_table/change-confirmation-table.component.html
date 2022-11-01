@@ -51,7 +51,11 @@
                             <p style="word-break: break-word;" class="mr-8">
                                 {{ row?.returnQty?.toString() || '-' }}
                             </p>
-                            <mat-icon style="cursor: pointer" (click)="onClickEdit(row, idx)">edit</mat-icon>
+                            <mat-icon 
+                                style="cursor: pointer" 
+                                (click)="onClickEdit(row, idx)"
+                                *ngIf="data.status !== 'rejected'"
+                            >edit</mat-icon>
                         </div>
                         <div *ngIf="formMode[idx] | hasFormMode: 'edit'" fxFlex fxLayoutAlign="start center" class="mr-8">
                             <input
