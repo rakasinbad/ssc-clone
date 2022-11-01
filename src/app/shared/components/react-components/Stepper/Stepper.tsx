@@ -82,12 +82,6 @@ const StepperMemo: StepperComponent = ({
   const stepperValue = useMemo(() => {
     let active = activeStep;
 
-    if (failedIndex !== -1) {
-      if (activeStep < 0) active = 0;
-      if (activeStep >= failedIndex) active = failedIndex;
-      setActiveStep(active);
-    }
-
     return {
       nextStep: doNextStep.current,
       previousStep: goToPreviousStep.current,

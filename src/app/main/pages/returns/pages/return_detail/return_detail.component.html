@@ -28,12 +28,13 @@
                         </div>
                     </div>
                 </div>
-    
-                <div class="stepper-container" *ngIf="!(isLoading$ | async)">
-                    <app-stepper [stepperConfig]="(returnInfoViewData$ | async)?.returnLogsV2" [initialActiveIndex]="activeIndexStepper"></app-stepper>
+                
+                
+                <div class="stepper-container" *ngIf="!(isLoading$ | async) && (activeIndexStepper | async) > -1">
+                    <app-stepper [stepperConfig]="(returnInfoViewData$ | async)?.returnLogsV2" [initialActiveIndex]="(activeIndexStepper | async) - 1"></app-stepper>
                 </div>
 
-                <div fxLayout="row" fxLayoutAlign="start stretch">
+                <div>
                     <div class="box-content__container return-content"
                          fxLayout="column"
                          fxLayoutAlign="start stretch"
@@ -44,7 +45,7 @@
 
                         <br/>
 
-                        <div fxLayout="row" fxLayoutAlign="start start">
+                        <div fxLayout="row" fxLayoutAlign="start space-between">
                             <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Store Info"'
@@ -82,7 +83,7 @@
                         </div>
                     </div>
 
-                    <div class="box-content__container return-content log-section"
+                    <!-- <div class="box-content__container return-content log-section"
                          fxLayout="column"
                          fxLayoutAlign="start stretch"
                          fusePerfectScrollbar
@@ -92,7 +93,7 @@
 
                         <app-document-log [logData]='(returnInfoViewData$ | async)?.returnLogs || null'>
                         </app-document-log>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div

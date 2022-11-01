@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject} from 'rxjs';
 import { distinctUntilChanged, map, takeUntil, take } from 'rxjs/operators';
 import * as moment from 'moment';
 import 'moment-timezone';
@@ -117,7 +117,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     defaultViewData: ReturnDetailComponentViewModel;
 
     displayedReturnLineColumns: Array<string>;
-    activeIndexStepper: number;
+    activeIndexStepper: BehaviorSubject<number> = new BehaviorSubject(-1);
     private readonly _unSubscribe$: Subject<any>;
 
     loadData(): void {
@@ -136,12 +136,10 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 if (!data) {
                     return this.defaultViewData;
                 }
-                console.log('data => ', data)
+                
                 let createdAtStr;
                 let dataLogs: Array<DocumentLogItemViewModel>|null = null;
-                /** TODO-kanzun-43: build step config */
-                let returnLogsV2 = this._onBuildStepConfig(data.steps, data.status);
-                this.activeIndexStepper = 1//this._onBuildStepConfig(data.returnParcelLogs).length;
+                let returnLogsV2 = this._onBuildStepConfig(data.steps, data.status, data.returned);
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -287,46 +285,68 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             this._unSubscribe$.next();
             this._unSubscribe$.complete();
         }
+
+        this.activeIndexStepper.next(0);
+        this.activeIndexStepper.complete();
     }
 
-    private _onBuildStepConfig(steps: ISteps, status: string): StepConfig[] {
-        /** TODO-kanzun-43: build step config */
-        let logs = [];
-        // const requestedItem = new StepConfig({})
+    private _onBuildStepConfig(steps: ISteps, status: string, returned: boolean): StepConfig[] {
+        let logs: StepConfig[] = [];
+        const stepConfig = (id: string, value?: { date: string, by: string }): StepConfig => {
+            const description = value ? `${moment(value.date).format('DD/MM/YY')} by ${value.by}` : null;
+
+            return new StepConfig({
+                id,
+                title: getReturnStatusTitle(id),
+                description
+            })
+        };
+
+        logs.push(stepConfig('pending', steps.pending));
+        logs.push(stepConfig('approved', steps.approved));
+        logs.push(stepConfig('approved_returned', steps.approved_returned));
+        logs.push(stepConfig('closed', steps.closed));
+
+        const approvedIdx = logs.findIndex(data => data.id === 'approved');
+        let returnedIdx = logs.findIndex(data => data.id === 'approved_returned');
         
+        if (steps.rejected) {
+            /** cek apakah ada rejected data */
+            const rejectedDesc = `${moment(steps.rejected.date).format('DD/MM/YY')} by ${steps.rejected.by}`;
+
+            if (approvedIdx > -1) {
+                logs[approvedIdx].description = rejectedDesc;
+                logs[approvedIdx].icon = 'x'
+            }
+            if (returnedIdx > -1) {
+                logs[returnedIdx].description = rejectedDesc;
+                logs[returnedIdx].icon = 'x'
+            }
+        } else {
+            /** handle selain status rejected */
+            if (
+                /** jika taken by salesman == true otomatis status akan ke approved_returned, tidak ada approved */
+                (status === 'pending' && returned) ||
+                /** cek apakah ada property approved dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status == approved_returned/closed */
+                (!steps.approved && approvedIdx > -1)    
+            ) {
+                logs.splice(approvedIdx, 1)
+            }
+    
+            /** refresh return index */
+            returnedIdx = logs.findIndex(data => data.id === 'approved_returned');
+    
+            if (!steps.approved_returned && returnedIdx > -1) {
+                /** cek apakah ada property returned dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status closed */
+                logs.splice(returnedIdx, 1)
+            }
+        }
+
+        /** mencari data stepper yang sedang aktif saat ini */
+        let activeIndexStepper = 0;
+        logs.map(log => log.description && activeIndexStepper++);
+        this.activeIndexStepper.next(activeIndexStepper);
+
         return logs;
-
-
-        // let returnParcelLogsStatus = {
-        //     created: [],
-        //     pending: [],
-        //     approved: [],
-        //     approvedReturned: [],
-        //     rejected: [],
-        //     closed: []
-        // };
-
-        // returnParcelLogs.map(data => {
-        //     returnParcelLogsStatus[data.status].push(data);
-        // });
-        // returnParcelLogsStatus = returnParcelLogs.reduce((acc, data) => 
-        //     ({
-        //         ...acc,
-        //         [data.status]: [...acc[data.status], data]
-        //     })
-        // , returnParcelLogsStatus);
-        
-        // return returnParcelLogs.reduce((acc, data) => {
-        //     const { id, status, description } = data
-        //     return [
-        //         ...acc, 
-        //         new StepConfig({
-        //             id,
-        //             title: getReturnStatusTitle(status),
-        //             description,
-        //             icon: status !== 'rejected' ? 'check' : 'x'
-        //         })
-        //     ]
-        // }, []);
     }
 }
