@@ -332,7 +332,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 /** jika taken by salesman == true otomatis status akan ke approved_returned, tidak ada approved */
                 (status === 'pending' && returned) ||
                 /** cek apakah ada property approved dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status == approved_returned/closed */
-                (!steps.approved && approvedIdx > -1)    
+                (status !== 'pending' && !steps.approved && approvedIdx > -1)    
             ) {
                 logs.splice(approvedIdx, 1)
             }
@@ -340,7 +340,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             /** refresh return index */
             returnedIdx = logs.findIndex(data => data.id === 'approved_returned');
     
-            if (!steps.approved_returned && returnedIdx > -1) {
+            if ((status !== 'pending' && status !== 'approved') && !steps.approved_returned && returnedIdx > -1) {
                 /** cek apakah ada property returned dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status closed */
                 logs.splice(returnedIdx, 1)
             }
