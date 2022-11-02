@@ -29,6 +29,7 @@ export interface IImportAdvanced {
     page: string;
     type: NonNullable<string>;
     endpoint: NonNullable<string>;
+    fileType?: string; /** fileType(optional) digunakan untuk mengubah error message */
 }
 
 export type TemplateType = 'CREATE' | 'UPDATE';
@@ -36,6 +37,7 @@ export type TemplateType = 'CREATE' | 'UPDATE';
 export interface IConfigMode {
     id: string;
     label: string;
+    fileType?: string;  /** fileType(optional) digunakan untuk mengubah error message */
 }
 
 export interface IConfigTemplateSource {

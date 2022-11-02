@@ -1,0 +1,66 @@
+<div id='export-advanced' class="dialog-content-wrapper">
+    <mat-toolbar class="m-0" [ngClass]="cssToolbar">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{ dialogTitle }}</span>
+            <button id="btn__close" type="button" mat-icon-button aria-label="Close Dialog" (click)="onClose()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-16 pb-0 m-0 mat-typography">
+        <mat-tab-group color="accent" fxLayout="column" [dynamicHeight]="false" fxFlex [(selectedIndex)]="selectedTabIndex">
+            <mat-tab
+                *ngFor="let tab of tabs; let idx = index"
+                [label]="tab.label"
+                [disabled]="tab.disabled"
+                [aria-label]="tab.id"
+            >
+                <ng-template matTabContent>
+                    <div class="tab-content p-16">
+                        <ng-container [ngSwitch]="tab.id">
+
+                            <ng-container *ngSwitchCase="'main-data'">
+                                <ng-container
+                                    *ngTemplateOutlet="mainData; context: exportContext"
+                                ></ng-container>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="'invoice'">
+                                <ng-container
+                                    *ngTemplateOutlet="invoice; context: exportContext"
+                                ></ng-container>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="'history'">
+                                <ng-container
+                                    *ngTemplateOutlet="history; context: exportContext"
+                                ></ng-container>
+                            </ng-container>
+
+                            <ng-container *ngSwitchDefault>
+                                <ng-container *ngTemplateOutlet="notFoundPage"></ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>
+
+<ng-template #mainData let-pageType>
+    <app-export-advanced-filter (selectedTabIndex)="onSelectedTabIndex($event)" [pageType]="'payments'"></app-export-advanced-filter>
+</ng-template>
+
+<ng-template #invoice let-pageType>
+    <app-export-advanced-filter (selectedTabIndex)="onSelectedTabIndex($event)" [pageType]="'invoices'"></app-export-advanced-filter>
+</ng-template>
+
+<ng-template #history let-pageType>
+    <app-export-history></app-export-history>
+</ng-template>
+
+<ng-template #notFoundPage>
+    Page not found.
+</ng-template>

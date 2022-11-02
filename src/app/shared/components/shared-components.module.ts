@@ -19,6 +19,7 @@ import { StoreSegmentationTypesDropdownModule } from './dropdowns/store-segmenta
 import { StoresDropdownModule } from './dropdowns/stores/stores.module';
 import { WarehouseCatalogueDropdownModule } from './dropdowns/warehouse-catalogues/warehouse-catalogues.module';
 import { WarehouseDropdownModule } from './dropdowns/warehouses/warehouses.module';
+import { ExportAdvancedModule } from './export-advanced/export-advanced.module';
 import { ExportsModule } from './exports/exports.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 import { ImportAdvancedModule } from './import-advanced/import-advanced.module';
@@ -44,6 +45,7 @@ import { StepperWrapperModule } from './react-components/Stepper/stepper.module'
         CardHeaderModule,
         ExportsModule,
         GeolocationModule,
+        ExportAdvancedModule,
         ImportAdvancedModule,
         SearchBarModule,
         MultipleSelectionModule,
@@ -83,6 +85,7 @@ import { StepperWrapperModule } from './react-components/Stepper/stepper.module'
         CardHeaderModule,
         ExportsModule,
         GeolocationModule,
+        ExportAdvancedModule,
         ImportAdvancedModule,
         SearchBarModule,
         MultipleSelectionModule,

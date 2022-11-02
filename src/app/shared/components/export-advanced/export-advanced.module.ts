@@ -1,39 +1,73 @@
 import { NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { FuseSharedModule } from '@fuse/shared.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MaterialModule } from 'app/shared/material.module';
+import { SharedModule } from 'app/shared/shared.module';
 
+import {
+    MatButtonModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatTableModule,
+    MatToolbarModule,
+} from '@angular/material';
+
+import { SearchBarModule } from '../search-bar/search-bar.module';
 import { ExportAdvancedComponent } from './export-advanced.component';
-import { ExportFilterComponent } from './export-filter/export-filter.component';
+import {
+    FilterComponent,
+    ExportDialogComponent,
+    ExportHistoryComponent,
+} from './export-dialog';
+import { ExportAdvancedStoreModule } from './store/export-advanced-store.module';
+import { FuseSharedModule } from '@fuse/shared.module';
 
 @NgModule({
-    declarations: [ExportAdvancedComponent, ExportFilterComponent],
+    declarations: [
+        ExportAdvancedComponent,
+        ExportDialogComponent,
+        FilterComponent,
+        ExportHistoryComponent,
+    ],
     imports: [
         FuseSharedModule,
+        SharedModule,
+        SearchBarModule,
+
+        NgMultiSelectDropDownModule,
 
         // Material
+        MaterialModule,
         MatButtonModule,
         MatDatepickerModule,
+        MatDialogModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
         MatSelectModule,
         MatSlideToggleModule,
         MatToolbarModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatProgressSpinnerModule,
 
         // Third Party
         RxReactiveFormsModule,
-        RxReactiveDynamicFormsModule
+        RxReactiveDynamicFormsModule,
+        TranslateModule.forChild({}),
+
+        ExportAdvancedStoreModule,
     ],
-    exports: [ExportAdvancedComponent, ExportFilterComponent],
-    entryComponents: [ExportFilterComponent]
+    exports: [ExportAdvancedComponent, ExportDialogComponent],
+    entryComponents: [ExportDialogComponent]
 })
 export class ExportAdvancedModule {}

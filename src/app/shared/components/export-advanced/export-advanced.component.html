@@ -1,3 +1,78 @@
-<button type="button" mat-flat-button [color]="color" (click)="onFilter()">
-    {{ title }}
-</button>
+<ng-container [ngSwitch]="btnConfig.type">
+    <ng-container *ngSwitchDefault>
+        <ng-container *ngTemplateOutlet="matBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_STROKED_BUTTON">
+        <ng-container *ngTemplateOutlet="matStrokedBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_RAISED_BUTTON">
+        <ng-container *ngTemplateOutlet="matRaisedBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_FLAT_BUTTON">
+        <ng-container *ngTemplateOutlet="matFlatBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_ICON_BUTTON">
+        <ng-container *ngTemplateOutlet="matIconBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_FAB">
+        <ng-container *ngTemplateOutlet="matFabBtn; context: btnConfig"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="BtnDesignType.MAT_MINI_FAB">
+        <ng-container *ngTemplateOutlet="matMiniFabBtn; context: btnConfig"></ng-container>
+    </ng-container>
+</ng-container>
+
+<!-- MAT BUTTON -->
+<ng-template #matBtn let-title="title" let-color="color" let-class="cssClass">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-button [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>  
+
+<!-- MAT STROKED BUTTON -->
+<ng-template #matStrokedBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-stroked-button [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>
+
+<!-- MAT RAISED BUTTON -->
+<ng-template #matRaisedBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-raised-button [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>
+
+<!-- MAT FLAT BUTTON -->
+<ng-template #matFlatBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-flat-button [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>
+
+<!-- MAT ICON BUTTON -->
+<ng-template #matIconBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-icon-button [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>
+
+<!-- MAT FAB BUTTON -->
+<ng-template #matFabBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-fab [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>
+
+<!-- MAT MINI FAB BUTTON -->
+<ng-template #matMiniFabBtn let-title="title" let-color="color" let-class="class">
+    <button id='btn__export' #exportBtn [ngClass]="class" type="button" mat-mini-fab [color]="color" (click)="onSetup()">
+        {{ title }}
+    </button>
+</ng-template>

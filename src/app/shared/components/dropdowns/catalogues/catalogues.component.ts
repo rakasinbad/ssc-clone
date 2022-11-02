@@ -8,6 +8,7 @@ import { ErrorMessageService, HelperService, NoticeService, ScrollService } from
 import { MatAutocomplete, MatAutocompleteTrigger, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
+// import { Catalogue as Entity } from './models';
 import { CatalogueApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';

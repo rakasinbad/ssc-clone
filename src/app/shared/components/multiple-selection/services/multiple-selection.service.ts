@@ -18,6 +18,14 @@ export class MultipleSelectionService implements OnDestroy {
         this.message.next('clear-all');
     }
 
+    selectAllOptions(): void {
+        this.message.next('select-all')
+    }
+
+    selectAllFalse(): void {
+        this.message.next('select-all-false')
+    }
+
     ngOnDestroy(): void {
         this.message.next('');
         this.message.complete();

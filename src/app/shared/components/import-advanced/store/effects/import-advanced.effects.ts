@@ -105,7 +105,7 @@ export class ImportAdvancedEffects {
                 return of([params, supplierId]);
             }),
             switchMap(
-                ([{ file, type, page, endpoint }, data]: [IImportAdvanced, string | Auth]) => {
+                ([{ file, type, page, endpoint, fileType }, data]: [IImportAdvanced, string | Auth]) => {
                     if (!data || !file || !type || !page || !endpoint) {
                         return of(
                             ImportAdvancedActions.importFailure({
@@ -135,13 +135,34 @@ export class ImportAdvancedEffects {
                     formData.append('supplierId', supplierId);
                     formData.append('type', type);
                     formData.append('page', page);
+                    if (fileType) formData.append('fileType', fileType);
 
-                    return this._$uploadApi.uploadFormData(endpoint, formData).pipe(
-                        map(resp => {
-                            return ImportAdvancedActions.importSuccess();
-                        }),
-                        catchError(err => this.sendErrorToState(err, 'importFailure'))
-                    );
+                    if (type === 'create_catalogues') {
+                        return this._$uploadApi.uploadCatalogueFormData(endpoint, formData).pipe(
+                            map(resp => {
+                                const message = "Import produk berhasil, Anda dapat melihat hasilnya di Tab Import History";
+                                this._$notice.open(message, 'success', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right'
+                                });
+
+                                return ImportAdvancedActions.importSuccess();
+                            }),
+                            catchError(err => this.sendErrorToState(err, 'importFailure'))
+                        );
+                    } else {
+                        return this._$uploadApi.uploadFormData(endpoint, formData).pipe(
+                            map(resp => {
+                                const message = "Import produk berhasil, Anda dapat melihat hasilnya di Tab Import History";
+                                this._$notice.open(message, 'success', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right'
+                                });
+                                return ImportAdvancedActions.importSuccess();
+                            }),
+                            catchError(err => this.sendErrorToState(err, 'importFailure'))
+                        );
+                    }
                 }
             )
         )
@@ -159,8 +180,16 @@ export class ImportAdvancedEffects {
                 ),
                 // Hanya mengambil payload-nya saja.
                 map(action => action.payload),
-                // Memunculkan notif bahwa request export gagal.
-                tap(this._$helper.showErrorNotification)
+                // Memunculkan notif bahwa request import gagal.
+                // tap(this._$helper.showErrorNotification)
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
             ),
         { dispatch: false }
     );
@@ -203,6 +232,16 @@ export class ImportAdvancedEffects {
             })
         );
     };
+
+    private _handleErrMessage(resp: ErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 
     constructor(
         private actions$: Actions,

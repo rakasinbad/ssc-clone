@@ -1,13 +1,38 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ChangeDetectionStrategy,
+    Input,
+    ViewChild,
+    AfterViewInit,
+    OnDestroy,
+    EventEmitter,
+    Output,
+} from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { environment } from 'environments/environment';
 
 import { FeatureState as GeolocationCoreState } from './store/reducers';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
-import { fromEvent, Observable, Subject } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged, take } from 'rxjs/operators';
+import {
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatAutocompleteSelectedEvent,
+} from '@angular/material';
+import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
+import {
+    tap,
+    debounceTime,
+    withLatestFrom,
+    filter,
+    takeUntil,
+    map,
+    startWith,
+    distinctUntilChanged,
+    take,
+} from 'rxjs/operators';
 import { GeolocationSelectors } from './store/selectors';
 import { GeolocationActions } from './store/actions';
 import { Urban } from './models';
@@ -22,10 +47,9 @@ import { IQueryParams } from 'app/shared/models/query.model';
     templateUrl: './geolocation.component.html',
     styleUrls: ['./geolocation.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
-
     // Form
     form: FormGroup;
     // Subject for subscription
@@ -50,7 +74,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     totalDistricts$: Observable<number>;
     // Untuk menyimpan jumlah semua urban.
     totalUrbans$: Observable<number>;
-    
+
     // Untuk menyimpan province yang tersedia.
     availableProvinces$: Observable<Array<Province>>;
     // Untuk menyimpan city yang tersedia.
@@ -61,33 +85,38 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     availableUrbans$: Observable<Array<Urban>>;
 
     // Untuk menyimpan province yang terpilih.
-    selectedProvince$: Observable<Province>;
+    selectedProvince$: BehaviorSubject<Province> = new BehaviorSubject<Province>(null);
     // Untuk menyimpan city yang terpilih.
-    selectedCity$: Observable<string>;
+    selectedCity$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
     // Untuk menyimpan district yang terpilih.
-    selectedDistrict$: Observable<string>;
+    selectedDistrict$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
     // Untuk menyimpan urban yang terpilih.
-    selectedUrban$: Observable<Urban>;
+    selectedUrban$: BehaviorSubject<Urban> = new BehaviorSubject<Urban>(null);
 
     // Untuk menentukan arah flex dari setiap input-nya.
     @Input() direction: 'row' | 'column' = 'row';
     // tslint:disable-next-line: no-inferrable-types
     @Input() showRequiredMark: boolean = false;
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selectedLocation: EventEmitter<SelectedLocation> = new EventEmitter<SelectedLocation>();
+    @Output() selectedLocation: EventEmitter<SelectedLocation> =
+        new EventEmitter<SelectedLocation>();
 
     // AutoComplete for Province
     @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
-    @ViewChild('triggerProvince', { static: true, read: MatAutocompleteTrigger }) triggerProvince: MatAutocompleteTrigger;
+    @ViewChild('triggerProvince', { static: true, read: MatAutocompleteTrigger })
+    triggerProvince: MatAutocompleteTrigger;
     // AutoComplete for City
     @ViewChild('cityAutoComplete', { static: true }) cityAutoComplete: MatAutocomplete;
-    @ViewChild('triggerCity', { static: true, read: MatAutocompleteTrigger }) triggerCity: MatAutocompleteTrigger;
+    @ViewChild('triggerCity', { static: true, read: MatAutocompleteTrigger })
+    triggerCity: MatAutocompleteTrigger;
     // AutoComplete for District
     @ViewChild('districtAutoComplete', { static: true }) districtAutoComplete: MatAutocomplete;
-    @ViewChild('triggerDistrict', { static: true, read: MatAutocompleteTrigger }) triggerDistrict: MatAutocompleteTrigger;
+    @ViewChild('triggerDistrict', { static: true, read: MatAutocompleteTrigger })
+    triggerDistrict: MatAutocompleteTrigger;
     // AutoComplete for Urban
     @ViewChild('urbanAutoComplete', { static: true }) urbanAutoComplete: MatAutocomplete;
-    @ViewChild('triggerUrban', { static: true, read: MatAutocompleteTrigger }) triggerUrban: MatAutocompleteTrigger;
+    @ViewChild('triggerUrban', { static: true, read: MatAutocompleteTrigger })
+    triggerUrban: MatAutocompleteTrigger;
 
     constructor(
         private fb: FormBuilder,
@@ -96,100 +125,96 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         private geolocationStore: NgRxStore<GeolocationCoreState>
     ) {
         // Mengambil total province di database.
-        this.totalProvinces$ = this.geolocationStore.select(
-            GeolocationSelectors.getProvinceTotal
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalProvinces$ = this.geolocationStore
+            .select(GeolocationSelectors.getProvinceTotal)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil total city di database.
-        this.totalCities$ = this.geolocationStore.select(
-            GeolocationSelectors.getCityTotal
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalCities$ = this.geolocationStore
+            .select(GeolocationSelectors.getCityTotal)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil total district di database.
-        this.totalDistricts$ = this.geolocationStore.select(
-            GeolocationSelectors.getDistrictTotal
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalDistricts$ = this.geolocationStore
+            .select(GeolocationSelectors.getDistrictTotal)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil total urban di database.
-        this.totalUrbans$ = this.geolocationStore.select(
-            GeolocationSelectors.getUrbanTotal
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalUrbans$ = this.geolocationStore
+            .select(GeolocationSelectors.getUrbanTotal)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil state loading-nya province.
-        this.isProvinceLoading$ = this.geolocationStore.select(
-            GeolocationSelectors.getProvinceLoadingState
-        ).pipe(
-            tap(val => this.debug('IS PROVINCE LOADING?', val)),
-            takeUntil(this.subs$)
-        );
+        this.isProvinceLoading$ = this.geolocationStore
+            .select(GeolocationSelectors.getProvinceLoadingState)
+            .pipe(
+                tap((val) => this.debug('IS PROVINCE LOADING?', val)),
+                takeUntil(this.subs$)
+            );
 
         // Mengambil state loading-nya city.
-        this.isCityLoading$ = this.geolocationStore.select(
-            GeolocationSelectors.getCityLoadingState
-        ).pipe(
-            tap(val => this.debug('IS CITY LOADING?', val)),
-            takeUntil(this.subs$)
-        );
+        this.isCityLoading$ = this.geolocationStore
+            .select(GeolocationSelectors.getCityLoadingState)
+            .pipe(
+                tap((val) => this.debug('IS CITY LOADING?', val)),
+                takeUntil(this.subs$)
+            );
 
         // Mengambil state loading-nya district.
-        this.isDistrictLoading$ = this.geolocationStore.select(
-            GeolocationSelectors.getDistrictLoadingState
-        ).pipe(
-            tap(val => this.debug('IS DISTRICT LOADING?', val)),
-            takeUntil(this.subs$)
-        );
+        this.isDistrictLoading$ = this.geolocationStore
+            .select(GeolocationSelectors.getDistrictLoadingState)
+            .pipe(
+                tap((val) => this.debug('IS DISTRICT LOADING?', val)),
+                takeUntil(this.subs$)
+            );
 
         // Mengambil state loading-nya urban.
-        this.isUrbanLoading$ = this.geolocationStore.select(
-            GeolocationSelectors.getUrbanLoadingState
-        ).pipe(
-            tap(val => this.debug('IS URBAN LOADING?', val)),
-            takeUntil(this.subs$)
-        );
+        this.isUrbanLoading$ = this.geolocationStore
+            .select(GeolocationSelectors.getUrbanLoadingState)
+            .pipe(
+                tap((val) => this.debug('IS URBAN LOADING?', val)),
+                takeUntil(this.subs$)
+            );
 
         // Mengambil state province yang terpilih.
-        this.selectedProvince$ = this.geolocationStore.select(
-            GeolocationSelectors.getSelectedProvinceEntity
-        ).pipe(
-            debounceTime(100),
-            tap(val => this.debug('SELECTED PROVINCE:', val)),
-            takeUntil(this.subs$)
-        );
+        this.geolocationStore
+            .select(GeolocationSelectors.getSelectedProvinceEntity)
+            .pipe(
+                debounceTime(100),
+                tap((val) => this.debug('SELECTED PROVINCE:', val)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((v) => this.selectedProvince$.next(v));
 
         // Mengambil state city yang terpilih.
-        this.selectedCity$ = this.geolocationStore.select(
-            GeolocationSelectors.getSelectedCity
-        ).pipe(
-            debounceTime(100),
-            tap(val => this.debug('SELECTED CITY:', val)),
-            takeUntil(this.subs$)
-        );
+        this.geolocationStore
+            .select(GeolocationSelectors.getSelectedCity)
+            .pipe(
+                debounceTime(100),
+                tap((val) => this.debug('SELECTED CITY:', val)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((v) => this.selectedCity$.next(v));
 
         // Mengambil state district yang terpilih.
-        this.selectedDistrict$ = this.geolocationStore.select(
-            GeolocationSelectors.getSelectedDistrict
-        ).pipe(
-            debounceTime(100),
-            tap(val => this.debug('SELECTED DISTRICT:', val)),
-            takeUntil(this.subs$)
-        );
+        this.geolocationStore
+            .select(GeolocationSelectors.getSelectedDistrict)
+            .pipe(
+                debounceTime(100),
+                tap((val) => this.debug('SELECTED DISTRICT:', val)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((v) => this.selectedDistrict$.next(v));
 
         // Mengambil state district yang terpilih.
-        this.selectedUrban$ = this.geolocationStore.select(
-            GeolocationSelectors.getSelectedUrbanEntity
-        ).pipe(
-            debounceTime(100),
-            tap(val => this.debug('SELECTED URBAN:', val)),
-            takeUntil(this.subs$)
-        );
+        this.geolocationStore
+            .select(GeolocationSelectors.getSelectedUrbanEntity)
+            .pipe(
+                debounceTime(100),
+                tap((val) => this.debug('SELECTED URBAN:', val)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((v) => this.selectedUrban$.next(v));
     }
 
     private debug(label: string, data: any = {}): void {
@@ -208,7 +233,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         const newQuery: IQueryParams = {
             paginate: true,
             limit: 10,
-            skip: 0
+            skip: 0,
         };
 
         this.enableLocationForm('province');
@@ -217,162 +242,152 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearLocationForm('urban');
 
         // Mengirim state untuk melepas province yang telah dipilih sebelumnya.
-        this.geolocationStore.dispatch(
-            GeolocationActions.deselectProvince()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.deselectProvince());
 
         // Mengosongkan province pada state.
-        this.geolocationStore.dispatch(
-            GeolocationActions.truncateProvinces()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.truncateProvinces());
 
         // Mengirim state untuk melakukan request province.
         this.geolocationStore.dispatch(
             GeolocationActions.fetchProvincesRequest({
-                payload: newQuery
+                payload: newQuery,
             })
         );
     }
 
-    private initCity(): void {
+    private initCity(provinceId: string): void {
         // Menyiapkan query untuk pencarian city.
         const newQuery: IQueryParams = {
             paginate: true,
             limit: 10,
-            skip: 0
+            skip: 0,
         };
+
+        newQuery['provinceId'] = provinceId;
 
         this.enableLocationForm('city');
         this.clearLocationForm('district');
         this.clearLocationForm('urban');
 
-
         // Mengirim state untuk melepas city yang telah dipilih sebelumnya.
-        this.geolocationStore.dispatch(
-            GeolocationActions.deselectCity()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.deselectCity());
 
         // Mengosongkan city pada state.
-        this.geolocationStore.dispatch(
-            GeolocationActions.truncateCities()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.truncateCities());
 
         // Mengirim state untuk melakukan request city.
         this.geolocationStore.dispatch(
             GeolocationActions.fetchCitiesRequest({
-                payload: newQuery
+                payload: newQuery,
             })
         );
     }
 
-    private initDistrict(): void {
+    private initDistrict(provinceId: string, city: string): void {
         // Menyiapkan query untuk pencarian district.
         const newQuery: IQueryParams = {
             paginate: true,
             limit: 10,
-            skip: 0
+            skip: 0,
         };
+
+        newQuery['provinceId'] = provinceId;
+        newQuery['city'] = city;
 
         this.enableLocationForm('district');
         this.clearLocationForm('urban');
 
         // Mengirim state untuk melepas city yang telah dipilih sebelumnya.
-        this.geolocationStore.dispatch(
-            GeolocationActions.deselectDistrict()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.deselectDistrict());
 
         // Mengosongkan district pada state.
-        this.geolocationStore.dispatch(
-            GeolocationActions.truncateDistricts()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.truncateDistricts());
 
         // Mengirim state untuk melakukan request district.
         this.geolocationStore.dispatch(
             GeolocationActions.fetchDistrictsRequest({
-                payload: newQuery
+                payload: newQuery,
             })
         );
     }
 
-    private initUrban(): void {
+    private initUrban(provinceId: string, city: string, district: string): void {
         // Menyiapkan query untuk pencarian district.
+        if (!provinceId || !city || !district) {
+            return;
+        }
+
         const newQuery: IQueryParams = {
             paginate: true,
             limit: 30,
-            skip: 0
+            skip: 0,
         };
+
+        newQuery['provinceId'] = provinceId;
+        newQuery['city'] = city;
+        newQuery['district'] = district;
 
         this.enableLocationForm('urban');
 
         // Mengirim state untuk melepas urban yang telah dipilih sebelumnya.
-        this.geolocationStore.dispatch(
-            GeolocationActions.deselectUrban()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.deselectUrban());
 
         // Mengosongkan urban pada state.
-        this.geolocationStore.dispatch(
-            GeolocationActions.truncateUrbans()
-        );
+        this.geolocationStore.dispatch(GeolocationActions.truncateUrbans());
 
         // Mengirim state untuk melakukan request urban.
         this.geolocationStore.dispatch(
             GeolocationActions.fetchUrbansRequest({
-                payload: newQuery
+                payload: newQuery,
             })
         );
     }
 
     enableLocationForm(location: 'province' | 'city' | 'district' | 'urban'): void {
-        if (location === 'province' || location === 'city' || location === 'district' || location === 'urban') {
+        if (
+            location === 'province' ||
+            location === 'city' ||
+            location === 'district' ||
+            location === 'urban'
+        ) {
             this.form.get(location).enable();
             this.form.get(location).reset();
         }
     }
 
     clearLocationForm(location: 'province' | 'city' | 'district' | 'urban'): void {
-        if (location === 'province' || location === 'city' || location === 'district' || location === 'urban') {
+        if (
+            location === 'province' ||
+            location === 'city' ||
+            location === 'district' ||
+            location === 'urban'
+        ) {
             this.form.get(location).disable();
             this.form.get(location).reset();
         }
 
         if (location === 'province') {
-            this.geolocationStore.dispatch(
-                GeolocationActions.deselectProvince()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.deselectProvince());
 
-            this.geolocationStore.dispatch(
-                GeolocationActions.truncateProvinces()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.truncateProvinces());
         }
 
         if (location === 'city') {
-            this.geolocationStore.dispatch(
-                GeolocationActions.deselectCity()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.deselectCity());
 
-            this.geolocationStore.dispatch(
-                GeolocationActions.truncateCities()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.truncateCities());
         }
 
         if (location === 'district') {
-            this.geolocationStore.dispatch(
-                GeolocationActions.deselectDistrict()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.deselectDistrict());
 
-            this.geolocationStore.dispatch(
-                GeolocationActions.truncateDistricts()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.truncateDistricts());
         }
 
         if (location === 'urban') {
-            this.geolocationStore.dispatch(
-                GeolocationActions.deselectUrban()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.deselectUrban());
 
-            this.geolocationStore.dispatch(
-                GeolocationActions.truncateUrbans()
-            );
+            this.geolocationStore.dispatch(GeolocationActions.truncateUrbans());
         }
     }
 
@@ -412,7 +427,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.autocompleteTrigger.closePanel();
         // this.triggerProvince.closePanel();
 
-        this.initCity();
+        this.initCity(province.id);
     }
 
     displayProvince(item: Province): string {
@@ -424,9 +439,10 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectedCity(event: MatAutocompleteSelectedEvent): void {
+        const province: string = this.selectedProvince$.value.id;
         const city: string = event.option.value;
 
-        if (!city) {
+        if (!province || !city) {
             return;
         }
 
@@ -434,7 +450,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.triggerCity.closePanel();
 
-        this.initDistrict();
+        this.initDistrict(province, city);
     }
 
     displayCity(item: string): string {
@@ -446,9 +462,11 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectedDistrict(event: MatAutocompleteSelectedEvent): void {
+        const province: string = this.selectedProvince$.value.id;
+        const city: string = this.selectedCity$.value;
         const district: string = event.option.value;
 
-        if (!district) {
+        if (!province || !city || !district) {
             return;
         }
 
@@ -456,7 +474,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.triggerDistrict.closePanel();
 
-        this.initUrban();
+        this.initUrban(province, city, district);
     }
 
     displayDistrict(item: string): string {
@@ -491,7 +509,11 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.triggerProvince && this.provinceAutoComplete && this.provinceAutoComplete.panel) {
             fromEvent<Event>(this.provinceAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
-                    tap(() => this.debug(`fromEvent<Event>(this.provinceAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() =>
+                        this.debug(
+                            `fromEvent<Event>(this.provinceAutoComplete.panel.nativeElement, 'scroll')`
+                        )
+                    ),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil province yang ada di state, jumlah total province di back-end dan loading state-nya.
@@ -499,29 +521,40 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.availableProvinces$,
                         this.totalProvinces$,
                         this.geolocationStore.select(GeolocationSelectors.getProvinceLoadingState),
-                        ($event, provinces, totalProvinces, isLoading) => ({ $event, provinces, totalProvinces, isLoading }),
+                        ($event, provinces, totalProvinces, isLoading) => ({
+                            $event,
+                            provinces,
+                            totalProvinces,
+                            isLoading,
+                        })
                     ),
                     // Debugging.
                     tap(() => this.debug('PROVINCE IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, provinces, totalProvinces }) =>
-                        !isLoading &&
-                        (totalProvinces > provinces.length) &&
-                        this.helper$.isElementScrolledToBottom(this.provinceAutoComplete.panel)
+                    filter(
+                        ({ isLoading, provinces, totalProvinces }) =>
+                            !isLoading &&
+                            totalProvinces > provinces.length &&
+                            this.helper$.isElementScrolledToBottom(this.provinceAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerProvince.panelClosingActions.pipe(
-                        tap(() => this.debug('Province is closing ...'))
-                    ))
-                ).subscribe(({ provinces }) => {
+                    takeUntil(
+                        this.triggerProvince.panelClosingActions.pipe(
+                            tap(() => this.debug('Province is closing ...'))
+                        )
+                    )
+                )
+                .subscribe(({ provinces }) => {
                     const newQuery: IQueryParams = {
                         paginate: true,
                         limit: 10,
-                        skip: provinces.length
+                        skip: provinces.length,
                     };
+
+                    newQuery['keyword'] = this.form.get('province').value;
 
                     this.geolocationStore.dispatch(
                         GeolocationActions.fetchProvincesRequest({
-                            payload: newQuery
+                            payload: newQuery,
                         })
                     );
                 });
@@ -532,37 +565,56 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.triggerCity && this.cityAutoComplete && this.cityAutoComplete.panel) {
             fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
-                    tap(() => this.debug(`fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() =>
+                        this.debug(
+                            `fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')`
+                        )
+                    ),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil province yang ada di state, jumlah total city di back-end dan loading state-nya.
                     withLatestFrom(
+                        this.selectedProvince$,
                         this.availableCities$,
                         this.totalCities$,
                         this.geolocationStore.select(GeolocationSelectors.getCityLoadingState),
-                        ($event, cities, totalCities, isLoading) => ({ $event, cities, totalCities, isLoading }),
+                        ($event, selectedProvince, cities, totalCities, isLoading) => ({
+                            $event,
+                            selectedProvince,
+                            cities,
+                            totalCities,
+                            isLoading,
+                        })
                     ),
                     // Debugging.
                     tap(() => this.debug('CITY IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, cities, totalCities }) =>
-                        !isLoading &&
-                        (totalCities > cities.length) &&
-                        this.helper$.isElementScrolledToBottom(this.cityAutoComplete.panel)
+                    filter(
+                        ({ isLoading, selectedProvince, cities, totalCities }) =>
+                            !isLoading &&
+                            selectedProvince &&
+                            totalCities > cities.length &&
+                            this.helper$.isElementScrolledToBottom(this.cityAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerCity.panelClosingActions.pipe(
-                        tap(() => this.debug('City is closing ...'))
-                    ))
-                ).subscribe(({ cities }) => {
+                    takeUntil(
+                        this.triggerCity.panelClosingActions.pipe(
+                            tap(() => this.debug('City is closing ...'))
+                        )
+                    )
+                )
+                .subscribe(({ cities, selectedProvince }) => {
                     const newQuery: IQueryParams = {
                         paginate: true,
                         limit: 10,
-                        skip: cities.length
+                        skip: cities.length,
                     };
+
+                    newQuery['keyword'] = this.form.get('city').value;
+                    newQuery['provinceId'] = selectedProvince.id;
 
                     this.geolocationStore.dispatch(
                         GeolocationActions.fetchCitiesRequest({
-                            payload: newQuery
+                            payload: newQuery,
                         })
                     );
                 });
@@ -573,37 +625,73 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.triggerDistrict && this.districtAutoComplete && this.districtAutoComplete.panel) {
             fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
-                    tap(() => this.debug(`fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() =>
+                        this.debug(
+                            `fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')`
+                        )
+                    ),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil province yang ada di state, jumlah total city di back-end dan loading state-nya.
                     withLatestFrom(
+                        this.selectedProvince$,
+                        this.selectedCity$,
                         this.availableDistricts$,
                         this.totalDistricts$,
                         this.geolocationStore.select(GeolocationSelectors.getDistrictLoadingState),
-                        ($event, districts, totalDistricts, isLoading) => ({ $event, districts, totalDistricts, isLoading }),
+                        (
+                            $event,
+                            selectedProvince,
+                            selectedCity,
+                            districts,
+                            totalDistricts,
+                            isLoading
+                        ) => ({
+                            $event,
+                            selectedProvince,
+                            selectedCity,
+                            districts,
+                            totalDistricts,
+                            isLoading,
+                        })
                     ),
                     // Debugging.
                     tap(() => this.debug('DISTRICT IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, districts, totalDistricts }) =>
-                        !isLoading &&
-                        (totalDistricts > districts.length) &&
-                        this.helper$.isElementScrolledToBottom(this.districtAutoComplete.panel)
+                    filter(
+                        ({
+                            isLoading,
+                            selectedProvince,
+                            selectedCity,
+                            districts,
+                            totalDistricts,
+                        }) =>
+                            !isLoading &&
+                            selectedProvince &&
+                            selectedCity &&
+                            totalDistricts > districts.length &&
+                            this.helper$.isElementScrolledToBottom(this.districtAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerDistrict.panelClosingActions.pipe(
-                        tap(() => this.debug('District is closing ...'))
-                    ))
-                ).subscribe(({ districts }) => {
+                    takeUntil(
+                        this.triggerDistrict.panelClosingActions.pipe(
+                            tap(() => this.debug('District is closing ...'))
+                        )
+                    )
+                )
+                .subscribe(({ districts, selectedProvince, selectedCity }) => {
                     const newQuery: IQueryParams = {
                         paginate: true,
                         limit: 10,
-                        skip: districts.length
+                        skip: districts.length,
                     };
+
+                    newQuery['keyword'] = this.form.get('district').value;
+                    newQuery['provinceId'] = selectedProvince.id;
+                    newQuery['city'] = selectedCity;
 
                     this.geolocationStore.dispatch(
                         GeolocationActions.fetchDistrictsRequest({
-                            payload: newQuery
+                            payload: newQuery,
                         })
                     );
                 });
@@ -614,37 +702,79 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.triggerUrban && this.urbanAutoComplete && this.urbanAutoComplete.panel) {
             fromEvent<Event>(this.urbanAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
-                    tap(() => this.debug(`fromEvent<Event>(this.urbanAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() =>
+                        this.debug(
+                            `fromEvent<Event>(this.urbanAutoComplete.panel.nativeElement, 'scroll')`
+                        )
+                    ),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil province yang ada di state, jumlah total city di back-end dan loading state-nya.
                     withLatestFrom(
+                        this.selectedProvince$,
+                        this.selectedCity$,
+                        this.selectedDistrict$,
                         this.availableUrbans$,
                         this.totalUrbans$,
                         this.geolocationStore.select(GeolocationSelectors.getUrbanLoadingState),
-                        ($event, urbans, totalUrbans, isLoading) => ({ $event, urbans, totalUrbans, isLoading }),
+                        (
+                            $event,
+                            selectedProvince,
+                            selectedCity,
+                            selectedDistrict,
+                            urbans,
+                            totalUrbans,
+                            isLoading
+                        ) => ({
+                            $event,
+                            selectedProvince,
+                            selectedCity,
+                            selectedDistrict,
+                            urbans,
+                            totalUrbans,
+                            isLoading,
+                        })
                     ),
                     // Debugging.
                     tap(() => this.debug('URBANS IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, urbans, totalUrbans }) =>
-                        !isLoading &&
-                        (totalUrbans > urbans.length) &&
-                        this.helper$.isElementScrolledToBottom(this.urbanAutoComplete.panel)
+                    filter(
+                        ({
+                            isLoading,
+                            selectedProvince,
+                            selectedCity,
+                            selectedDistrict,
+                            urbans,
+                            totalUrbans,
+                        }) =>
+                            !isLoading &&
+                            selectedProvince &&
+                            selectedCity &&
+                            selectedDistrict &&
+                            totalUrbans > urbans.length &&
+                            this.helper$.isElementScrolledToBottom(this.urbanAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerUrban.panelClosingActions.pipe(
-                        tap(() => this.debug('Urban is closing ...'))
-                    ))
-                ).subscribe(({ urbans }) => {
+                    takeUntil(
+                        this.triggerUrban.panelClosingActions.pipe(
+                            tap(() => this.debug('Urban is closing ...'))
+                        )
+                    )
+                )
+                .subscribe(({ urbans, selectedProvince, selectedCity, selectedDistrict }) => {
                     const newQuery: IQueryParams = {
                         paginate: true,
                         limit: 10,
-                        skip: urbans.length
+                        skip: urbans.length,
                     };
+
+                    newQuery['keyword'] = this.form.get('urban').value;
+                    newQuery['provinceId'] = selectedProvince.id;
+                    newQuery['city'] = selectedCity;
+                    newQuery['district'] = selectedDistrict;
 
                     this.geolocationStore.dispatch(
                         GeolocationActions.fetchUrbansRequest({
-                            payload: newQuery
+                            payload: newQuery,
                         })
                     );
                 });
@@ -678,219 +808,263 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                 { value: '', disabled: false },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             province: [
                 { value: '', disabled: false },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             city: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             district: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             urban: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
         });
 
         // Handle Province's Form Control
-        (this.form.get('province').valueChanges as Observable<string>).pipe(
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            withLatestFrom(this.selectedProvince$),
-            filter(([provinceForm, selectedProvince]: [Province | string, Province | string]) => {
-                if (!(provinceForm instanceof Province) && (selectedProvince instanceof Province)) {
-                    this.clearLocationForm('city');
-                }
-                
-                return !(provinceForm instanceof Province);
-            }),
-            tap(([value, _]: [string, string]) => {
-                const queryParams: IQueryParams = {
-                    paginate: true,
-                    limit: 10,
-                    skip: 0
-                };
+        (this.form.get('province').valueChanges as Observable<string>)
+            .pipe(
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                withLatestFrom(this.selectedProvince$),
+                filter(
+                    ([provinceForm, selectedProvince]: [Province | string, Province | string]) => {
+                        if (
+                            !(provinceForm instanceof Province) &&
+                            selectedProvince instanceof Province
+                        ) {
+                            this.clearLocationForm('city');
+                        }
 
-                queryParams['keyword'] = value;
+                        return !(provinceForm instanceof Province);
+                    }
+                ),
+                tap(([value, _]: [string, string]) => {
+                    const queryParams: IQueryParams = {
+                        paginate: true,
+                        limit: 10,
+                        skip: 0,
+                    };
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.truncateProvinces()
-                );
+                    queryParams['keyword'] = value;
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.fetchProvincesRequest({
-                        payload: queryParams
-                    })
-                );
+                    this.geolocationStore.dispatch(GeolocationActions.truncateProvinces());
 
-                this.location$.next('');
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
+                    this.geolocationStore.dispatch(
+                        GeolocationActions.fetchProvincesRequest({
+                            payload: queryParams,
+                        })
+                    );
+
+                    this.location$.next('');
+                }),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
 
         // Handle City's Form Control
-        (this.form.get('city').valueChanges as Observable<string>).pipe(
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            withLatestFrom(this.selectedProvince$),
-            filter(([cityForm, selectedProvince]) => {
-                if (!selectedProvince) {
-                    return false;
-                }
+        (this.form.get('city').valueChanges as Observable<string>)
+            .pipe(
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                withLatestFrom(this.selectedProvince$),
+                filter(([cityForm, selectedProvince]) => {
+                    if (!selectedProvince) {
+                        return false;
+                    }
 
-                if (!cityForm) {
-                    this.clearLocationForm('district');
-                }
+                    if (!cityForm) {
+                        this.clearLocationForm('district');
+                    }
 
-                return true;
-            }),
-            tap(([value, _]: [string, Province]) => {
-                const queryParams: IQueryParams = {
-                    paginate: true,
-                    limit: 10,
-                    skip: 0
-                };
+                    return true;
+                }),
+                tap(([value, selectedProvince]: [string, Province]) => {
+                    const queryParams: IQueryParams = {
+                        paginate: true,
+                        limit: 10,
+                        skip: 0,
+                    };
 
-                queryParams['keyword'] = value;
+                    queryParams['keyword'] = value;
+                    queryParams['provinceId'] = selectedProvince.id;
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.truncateCities()
-                );
+                    this.geolocationStore.dispatch(GeolocationActions.truncateCities());
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.fetchCitiesRequest({
-                        payload: queryParams
-                    })
-                );
+                    this.geolocationStore.dispatch(
+                        GeolocationActions.fetchCitiesRequest({
+                            payload: queryParams,
+                        })
+                    );
 
-                this.location$.next('');
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
-
-        // Handle District's Form Control
-        (this.form.get('district').valueChanges as Observable<string>).pipe(
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            withLatestFrom(
-                this.selectedCity$,
-                this.selectedDistrict$,
-                (districtForm, selectedCity, selectedDistrict) => ([districtForm, selectedCity, selectedDistrict] as [string, string, string])
-            ),
-            filter(([districtForm, selectedCity, _]) => {
-                if (!selectedCity) {
-                    return false;
-                }
-
-                if (!districtForm) {
-                    this.clearLocationForm('urban');
-                }
-
-                return true;
-            }),
-            tap(([value, _, __]: [string, string, string]) => {
-                const queryParams: IQueryParams = {
-                    paginate: true,
-                    limit: 10,
-                    skip: 0
-                };
-
-                queryParams['keyword'] = value;
-
-                this.geolocationStore.dispatch(
-                    GeolocationActions.truncateDistricts()
-                );
-
-                this.geolocationStore.dispatch(
-                    GeolocationActions.fetchDistrictsRequest({
-                        payload: queryParams
-                    })
-                );
-
-                this.location$.next('');
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
-
-        // Handle District's Form Control
-        (this.form.get('urban').valueChanges as Observable<string>).pipe(
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            withLatestFrom(
-                this.selectedCity$,
-                this.selectedDistrict$,
-                this.selectedUrban$,
-                (urbanForm, selectedCity, selectedDistrict, selectedUrban) =>
-                    ([urbanForm, selectedCity, selectedDistrict, selectedUrban] as [string, string, string, Urban])
-            ),
-            filter(([urbanForm, _, __, selectedUrban]) => {
-                if (selectedUrban && urbanForm && !this.urbanAutoComplete.isOpen) {
                     this.location$.next('');
-                    return false;
-                }
-                
-                if (selectedUrban || (!urbanForm && !this.urbanAutoComplete.isOpen)) {
-                    return false;
-                }
+                }),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
 
-                if (!urbanForm && selectedUrban && !this.urbanAutoComplete.isOpen) {
-                    this.form.get('urban').patchValue(selectedUrban);
-                    return false;
-                }
+        // Handle District's Form Control
+        (this.form.get('district').valueChanges as Observable<string>)
+            .pipe(
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                withLatestFrom(
+                    this.selectedProvince$,
+                    this.selectedCity$,
+                    this.selectedDistrict$,
+                    (districtForm, selectedProvince, selectedCity, selectedDistrict) =>
+                        [districtForm, selectedProvince, selectedCity, selectedDistrict] as [
+                            string,
+                            Province,
+                            string,
+                            string
+                        ]
+                ),
+                filter(([districtForm, selectedProvince, selectedCity]) => {
+                    if (!selectedProvince || !selectedCity) {
+                        return false;
+                    }
 
-                return true;
-            }),
-            tap(([value, _, __, ___]: [string, string, string, Urban]) => {
-                const queryParams: IQueryParams = {
-                    paginate: true,
-                    limit: 10,
-                    skip: 0
-                };
+                    if (!districtForm) {
+                        this.clearLocationForm('urban');
+                    }
 
-                queryParams['keyword'] = value;
+                    return true;
+                }),
+                tap(
+                    ([value, selectedProvince, selectedCity, _]: [
+                        string,
+                        Province,
+                        string,
+                        string
+                    ]) => {
+                        const queryParams: IQueryParams = {
+                            paginate: true,
+                            limit: 10,
+                            skip: 0,
+                        };
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.truncateUrbans()
-                );
+                        queryParams['keyword'] = value;
+                        queryParams['provinceId'] = selectedProvince.id;
+                        queryParams['city'] = selectedCity;
 
-                this.geolocationStore.dispatch(
-                    GeolocationActions.fetchUrbansRequest({
-                        payload: queryParams
-                    })
-                );
+                        this.geolocationStore.dispatch(GeolocationActions.truncateDistricts());
 
-                this.location$.next('');
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
+                        this.geolocationStore.dispatch(
+                            GeolocationActions.fetchDistrictsRequest({
+                                payload: queryParams,
+                            })
+                        );
+
+                        this.location$.next('');
+                    }
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
+
+        // Handle District's Form Control
+        (this.form.get('urban').valueChanges as Observable<string>)
+            .pipe(
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                withLatestFrom(
+                    this.selectedProvince$,
+                    this.selectedCity$,
+                    this.selectedDistrict$,
+                    this.selectedUrban$,
+                    (urbanForm, selectedProvince, selectedCity, selectedDistrict, selectedUrban) =>
+                        [
+                            urbanForm,
+                            selectedProvince,
+                            selectedCity,
+                            selectedDistrict,
+                            selectedUrban,
+                        ] as [string, Province, string, string, Urban]
+                ),
+                filter(([urbanForm, selectedProvince, selectedCity, selectedUrban]) => {
+                    if (!selectedProvince && !selectedCity) {
+                        return false;
+                    }
+
+                    if (selectedUrban && urbanForm && !this.urbanAutoComplete.isOpen) {
+                        this.location$.next('');
+                        return false;
+                    }
+
+                    if (selectedUrban || (!urbanForm && !this.urbanAutoComplete.isOpen)) {
+                        return false;
+                    }
+
+                    if (!urbanForm && selectedUrban && !this.urbanAutoComplete.isOpen) {
+                        this.form.get('urban').patchValue(selectedUrban);
+                        return false;
+                    }
+
+                    return true;
+                }),
+                tap(
+                    ([value, selectedProvince, selectedCity, selectedDistrict, _]: [
+                        string,
+                        Province,
+                        string,
+                        string,
+                        Urban
+                    ]) => {
+                        const queryParams: IQueryParams = {
+                            paginate: true,
+                            limit: 10,
+                            skip: 0,
+                        };
+
+                        queryParams['keyword'] = value;
+                        queryParams['provinceId'] = selectedProvince.id;
+                        queryParams['city'] = selectedCity;
+                        queryParams['district'] = selectedDistrict;
+
+                        this.geolocationStore.dispatch(GeolocationActions.truncateUrbans());
+
+                        this.geolocationStore.dispatch(
+                            GeolocationActions.fetchUrbansRequest({
+                                payload: queryParams,
+                            })
+                        );
+
+                        this.location$.next('');
+                    }
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
 
         // this.form.valueChanges
         // .pipe(
@@ -920,53 +1094,56 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.availableProvinces$ = this.geolocationStore.select(
-            GeolocationSelectors.selectAllProvinces
-        ).pipe(
-            debounceTime(100),
-            withLatestFrom(this.isProvinceLoading$),
-            filter(([_, isLoading]: [Array<Province>, boolean]) => (!(!!isLoading))),
-            map(([provinces]: [Array<Province>, boolean]) => {
-                if (provinces.length === 0) {
-                    this.initProvince();
+        this.availableProvinces$ = this.geolocationStore
+            .select(GeolocationSelectors.selectAllProvinces)
+            .pipe(
+                debounceTime(100),
+                withLatestFrom(this.isProvinceLoading$),
+                filter(([_, isLoading]: [Array<Province>, boolean]) => !!!isLoading),
+                map(([provinces]: [Array<Province>, boolean]) => {
+                    if (provinces.length === 0) {
+                        this.initProvince();
+                    }
+
+                    return provinces;
+                }),
+                takeUntil(this.subs$)
+            );
+
+        this.availableCities$ = this.geolocationStore
+            .select(GeolocationSelectors.selectAllCities)
+            .pipe(takeUntil(this.subs$));
+
+        this.availableDistricts$ = this.geolocationStore
+            .select(GeolocationSelectors.selectAllDistricts)
+            .pipe(takeUntil(this.subs$));
+
+        this.availableUrbans$ = this.geolocationStore
+            .select(GeolocationSelectors.selectAllUrbans)
+            .pipe(takeUntil(this.subs$));
+
+        this.location$
+            .pipe(
+                debounceTime(200),
+                withLatestFrom(
+                    this.selectedProvince$,
+                    this.selectedCity$,
+                    this.selectedDistrict$,
+                    this.selectedUrban$
+                ),
+                tap((value) => this.debug('tap => onSelectedLocation()', value)),
+                takeUntil(this.subs$)
+            )
+            .subscribe(
+                ([_, province, city, district, urban]: [
+                    string,
+                    Province,
+                    string,
+                    string,
+                    Urban
+                ]) => {
+                    this.selectedLocation.emit({ province, city, district, urban });
                 }
-
-                return provinces;
-            }),
-            takeUntil(this.subs$)
-        );
-
-        this.availableCities$ = this.geolocationStore.select(
-            GeolocationSelectors.selectAllCities
-        ).pipe(
-            takeUntil(this.subs$)
-        );
-
-        this.availableDistricts$ = this.geolocationStore.select(
-            GeolocationSelectors.selectAllDistricts
-        ).pipe(
-            takeUntil(this.subs$)
-        );
-
-        this.availableUrbans$ = this.geolocationStore.select(
-            GeolocationSelectors.selectAllUrbans
-        ).pipe(
-            takeUntil(this.subs$)
-        );
-
-        this.location$.pipe(
-            debounceTime(200),
-            withLatestFrom(
-                this.selectedProvince$,
-                this.selectedCity$,
-                this.selectedDistrict$,
-                this.selectedUrban$
-            ),
-            tap(value => this.debug('tap => onSelectedLocation()', value)),
-            takeUntil(this.subs$)
-        ).subscribe(([_, province, city, district, urban]: [string, Province, string, string, Urban]) => {
-            this.selectedLocation.emit({ province, city, district, urban });
-        });
+            );
     }
-
 }

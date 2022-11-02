@@ -37,10 +37,17 @@ export class LocationApiService {
                 break;
             }
             case 'district': {
+                if (!params['provinceId']) {
+                    throw new Error('provinceId is required.');
+                }
+
                 if (!params['city']) {
                     throw new Error('city is required.');
                 }
-                newArgs.push({ key: 'city', value: params['city'] });
+                newArgs.push(
+                    { key: 'provinceId', value: params['provinceId'] },
+                    { key: 'city', value: params['city'] }
+                );
 
                 this._url = this._$helper.handleApiRouter(this._locationEndpoint);
                 break;
@@ -48,9 +55,13 @@ export class LocationApiService {
             case 'urban': {
                 if (!params['provinceId']) {
                     throw new Error('provinceId is required.');
-                } else if (!params['city']) {
+                }
+
+                if (!params['city']) {
                     throw new Error('city is required.');
-                } else if (!params['district']) {
+                }
+
+                if (!params['district']) {
                     throw new Error('district is required.');
                 }
 

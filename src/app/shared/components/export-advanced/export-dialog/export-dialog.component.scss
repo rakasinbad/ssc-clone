@@ -1,0 +1,73 @@
+@import 'src/@fuse/scss/fuse';
+
+.event-form-export-advanced-dialog {
+    @include media-breakpoint('xs') {
+        width: 100%;
+    }
+
+    @include media-breakpoint('gt-xs') {
+        width: 100vw;
+        max-width: 800px;
+    }
+
+    .mat-dialog-container {
+        padding: 0;
+        min-height: 550px;
+        max-height: 550px;
+        height: 550px;
+        overflow: auto;
+    }
+
+    .dialog-content-wrapper {
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .primary-color-input,
+    .secondary-color-input {
+        padding: 6px 8px;
+    }
+
+    .mat-form-field-prefix {
+        top: -0.2em;
+    }
+
+    .mat-form-field-infix {
+        padding: 0.5em 0 !important;
+        // top: -0.25em;
+    }
+
+    .mat-tab-label {
+        height: 44px;
+        min-height: 44px;
+        max-height: 44px;
+        opacity: 1;
+
+        &.mat-tab-label-active {
+            > .mat-tab-label-content {
+                color: #f0444c;
+            }
+        }
+    }
+
+    .tab-content {
+        .section {
+            .section__top--contents {
+                .section__title {
+                    color: #25282b;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+            }
+
+            .section__bottom--contents {
+                .section__subtitle {
+                    color: #25282b;
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+}

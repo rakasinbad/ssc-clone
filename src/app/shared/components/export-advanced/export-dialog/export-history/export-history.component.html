@@ -1,0 +1,133 @@
+<div class="mb-16">
+    <div fxLayout="row" fxFlex fxLayoutAlign="start stretch">
+        <!-- LEFT COLUMN -->
+        <div fxFlex="50">
+            <div fxLayout="column">
+                <div fxLayoutAlign="start stretch">
+                    <!-- "VIEW HISTORY" LIST -->
+                    <mat-chip-list class="custom-chip-list" aria-label="View history selection">
+                        <span class="text-bold">View History :</span>
+                        <mat-chip *ngFor="let viewHistory of viewHistoryList" [ngClass]="
+                                viewHistory.id === selectedViewHistoryId
+                                    ? selectedViewHistoryClasses
+                                    : notSelectedViewHistoryClasses
+                            " [class.fuse-white-bg]="true" [disableRipple]="true"
+                            (click)="onViewHistoryChanged(viewHistory)">
+                            {{ viewHistory.label }}
+                        </mat-chip>
+                    </mat-chip-list>
+                    <!-- / "VIEW HISTORY" LIST -->
+                </div>
+            </div>
+        </div>
+        <!-- / LEFT COLUMN -->
+        <!-- RIGHT COLUMN -->
+        <div fxFlex="50">
+            <div fxLayout="column">
+                <div fxLayoutAlign="end stretch">
+                    <button id="btn__refresh" type="button" mat-stroked-button mat-button-base
+                        class="w-92 h-32 ng-star-inserted btn-refresh" (click)="onRefresh()">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- / RIGHT COLUMN -->
+    </div>
+</div>
+
+<!-- TABLE -->
+<table
+    id="export-history"
+    mat-table
+    [dataSource]="dataSource$ | async"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    class="simple"
+>
+    <!-- User Column -->
+    <ng-container matColumnDef="user">
+        <th id="thead__user" mat-header-cell *matHeaderCellDef>
+            User
+        </th>
+        <td [id]="'tbody__user-' + i" mat-cell *matCellDef="let row; let i = index">
+            {{ row?.user || '-' }}
+        </td>
+    </ng-container>
+
+    <!-- Type Column -->
+    <ng-container matColumnDef="type">
+        <th id="thead__type" mat-header-cell *matHeaderCellDef>
+            Type
+        </th>
+        <td [id]="'tbody__type-' + i" mat-cell *matCellDef="let row; let i = index">
+            {{ row?.type || '-' }}
+        </td>
+    </ng-container>
+
+    <!-- Periode Column -->
+    <ng-container matColumnDef="period">
+        <th id="thead__period" mat-header-cell *matHeaderCellDef>
+            Periode
+        </th>
+        <td [id]="'tbody__period-' + i" mat-cell *matCellDef="let row; let i = index">
+            {{ row?.period || '-' }}
+        </td>
+    </ng-container>
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="date">
+        <th id="thead__date" mat-header-cell *matHeaderCellDef>
+            Date
+        </th>
+        <td [id]="'tbody__date-' + i" mat-cell *matCellDef="let row; let i = index">
+            {{ (row?.createdAt | date: 'MMM dd, yyyy HH:mm:ss') || '-' }}
+        </td>
+    </ng-container>
+
+    <!-- Progress Column -->
+    <ng-container matColumnDef="progress">
+        <th id="thead__progress" mat-header-cell *matHeaderCellDef>Progress</th>
+        <td [id]="'row__progress-' + i" mat-cell *matCellDef="let row; let i = index">
+            <ng-container *ngIf="row?.progress === 'Download'; else otherProgress">
+                <a
+                    [id]="'btn__download-report_' + i"
+                    href="javascript:;"
+                    (click)="onDownload(row?.downloadUrl)"
+                >
+                    {{ row?.progress || '-' }}
+                </a>
+            </ng-container>
+            
+            <ng-template #otherProgress>
+                {{ row?.progress || '-' }}
+            </ng-template>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+
+<div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent" diameter="50"></mat-spinner>
+</div>
+
+<div class="no-records h-100" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div>
+
+<div class="loader-content" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+    <mat-spinner color="accent" diameter="50"></mat-spinner>
+</div>
+
+<mat-paginator
+    [fxHide]="
+        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+    "
+    [length]="totalDataSource$ | async"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator>

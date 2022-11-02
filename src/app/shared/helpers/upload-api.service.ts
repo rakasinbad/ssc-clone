@@ -8,7 +8,9 @@ import { Observable } from 'rxjs';
 })
 export class UploadApiService {
     private _url: string;
+    private _urlCatalogue: string;
     private readonly _endpoint = '/upload';
+    private readonly _endpointCatalogue = '/import-bulk-catalogues';
 
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
@@ -19,6 +21,14 @@ export class UploadApiService {
         // const headers = new HttpHeaders().append('Content-Type', 'multipart/form-data');
 
         return this.http.post(`${this._url}/${endpoint}`, formData, {
+            reportProgress: true
+        });
+    }
+
+    uploadCatalogueFormData(endpoint: string, formData: FormData): Observable<any> {
+        this._urlCatalogue = this._$helper.handleApiRouter(this._endpointCatalogue);
+
+        return this.http.post(`${this._urlCatalogue}`, formData, {
             reportProgress: true
         });
     }

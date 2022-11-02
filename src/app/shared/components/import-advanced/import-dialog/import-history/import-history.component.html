@@ -126,7 +126,13 @@
                     *ngIf="row?.status === 'error'"
                     (click)="onDownload(row?.url)"
                 >
-                    Download Error Report
+                    <ng-container *ngIf="row?.page === 'catalogues'; else otherPage">
+                        Download Failed Data
+                    </ng-container>
+
+                    <ng-template #otherPage>
+                        Download Error Report
+                    </ng-template>
                 </a>
 
                 <ng-container *ngIf="row?.status !== 'error'">

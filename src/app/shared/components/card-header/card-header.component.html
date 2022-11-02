@@ -151,24 +151,35 @@
             <!-- / "FIRST BOTTOM LEFT" CONTENT -->
             <ng-template [ngxPermissionsOnly]="exportPermissions">
                 <!-- EXPORT BUTTON -->
-                <button
-                    id='btn__export'
-                    mat-stroked-button
-                    *ngIf="exportPermissions"
-                    color="primary"
-                    [ngClass]="buttonClasses"
-                    class="grey-300-border"
-                    fxFlexAlign="center"
-                    (click)="onExportClicked()"
-                >
-                    {{ exportTitle }}
-                </button>
+                <ng-container *ngIf="!config?.export?.useAdvanced; else useSimpleExport">
+                    <sinbad-export-advanced
+                        *ngIf="exportPermissions"
+                        fxFlexAlign="center"
+                        [pageType]="config?.export?.pageType || ''"
+                        [btnConfig]="exportBtnConfig"
+                    ></sinbad-export-advanced>
+                </ng-container>
+
+                <ng-template #useSimpleExport>
+                    <button
+                        id='btn__export'
+                        mat-stroked-button
+                        *ngIf="exportPermissions"
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        (click)="onExportClicked()"
+                    >
+                        {{ exportTitle }}
+                    </button>
+                </ng-template>
                 <!-- / EXPORT BUTTON -->
             </ng-template>
 
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
-                <ng-container *ngIf="config?.import?.useAdvanced; else useSimple">
+                <ng-container *ngIf="config?.import?.useAdvanced; else useSimpleImport">
                     <sinbad-import-advanced
                         *ngIf="importPermissions"
                         fxFlexAlign="center"
@@ -177,7 +188,7 @@
                     ></sinbad-import-advanced>
                 </ng-container>
 
-                <ng-template #useSimple>
+                <ng-template #useSimpleImport>
                     <button
                         id='btn__import'
                         mat-stroked-button

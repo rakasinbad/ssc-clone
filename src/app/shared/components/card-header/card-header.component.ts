@@ -15,6 +15,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { TNullable } from 'app/shared/models/global.model';
+import { IButtonExportConfig } from '../export-advanced/models';
 import { ExportActions } from '../exports/store/actions';
 import { fromExport } from '../exports/store/reducers';
 import { IButtonImportConfig } from '../import-advanced/models';
@@ -30,6 +31,7 @@ import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CardHeaderComponent implements OnInit, OnChanges {
+    exportBtnConfig: IButtonExportConfig;
     importBtnConfig: IButtonImportConfig;
 
     selectedViewByClasses = {
@@ -103,9 +105,8 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     @Input('showBatchActions') showBatchActions = false;
     // Untuk mendengarkan "event" ketika memilih salah 1 action.
     // tslint:disable-next-line:no-output-rename
-    @Output('onActionSelected') actionSelected: EventEmitter<
-        CardHeaderActionConfig
-    > = new EventEmitter<CardHeaderActionConfig>();
+    @Output('onActionSelected') actionSelected: EventEmitter<CardHeaderActionConfig> =
+        new EventEmitter<CardHeaderActionConfig>();
 
     /**
      * Konfigurasi tombol "Add".
@@ -286,6 +287,19 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     // Memeriksa konfigurasi label untuk permission tombol "Export".
                     if (this.config.export.permissions) {
                         this.exportPermissions = this.config.export.permissions;
+                    }
+
+                    if (!this.config.export.useAdvanced) {
+                        this.exportBtnConfig = {
+                            id: 'export',
+                            cssClass: ['w-92', 'h-32'],
+                            dialogConf: {
+                                title: 'Export',
+                                cssToolbar: 'fuse-white-bg',
+                            },
+                            title: 'Export',
+                            type: ButtonDesignType.MAT_STROKED_BUTTON,
+                        };
                     }
                 }
 

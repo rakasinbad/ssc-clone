@@ -223,7 +223,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             );
 
             // Menghitung kembali jumlah opsi yang terpilih.
-            this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
+            // this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
+            this.totalSelectedOptions = this.mergedSelectedOptions.length;
             // Mengirim emit event kembali untuk di-update hasil pilihannya.
             this.selectionListChanged.emit({
                 added: this.selectedOptions,
@@ -316,6 +317,18 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 this.onToggleSelectAll({ option: { selected: false } } as MatSelectionListChange);
                 this.cdRef.markForCheck();
             }
+
+            // untuk menjalan fungsi toggle select all dari luar component
+            if (value === 'select-all') {
+                this.onToggleSelectAll({ option: { selected: true } } as MatSelectionListChange);
+                this.cdRef.markForCheck();
+            }
+
+            // untuk mengubah allSelected menjadi false dari luar component
+            if (value === 'select-all-false') {
+                this.allSelected = false;
+                this.cdRef.markForCheck();
+            }
         });
 
         this.selectedOptionSub$.pipe(
@@ -397,7 +410,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);
                 const removedLength =  (removed.length);
-                this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
+                // this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
+                this.totalSelectedOptions = this.mergedSelectedOptions.length;
                 // Mendeteksi adanya perubahan.
                 this.cdRef.detectChanges();
             }),

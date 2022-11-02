@@ -54,6 +54,7 @@ export class MainImportComponent implements OnInit, OnDestroy {
     @Input() pageType: string;
 
     private _unSubs$: Subject<void> = new Subject<void>();
+    urlDownload: string = null;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -146,14 +147,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.store
-            .select(ImportAdvancedSelectors.getIsDownload)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(isDownload => {
-                if (isDownload) {
-                    window.open(url, '_blank');
-                }
-            });
+        this.urlDownload = url;
+           
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -257,14 +252,28 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             if (file) {
                                 if (config.mode) {
                                     const modeIds = config.mode.map(configMode => configMode.id);
+                                    const selectedMode = config.mode.find(item => item.id === mode);
+                                    const fileType = selectedMode.fileType ? selectedMode.fileType : null;
 
                                     if (modeIds.includes(mode)) {
-                                        this._handlePage(file, mode);
+                                        this._handlePage(file, mode, fileType);
                                     }
                                 }
                             }
                         }
                     });
+
+                    this.store
+                        .select(ImportAdvancedSelectors.getIsDownload)
+                        .pipe(
+                            takeUntil(this._unSubs$)
+                        )
+                        .subscribe(isDownload => {
+                            if (isDownload && (this.urlDownload)) {
+                                window.open(this.urlDownload, '_blank');
+                            }
+                        }
+                    );
                 break;
         }
     }
@@ -280,7 +289,7 @@ export class MainImportComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _handlePage(file: File, mode: string): void {
+    private _handlePage(file: File, mode: string, fileType?: string): void {
         switch (this.pageType) {
             case 'payments':
             case 'orders':
@@ -303,7 +312,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             file,
                             page: this.pageType,
                             type: mode,
-                            endpoint: 'import-catalogues'
+                            endpoint: 'import-catalogues',
+                            fileType
                         }
                     })
                 );

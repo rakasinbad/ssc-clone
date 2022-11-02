@@ -1,0 +1,272 @@
+<div class="mat-typography" fusePerfectScrollbar>
+    <form
+        autocomplete="off"
+        id="filter-form"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        class="w-100-p"
+        fxLayout="column"
+        fxLayoutGap="10px"
+        fxFlex 
+        fxLayoutAlign="start stretch"
+        novalidate
+    >
+
+        <!-- CHOOSE STATUS -->
+        <div 
+            *ngIf="activeConfiguration?.filterAspect?.status"
+            class="custom-field" fxLayout="column"
+        >
+            <mat-label fxLayoutAlign="start stretch">
+                {{ activeConfiguration?.filterAspect?.status?.label || 'Status' }}
+            </mat-label>
+            <!-- <mat-label style="margin-bottom: 0px !important;margin-top: 5px;">
+            </mat-label> -->
+            <mat-form-field
+                *ngIf="activeConfiguration?.filterAspect?.status"
+                appearance="outline"
+                class="w-100-p mb-0 mt-10"
+            >
+                <ng-container *ngIf="statusSources; else noStatusSources">
+                    <mat-select
+                        id="status"
+                        formControlName="status"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.status?.placeholder ||
+                            'Choose Status'
+                        "
+                        [required]="activeConfiguration?.filterAspect?.status?.required"
+                    >
+                        <mat-option>(None)</mat-option>
+                        <mat-option [id]="'status__' + row?.id" *ngFor="let row of statusSources;" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-option>
+                    </mat-select>
+                </ng-container>
+
+                <ng-template #noStatusSources>
+                    <mat-select
+                        id="status"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.status?.placeholder ||
+                            'Choose Status'
+                        "
+                    >
+                        <mat-option
+                            >{{ activeConfiguration?.filterAspect?.status?.label || 'Status' }} not
+                            found</mat-option
+                        >
+                    </mat-select>
+                </ng-template>
+
+                <mat-error *ngIf="hasError(form.get('status'))">
+                    {{ getFormError(form.get('status')) }}
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- SLIDE TOOGLE TODAY -->
+        <div
+            fxLayoutAlign="start"
+            *ngIf="form.get('isToday')"
+            class="mb-16"
+            style="margin-top: -10px"
+        >
+            <mat-slide-toggle id='btn__today' formControlName="isToday" (change)="onChangeToday($event)">
+                Today
+            </mat-slide-toggle>
+        </div>
+
+        <!-- CHOOSE TYPE -->
+        <mat-form-field
+            *ngIf="activeConfiguration?.filterAspect?.type"
+            appearance="outline"
+            floatLabel="always"
+            class="w-100-p"
+        >
+            <mat-label>
+                {{ activeConfiguration?.filterAspect?.type?.label || 'Type' }}
+            </mat-label>
+            <ng-container *ngIf="typeSources; else noTypeSources">
+                <mat-select
+                    id="type"
+                    formControlName="type"
+                    [placeholder]="
+                        activeConfiguration?.filterAspect?.type?.placeholder ||
+                        'Choose Type'
+                    "
+                    [required]="activeConfiguration?.filterAspect?.type?.required"
+                >
+                    <mat-option>(None)</mat-option>
+                    <mat-option [id]="'type__' + row?.id" *ngFor="let row of typeSources" [value]="row?.id">
+                        {{ row?.label }}
+                    </mat-option>
+                </mat-select>
+            </ng-container>
+
+            <ng-template #noTypeSources>
+                <mat-select
+                    id="type"
+                    [placeholder]="
+                        activeConfiguration?.filterAspect?.type?.placeholder ||
+                        'Choose Type'
+                    "
+                >
+                    <mat-option
+                        >{{ activeConfiguration?.filterAspect?.type?.label || 'Type' }} not
+                        found</mat-option
+                    >
+                </mat-select>
+            </ng-template>
+
+            <mat-error *ngIf="hasError(form.get('type'))">
+                {{ getFormError(form.get('type')) }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-label [style.color]="hasError(form.get('warehouse'))?'red':'rgba(0, 0, 0, 0.6)'" id="warehouse-label" *ngIf="activeConfiguration?.filterAspect?.warehouse">
+            {{ activeConfiguration?.filterAspect?.warehouse?.label || 'Warehouses' }} *
+        </mat-label>
+
+        <ng-multiselect-dropdown [placeholder]="
+            activeConfiguration?.filterAspect?.warehouse?.placeholder ||
+            'Choose Warehouse'
+            " [data]="dataWarehouse" [required]="activeConfiguration?.filterAspect?.warehouse?.required"
+            formControlName="warehouse" [disabled]="disabled" [settings]="dropdownSettings" *ngIf="activeConfiguration?.filterAspect?.warehouse"
+        >
+        </ng-multiselect-dropdown>
+                    
+        <mat-error *ngIf="hasError(form.get('warehouse'))" id="warehouse-error">
+            This field is required
+        </mat-error>
+
+        <!-- FILTER DATE RANGE -->
+        <div
+            fxFlex="1 0 auto"
+            fxLayout="row"
+            fxLayout.gt-xs="row"
+            *ngIf="activeConfiguration?.filterAspect?.rangeDate"
+        >
+            <!-- START DATE -->
+            <div class="custom-field" fxFlex="50">
+                <div fxLayout="column">
+                    <mat-label fxLayoutAlign="start stretch">Start Date (Order)</mat-label>
+                    <mat-form-field
+                        appearance="outline"
+                        class="pr-sm-8 datepicker-red"
+                    >
+                        <input
+                            id="startDate"
+                            matInput
+                            [matDatepicker]="startDatePicker"
+                            formControlName="startDate"
+                            [min]="minStartDate"
+                            [max]="maxStartDate"
+                            name="start"
+                            (dateChange)="onChangeDate($event, 'startDate')"
+                            required
+                            *ngIf="isRequired('rangeDate')"
+                        />
+                        <input
+                            id="startDate"
+                            matInput
+                            [matDatepicker]="startDatePicker"
+                            formControlName="startDate"
+                            [min]="minStartDate"
+                            [max]="maxStartDate"
+                            name="start"
+                            (dateChange)="onChangeDate($event, 'startDate')"
+                            *ngIf="!isRequired('rangeDate')"
+                        />
+                        <mat-datepicker-toggle
+                            matSuffix
+                            [for]="startDatePicker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker #startDatePicker touchUi></mat-datepicker>
+
+                        <mat-error *ngIf="hasError(form.get('startDate'))">
+                            {{ getFormError(form.get('startDate')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- END DATE -->
+            <div class="custom-field" fxFlex="50">
+                <div fxLayout="column">
+                    <mat-label fxLayoutAlign="start stretch" class="pl-sm-8">End Date (Order)</mat-label>
+                    <mat-form-field
+                        appearance="outline"
+                        class="pl-sm-8 datepicker-red"
+                    >
+                        <input
+                            id="endDate"
+                            matInput
+                            [matDatepicker]="endDatePicker"
+                            formControlName="endDate"
+                            [min]="minEndDate"
+                            [max]="maxEndDate"
+                            name="end"
+                            required
+                            *ngIf="isRequired('rangeDate')"
+                        />
+                        <input
+                            id="endDate"
+                            matInput
+                            [matDatepicker]="endDatePicker"
+                            formControlName="endDate"
+                            [min]="minEndDate"
+                            [max]="maxEndDate"
+                            name="end"
+                            *ngIf="!isRequired('rangeDate')"
+                        />
+                        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endDatePicker touchUi></mat-datepicker>
+
+                        <mat-error *ngIf="hasError(form.get('endDate'))">
+                            {{ getFormError(form.get('endDate')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+
+        <br *ngIf="activeConfiguration?.filterAspect?.warehouse">
+    </form>
+</div>
+
+<div *ngIf="pageType === 'invoices'" class="label-info mb-16">
+    <mat-icon class="label-info__icon s-16" svgIcon="sinbad-info-2"></mat-icon>
+    <p class="label-info__text">The selectable period is 30 days and download invoice maximum 1 year ago.</p>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end center">
+    <!-- CANCEL -->
+    <button 
+        id="btn__cancel-export"
+        mat-stroked-button
+        color="accent" 
+        mat-dialog-close
+        class="sinbad h-32 line-height-32 mr-16"
+    >
+        Cancel
+    </button>
+
+    <!-- START EXPORT -->
+    <button
+        id="btn__start-export"
+        type="submit"
+        mat-flat-button
+        color="accent"
+        class="h-32 line-height-32"
+        [disabled]="form.invalid"
+        aria-label="Export"
+        form="filter-form"
+    >
+        Start Export
+    </button>
+</div>
+
+<div class="no-records" *ngIf="(isRequesting$ | async)">
+    <mat-spinner color="accent" diameter="50"></mat-spinner>
+</div>

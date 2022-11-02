@@ -116,6 +116,14 @@ export class ErrorMessageService {
                 });
             }
 
+            case 'gte_field': {
+                let { fieldComparedName = '' } = args;
+                return this.translate.instant('ERROR.GTE_FIELD', {
+                    fieldName: labelName,
+                    fieldComparedName,
+                });
+            }
+
             case 'gte_number': {
                 const { limitValue = 0 } = args;
                 return this.translate.instant('ERROR.GTE_NUMBER', {

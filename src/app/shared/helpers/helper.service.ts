@@ -302,6 +302,26 @@ export class HelperService {
         }
     ];
 
+    // tslint:disable-next-line:member-ordering
+    private static _paymentStatusesInvoice: Array<{ id: string; label: string }> = [
+        {
+            id: 'waiting_for_payment',
+            label: 'Waiting for Payment',
+        },
+        {
+            id: 'payment_failed',
+            label: 'Payment Failed',
+        },
+        {
+            id: 'paid',
+            label: 'Paid',
+        },
+        {
+            id: 'overdue',
+            label: 'Overdue',
+        }
+    ];
+
     private static _paymentTypes: Array<{ id: string; label: string }> = [
         {
             id: EPaymentType.PAY_LATER,
@@ -811,7 +831,7 @@ export class HelperService {
     }
 
     static getStatusList(
-        page: 'stores' | 'catalogues' | 'payments' | 'orders' | 'sales-rep'
+        page: 'stores' | 'catalogues' | 'payments' | 'invoices' | 'orders' | 'sales-rep'
     ): Array<{ id: string; label: string }> {
         switch (page) {
             case 'stores':
@@ -823,6 +843,8 @@ export class HelperService {
             case 'payments':
                 return HelperService._paymentStatuses;
 
+            case 'invoices':
+                return HelperService._paymentStatusesInvoice;
             case 'orders':
                 return HelperService._orderStatuses;
 
@@ -835,7 +857,7 @@ export class HelperService {
     }
 
     static getTypesList(
-        page: 'stores' | 'catalogues' | 'payments' | 'orders' | 'sales-rep'
+        page: 'stores' | 'catalogues' | 'payments' | 'invoices' | 'orders' | 'sales-rep'
     ): Array<{ id: string; label: string }> {
         switch (page) {
             case 'catalogues':
@@ -1421,9 +1443,13 @@ export class HelperService {
     paymentStatus(): { id: string; label: string }[] {
         return HelperService._paymentStatuses;
     }
-
+    
     paymentStatusV2(): { id: string; label: string }[] {
         return HelperService._paymentStatusesV2;
+    }
+
+    paymentStatusInvoice(): { id: string; label: string }[] {
+        return HelperService._paymentStatusesInvoice;
     }
 
     paymentType(): { id: string; label: string }[] {

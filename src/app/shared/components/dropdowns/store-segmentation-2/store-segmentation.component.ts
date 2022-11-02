@@ -191,6 +191,17 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.cdRef.markForCheck();
     }
 
+    private getCorrectGroupName() {
+        /** mengubah nama group sesuai dengan nama group yang di set di fungsi onSelectionChanged */
+        const group = {
+            type: 'store-segmentation-types',
+            group: 'store-segmentation-groups',
+            channel: 'store-segmentation-channels',
+            cluster:  'store-segmentation-clusters'
+        };
+        return group[this.segmentationType];
+    }
+
     private requestEntity(params: IQueryParams): void {
         this.toggleLoading(true);
 
@@ -327,11 +338,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                         addedRawAvailableEntities = response;
                         if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                             if (this.segmentationType == 'type') {
-                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: 'store-segmentation-types' }));
                                 let typeValue = (response as Array<Entity>).map((d) => ({
                                     id: d.typeId,
                                     label: d.typeName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-types',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -346,11 +357,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                     this.upsertEntity(entity);
                                 }
                             } else if (this.segmentationType == 'group') {
-                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: 'store-segmentation-groups' }));
                                 let groupValue = (response as Array<Entity>).map((d) => ({
                                     id: d.groupId,
                                     label: d.groupName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-groups',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -365,11 +376,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                     this.upsertEntity(entity);
                                 }
                             } else if (this.segmentationType == 'channel') {
-                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: 'store-segmentation-channels' }));
                                 let channelValue = (response as Array<Entity>).map((d) => ({
                                     id: d.channelId,
                                     label: d.channelName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-channels',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -387,12 +398,12 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                 addedAvailableEntities = (response as Array<Entity>).map((d) => ({
                                     id: d.clusterId,
                                     label: d.clusterName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-clusters',
                                 }));
                                 let clusterValue = (response as Array<Entity>).map((d) => ({
                                     id: d.clusterId,
                                     label: d.clusterName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-clusters',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -408,7 +419,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                 }
                             }
                         } else {
-                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.getCorrectGroupName() }));
                             for (const entity of response as Array<Entity>) {
                                 this.upsertEntity(entity);
                             }
@@ -418,11 +429,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
                         if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                             if (this.segmentationType == 'type') {
-                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: 'store-segmentation-types' }));
                                 let typeValue = (response.data as Array<Entity>).map((d) => ({
                                     id: d.typeId,
                                     label: d.typeName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-types',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -437,11 +448,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                     this.upsertEntity(entity);
                                 }
                             } else if (this.segmentationType == 'group') {
-                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: 'store-segmentation-groups' }));
                                     let groupValue = (response.data as Array<Entity>).map((d) => ({
                                         id: d.groupId,
                                         label: d.groupName,
-                                        group: this.segmentationType,
+                                        group: 'store-segmentation-groups',
                                         supplierId: null,
                                         parentId: null,
                                         externalId: null,
@@ -456,11 +467,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                         this.upsertEntity(entity);
                                     }
                             } else if (this.segmentationType == 'channel') {
-                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: 'store-segmentation-channels' }));
                                     let channelValue = (response.data as Array<Entity>).map((d) => ({
                                         id: d.channelId,
                                         label: d.channelName,
-                                        group: this.segmentationType,
+                                        group: 'store-segmentation-channels',
                                         supplierId: null,
                                         parentId: null,
                                         externalId: null,
@@ -475,11 +486,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                         this.upsertEntity(entity);
                                     }
                             } else if (this.segmentationType == 'cluster') {
-                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: 'store-segmentation-clusters' }));
                                 let clusterValue = (response.data as Array<Entity>).map((d) => ({
                                     id: d.clusterId,
                                     label: d.clusterName,
-                                    group: this.segmentationType,
+                                    group: 'store-segmentation-clusters',
                                     supplierId: null,
                                     parentId: null,
                                     externalId: null,
@@ -495,7 +506,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                 }
                             }
                         } else {
-                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.getCorrectGroupName() }));
 
                             for (const entity of response.data as Array<Entity>) {
                                 this.upsertEntity(entity);
@@ -587,12 +598,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         // Mengirim nilai tersebut melalui subject.
         if (event) {
             const eventIds = event.map((e) => e.id);
-            const rawEntities = this.rawAvailableEntities$.value;
-            if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                this.selectedEntity$.next(eventIds.map((eventId) => this.cachedEntities[String(eventId)]));
-            } else {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
-            }
+            this.selectedEntity$.next(eventIds.map((eventId) => this.cachedEntities[String(eventId)]));
         }
     }
 
@@ -704,6 +710,9 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                         // this.entityFormView.setValue(viewValue);
                     }
 
+                    // refresh to initial data
+                    this.initEntity();
+                    
                     this.onSelectedEntity(this.entityFormValue.value);
                     this.cdRef.markForCheck();
                 },

@@ -1,0 +1,49 @@
+@import 'src/@fuse/scss/fuse';
+
+app-export-history {
+    table {
+        &.simple {
+            border: 1px solid #e8e8e8;
+            border-collapse: collapse;
+
+            thead[role='rowgroup'] {
+                background-color: #fafafa;
+            }
+
+            th {
+                &.mat-header-cell {
+                    font-size: 14px;
+                }
+            }
+
+            th,
+            td {
+                border: 1px solid #e8e8e8;
+            }
+        }
+    }
+
+    .mat-flat-button, .mat-stroked-button {
+        line-height: 4px !important;
+    }
+
+    .custom-chip-list {
+        mat-chip {
+            border: 1px solid;
+        }
+
+        .mat-chip.mat-standard-chip::after {
+            background: sinbad-color('black', '80');
+            opacity: 0;
+        }
+    }
+
+    .mat-standard-chip {
+        border-radius: 5px !important;
+    }
+
+    .btn-refresh {
+        color: white !important;
+        background-color: #31475e !important;
+    }
+}

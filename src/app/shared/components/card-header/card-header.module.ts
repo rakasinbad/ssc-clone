@@ -26,6 +26,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { ExportsModule } from '../exports/exports.module';
 import { ExportsEffects } from '../exports/store/effects';
 import { fromExport } from '../exports/store/reducers';
+import { ExportAdvancedModule } from '../export-advanced/export-advanced.module';
 import { ImportAdvancedModule } from '../import-advanced/import-advanced.module';
 import { SearchBarModule } from '../search-bar/search-bar.module';
 import { CardHeaderComponent } from './card-header.component';
@@ -41,7 +42,7 @@ import { CardHeaderComponent } from './card-header.component';
         SearchBarModule,
         ImportAdvancedModule,
         ExportsModule,
-        // ExportAdvancedModule,
+        ExportAdvancedModule,
 
         // Material
         MatButtonModule,

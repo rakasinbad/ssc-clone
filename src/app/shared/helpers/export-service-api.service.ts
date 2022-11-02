@@ -1,10 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ExportConfigurationPage } from '../components/export-advanced/models/export-filter.model';
 
 import { IConfigImportAdvanced } from '../components/import-advanced/models';
 import { HelperService } from './helper.service';
-import { ExportConfiguration } from '../components/exports/models';
 
 /**
  *
@@ -54,7 +54,7 @@ export class ExportServiceApiService {
         let params = new HttpParams();
 
         if (!params.has('type')) {
-            switch (type as ExportConfiguration['page']) {
+            switch (type as ExportConfigurationPage) {
                 case 'catalogues': {
                     params = params.set('type', 'catalogues');
                     break;
@@ -70,7 +70,8 @@ export class ExportServiceApiService {
                     break;
                 }
 
-                case 'payments': {
+                case 'payments':
+                case 'invoices': {
                     params = params.set('type', 'fms');
                     break;
                 }
