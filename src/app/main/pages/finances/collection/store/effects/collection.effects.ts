@@ -28,9 +28,6 @@ import {
     FinanceDetailBillingV1,
 } from '../../models';
 import * as collectionStatus from '../reducers';
-import * as fromBilling from '../reducers/billing.reducer';
-import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
-import { OrderActions } from '../../../../orders/store/actions';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 import { APPROVE, REJECT } from '../../constants';
 

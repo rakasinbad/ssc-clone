@@ -5,8 +5,8 @@ import * as fromRoot from 'app/store/app.reducer';
 
 import { IStatusPayment } from '../../models';
 import { PaymentStatusActions } from '../actions';
-import { OrderActions } from '../../../../orders/store/actions';
-import { getTotalRefunded } from '../selectors/payment-status.selectors';
+// import { OrderActions } from '../../../../orders/store/actions';
+// import { getTotalRefunded } from '../selectors/payment-status.selectors';
 
 export const FEATURE_KEY = 'paymentStatuses';
 

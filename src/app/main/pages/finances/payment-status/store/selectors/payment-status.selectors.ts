@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { fromPaymentStatus } from '../reducers';
-import { getOrderState } from '../../../../orders/store/selectors/order.selectors';
+// import { getOrderState } from '../../../../orders/store/selectors/order.selectors';
 
 export const getPaymentStatusState = createFeatureSelector<fromPaymentStatus.State>(
     fromPaymentStatus.FEATURE_KEY

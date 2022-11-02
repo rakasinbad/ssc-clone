@@ -1,4 +1,4 @@
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models/merchant.model';
+// import { Store as Merchant } from 'app/main/pages/accounts/merchants/models/merchant.model';
 import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { StoreSegment } from 'app/shared/models/store-segment.model';
@@ -16,7 +16,7 @@ export interface ICreditLimitStore extends ITimestamp {
     freezeStatus: boolean;
     invoiceGroup: InvoiceGroup;
     invoiceGroupId: string;
-    store?: Merchant;
+    store?: any;
     storeId: string;
     termOfPayment: number;
     totalOrder: number;
@@ -39,7 +39,7 @@ export class CreditLimitStore implements ICreditLimitStore {
     freezeStatus: boolean;
     invoiceGroup: InvoiceGroup;
     invoiceGroupId: string;
-    store?: Merchant;
+    store?: any;
     storeId: string;
     termOfPayment: number;
     totalOrder: number;
@@ -102,8 +102,8 @@ export class CreditLimitStore implements ICreditLimitStore {
         this.invoiceGroup = value ? new InvoiceGroup(value) : null;
     }
 
-    set setStore(value: Merchant) {
-        this.store = value ? new Merchant(value) : null;
+    set setStore(value: any) {
+        this.store = value ? value : null;
     }
 
     static patch(body: CreditLimitStoreOptions): CreditLimitStoreOptions {
