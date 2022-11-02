@@ -1,0 +1,118 @@
+<div id="collection-detail" class="page-layout carded fullwidth tabbed inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT CARD Detail-->
+        <div class="content-card" style="margin-top: 10px">
+            <!-- HEADER -->
+            <div class="header" fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- APP TITLE -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    style="margin-bottom: 5px; width: 100%"
+                >
+                    <div fxLayoutAlign="start center">
+                        <button mat-icon-button class="mr-0 mr-sm-16" (click)="onClickBack()">
+                            <mat-icon>arrow_back</mat-icon>
+                        </button>
+
+                        <div>
+                            <div
+                                fxLayout="column"
+                                fxLayoutAlign="start start"
+                                [@animate]="{
+                                    value: '*',
+                                    params: { delay: '100ms', x: '-25px' }
+                                }"
+                            >
+                                <div class="h2 header-title">
+                                    {{
+                                        (detailCollection$ | async)?.data.paymentCollectionMethod
+                                            .collectionCode || '-'
+                                    }}
+                                </div>
+                            </div>
+                            <div
+                                fxLayout="row"
+                                fxLayoutAlign="start start"
+                                [@animate]="{
+                                    value: '*',
+                                    params: { delay: '100ms', x: '-25px' }
+                                }"
+                            >
+                                <div class="label-collection">Collection Status:</div>
+
+                                <div
+                                    class="text-status text-{{
+                                        (detailCollection$ | async)?.data?.paymentCollectionMethod
+                                            ?.approvalStatus}}">
+                                    {{
+                                        statusLabel(
+                                            (detailCollection$ | async)?.data
+                                                ?.paymentCollectionMethod?.approvalStatus
+                                        ) || '-'
+                                    }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <ng-template [ngxPermissionsOnly]="['FINANCE.CL.UPDATE']"> -->
+                    <div
+                        fxLayoutAlign="start center"
+                        *ngIf="
+                            (detailCollection$ | async)?.data.paymentCollectionMethod
+                                .approvalStatus == 'pending' && 
+                            (detailCollection$ | async)?.data.paymentCollectionMethod
+                                .paymentCollectionType.code !== 'sales_return'
+                        "
+                    >
+                        <button class="btn-rejected" (click)="btnReject(dataDetail)">Reject</button>
+                        <button class="btn-approved" (click)="btnApproved(dataDetail)">Approve</button>
+                    </div>
+                    <!-- </ng-template> -->
+                </div>
+
+                <!-- / APP TITLE -->
+            </div>
+            <!-- / HEADER -->
+            <div class="tab-content p-16">
+                <div class="box-info">
+                    <span class="mat-title-headline"> Collection Detail </span>
+                </div>
+            </div>
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="tab-content p-16">
+                    <app-detail-collection-info></app-detail-collection-info>
+                </div>
+                <div class="tab-content p-16">
+                    <app-detail-collection-sales></app-detail-collection-sales>
+                </div>
+            </div>
+            <br />
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD Detail-->
+
+        <br />
+
+        <!-- CONTENT CARD Table -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="tab-content p-16">
+                    <app-detail-collection-table></app-detail-collection-table>
+                </div>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+
+        <br />
+        <!-- / CONTENT CARD Table-->
+    </div>
+    <!-- / CENTER -->
+</div>

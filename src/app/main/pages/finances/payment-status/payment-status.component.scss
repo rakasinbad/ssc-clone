@@ -1,0 +1,253 @@
+@import 'src/@fuse/scss/fuse';
+
+app-payment-status {
+    #payment-status {
+        .top-bg {
+            @include media-breakpoint('lt-md') {
+                height: 256px;
+            }
+        }
+
+        > .center {
+            > .header {
+                .search-wrapper {
+                    width: 100%;
+                    // max-width: 480px;
+                    max-width: 200px;
+                    border-radius: 28px;
+                    overflow: hidden;
+                    // @include mat-elevation(1);
+
+                    @include media-breakpoint('xs') {
+                        width: 100%;
+                    }
+
+                    .search {
+                        width: 100%;
+                        // height: 48px;
+                        // line-height: 48px;
+                        height: 36px;
+                        line-height: 36px;
+                        padding: 0 18px;
+
+                        input {
+                            width: 100%;
+                            // height: 48px;
+                            // min-height: 48px;
+                            // max-height: 48px;
+                            // padding: 0 16px;
+                            height: 36px;
+                            min-height: 36px;
+                            max-height: 36px;
+                            padding: 0 16px 0 4px;
+                            border: none;
+                            outline: none;
+                            font-size: 13px;
+                        }
+                    }
+                }
+
+                @include media-breakpoint('lt-md') {
+                    padding: 8px 0;
+                    height: 192px !important;
+                    min-height: 192px !important;
+                    max-height: 192px !important;
+                }
+            }
+        }
+    }
+
+    .payments-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
+        // .mat-header-row {
+        //     min-height: 64px;
+        // }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .payment {
+            position: relative;
+            // cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
+            padding-right: 8px;
+
+            p[data-content='-'] {
+                // color: red;
+                // text-align: center;
+            }
+
+            .indicator-green {
+                color: #27ae60;
+            }
+        }
+
+        // .ngxImageZoomContainer {
+        //     width: 100% !important;
+        //     height: 100% !important;
+        // }
+
+        .mat-column-order-reference {
+            flex: 0 1 10em;
+            min-width: 120px;
+        }
+
+        .mat-column-order-code {
+            flex: 0 1 10em;
+            min-width: 140px;
+        }
+
+        .mat-column-store-name {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+        .mat-column-owner-name {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+        .mat-column-store-order-total {
+            flex: 1 1 10em;
+            min-width: 130px;
+        }
+
+        .mat-column-supplier-delivered-total {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+
+        .mat-column-order-status {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
+
+        .mat-column-paylater-type {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
+
+        .mat-column-account-receivable {
+            flex: 1 1 10em;
+            min-width: 130px;
+        }
+        .mat-column-status {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
+
+        .mat-column-paylater-type {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
+
+        .mat-column-payment-type {
+            flex: 0 1 100px;
+            min-width: 100px;
+        }
+
+        .mat-column-payment-method {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-order-date {
+            flex: 0 1 90px;
+            min-width: 90px;
+        }
+
+        .mat-column-due-date {
+            flex: 0 1 90px;
+            min-width: 90px;
+        }
+
+        .mat-column-paid-on {
+            flex: 0 1 90px;
+            min-width: 90px;
+        }
+
+        .mat-column-aging-day {
+            flex: 0 1 75px;
+            min-width: 75px;
+        }
+
+        .mat-column-d {
+            flex: 0 1 50px;
+            min-width: 50px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 60px;
+            min-width: 60px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
+        }
+    }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
+}
+
+.nav {
+    fuse-nav-horizontal-item {
+        &.nav-item {
+            &:first-of-type {
+                .nav-link {
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+}

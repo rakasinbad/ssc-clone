@@ -1,0 +1,108 @@
+<div id="collection-detail-general-info">
+    <div class="pb-16">
+        <span class="mat-headline"> General Information </span>
+    </div>
+
+    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Code</div>
+
+                <div class="description">
+                    {{
+                        (detailCollection$ | async)?.data?.paymentCollectionMethod
+                            ?.collectionCode || '-'
+                    }}
+                </div>
+            </div>
+        </div>
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Reference Number</div>
+
+                <div class="description">
+                    {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.refNo || '-' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Total Amount</div>
+
+                <div class="description">
+                    {{
+                        numberFormat(
+                            (detailCollection$ | async)?.data?.paymentCollectionMethod?.totalAmount
+                        )
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Used Amount</div>
+
+                <div class="description">
+                    {{
+                        numberFormat(
+                            (detailCollection$ | async)?.data?.paymentCollectionMethod?.usedAmount
+                        )
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Date</div>
+
+                <div class="description">
+                    {{
+                        ((detailCollection$ | async)?.data?.paymentCollectionMethod?.createdDate
+                            | date: 'dd MMM yyyy') || '-'
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Collection Due Date</div>
+
+                <div class="description">
+                    {{
+                        ((detailCollection$ | async)?.data?.paymentCollectionMethod?.dueDate
+                            | date: 'dd MMM yyyy') || '-'
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Updated By</div>
+
+                <div class="description">
+                    {{
+                        (detailCollection$ | async)?.data?.paymentCollectionMethod?.updatedBy || '-'
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <div class="box-info">
+            <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                <div class="label">Updated Date</div>
+
+                <div class="description">
+                    {{
+                        ((detailCollection$ | async)?.data?.paymentCollectionMethod?.updatedDate
+                            | date: 'dd MMM yyyy') || '-'
+                    }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
