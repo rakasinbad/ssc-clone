@@ -116,7 +116,12 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
             map(({ payload }) => payload),
             withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnLogs)),
             exhaustMap(([{ id, change, returned }, lastReturnParcelLogs]) => {
-                return props.returnApiService.update(id, change)
+                let updatePayload: IChangeStatusReturn = { status: change.status };
+                if (change.status !== 'closed' && change.status !== 'rejected') {
+                    updatePayload.returnItems = change.returnItems;
+                }
+            
+                return props.returnApiService.update(id, updatePayload)
                     .pipe(
                         map((resp) => {
                            props.$log.generateGroup(`[RESPONSE REQUEST UPDATE STATUS RETURN]`, {

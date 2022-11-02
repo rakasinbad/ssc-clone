@@ -103,7 +103,7 @@ const returnReducer = createReducer(
             isEdit: false,
             isLoading: false,
             isRefresh: undefined,
-            returns: adapterReturn.addOne(
+            returns: adapterReturn.upsertOne(
                 payload.data,
                 { ...state.returns, selectedReturnId: payload.data.returnParcelId  }
             ),
