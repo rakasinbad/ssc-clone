@@ -77,6 +77,11 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                     this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
                 }
             },
+            export: {
+                permissions: [],
+                useAdvanced: true,
+                pageType: 'returns',
+            },
         };
 
         this.displayedColumns = [

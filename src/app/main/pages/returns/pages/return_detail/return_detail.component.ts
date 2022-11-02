@@ -302,7 +302,11 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             })
         };
 
-        logs.push(stepConfig('pending', steps.pending));
+        if (steps.pending) {
+            logs.push(stepConfig('pending', steps.pending));
+        } else {
+            logs.push(stepConfig('pending', steps.created));
+        }
         logs.push(stepConfig('approved', steps.approved));
         logs.push(stepConfig('approved_returned', steps.approved_returned));
         logs.push(stepConfig('closed', steps.closed));

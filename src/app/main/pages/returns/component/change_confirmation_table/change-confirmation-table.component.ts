@@ -303,7 +303,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
     }
 
     isDisableButtonConfirm(): boolean {
-        return this.formMode.some(form => form === 'edit');
+        return this.formMode.some(form => form === 'edit') || this.errorMessages.length > 0;
     }
 
     getButtonConfirmTitle(): string {

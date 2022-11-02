@@ -96,6 +96,7 @@ export class ExportFilterComponent implements OnInit {
 
             case 'warehouses':
             case 'portfolios':
+            case 'returns':
                 break;
 
             default: {
@@ -472,6 +473,9 @@ export class ExportFilterComponent implements OnInit {
 
             case 'warehouses':
                 return '(Warehouses)';
+
+            case 'returns':
+                return '(Returns)';
 
             default:
                 return '';

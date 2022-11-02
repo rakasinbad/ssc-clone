@@ -85,6 +85,7 @@
                                     autocomplete="off"
                                     style="width: 60%;"
                                     [class.mat-error]="hasError(approvedQty(idx))"
+                                    min="0"
                                 />
                                 <div class="ml-8" fxFlex fxLayoutAlign="center center">
                                     <mat-icon style="cursor: pointer;" (click)="formMode[idx] = 'view'" (click)="onSaveEditQty(row, idx)">check_circle</mat-icon>

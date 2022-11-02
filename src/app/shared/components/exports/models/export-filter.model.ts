@@ -45,7 +45,8 @@ export interface ExportConfiguration {
         | 'journey-plans'
         | 'sr-assignment'
         | 'sales-rep'
-        | 'warehouses';
+        | 'warehouses'
+        | 'returns';
 
     // Menentukan konfigurasi setiap export.
     configuration?: ExportFilterConfiguration;
@@ -192,4 +193,21 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
     warehouses: {
         requireFilter: false,
     },
+    returns: {
+        requireFilter: true,
+        filterAspect: {
+            status: {
+                label: 'Return Status',
+                placeholder: 'Select Return Status',
+                required: true
+            },
+            rangeDate: {
+                required: false,
+                maxRange: {
+                    number: 1,
+                    duration: 'month',
+                },
+            },
+        }
+    }
 };

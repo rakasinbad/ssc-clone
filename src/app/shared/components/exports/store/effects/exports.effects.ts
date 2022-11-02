@@ -443,7 +443,8 @@ export class ExportsEffects {
             case 'warehouses':
             case 'journey-plans':
             case 'orders':
-            case 'sales-rep': {
+            case 'sales-rep':
+            case 'returns': {
                 return EXPORT_CONFIGURATION[pageType].requireFilter;
             }
         }
@@ -511,6 +512,7 @@ export class ExportsEffects {
 
                 case 'warehouses':
                 case 'portfolios':
+                case 'returns':
                     break;
 
                 default: {
