@@ -275,7 +275,7 @@ export class ChangeConfirmationTableComponent implements OnInit, OnDestroy {
     }
 
     checkMinNumber(): void {
-        const haveError: boolean = this.returnData.value.every(data => data.approvedQty === 0);
+        const haveError: boolean = this.returnData.value.every(data => data.approvedQty <= 0);
         const isErrorExist: boolean = this.errorMessages.includes(this._errorMinNumber);
         if (haveError && !isErrorExist) {
             this.errorMessages.push(this._errorMinNumber);
