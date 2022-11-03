@@ -46,6 +46,8 @@ interface CardHeaderButtonConfig extends CardHeaderBaseConfig {
 interface CardHeaderAdvancedButtonConfig extends CardHeaderButtonConfig {
     // Berisi nama tipe halaman yang ingin dituju.
     pageType?: ExportConfiguration['page'];
+    // Jika value true, maka export akan meng hit ke api medea golang
+    useMedeaGo?: boolean;
 }
 
 export interface ICardHeaderConfiguration {

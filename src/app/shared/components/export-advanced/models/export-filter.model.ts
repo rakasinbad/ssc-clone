@@ -1,3 +1,5 @@
+import { IQueryParams } from "app/shared/models/query.model";
+
 interface ExportFilterFormConfiguration {
     required: boolean;
     placeholder?: string;
@@ -45,6 +47,7 @@ export type ExportConfigurationPage =
     | 'sr-assignment'
     | 'sales-rep'
     | 'warehouses'
+    | 'returns'
 
 export interface ExportConfiguration {
     // Tipe halaman harus diisi untuk menentukan export yang dibutuhkan.
@@ -52,6 +55,11 @@ export interface ExportConfiguration {
 
     // Menentukan konfigurasi setiap export.
     configuration?: ExportFilterConfiguration;
+}
+
+export interface IFetchStatusList {
+    params?: IQueryParams;
+    customUrl?: string;
 }
 
 export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
@@ -212,4 +220,21 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
     warehouses: {
         requireFilter: false,
     },
+    returns: {
+        requireFilter: true,
+        filterAspect: {
+            status: {
+                label: 'Return Status',
+                placeholder: 'Select Return Status',
+                required: true
+            },
+            rangeDate: {
+                required: true,
+                maxRange: {
+                    number: 9999,
+                    duration: 'year',
+                },
+            },
+        }
+    }
 };

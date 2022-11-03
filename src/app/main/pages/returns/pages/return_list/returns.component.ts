@@ -21,6 +21,7 @@ import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
 import { getReturnStatusTitle } from '../../models/returnline.model';
 import { IConfirmChangeQuantityReturn } from '../../models/returndetail.model';
+import { ExportFilterActions } from 'app/shared/components/export-advanced/store/actions';
 
 /**
  * @author Mufid Jamaluddin
@@ -79,8 +80,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             },
             export: {
                 permissions: [],
-                useAdvanced: true,
+                useAdvanced: false,
                 pageType: 'returns',
+                useMedeaGo: true
             },
         };
 
@@ -222,6 +224,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             });
 
         this.loadData(true);
+
+        /** FETCH STATUS LIST FOR FILTER EXPORT */
+        this.store.dispatch(ExportFilterActions.fetchStatusListRequest({}))
     }
 
     loadData(refresh?: boolean): void {

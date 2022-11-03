@@ -4,9 +4,9 @@ import { HelperService } from 'app/shared/helpers';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
+import { environment } from 'environments/environment';
 
-import { ExportConfiguration } from '../models';
-import { ExportConfigurationPage } from '../models/export-filter.model';
+import { ExportConfigurationPage } from '../models';
 
 /**
  *
@@ -34,6 +34,7 @@ export class ExportAdvanceApiService {
      * @memberof ExportAdvanceApiService
      */
     private readonly _exportEndpoint = '/download/export-';
+    private readonly _medeaGoExportEndoint = `${environment.urlMedeaGo};`
 
     /**
      *
@@ -42,6 +43,7 @@ export class ExportAdvanceApiService {
      * @memberof ExportAdvanceApiService
      */
     private readonly _exportHistoryEndpoint = '/export-logs';
+    private readonly _returnStatusEndpoint = '/return-status';
 
     /**
      * Creates an instance of ExportAdvanceApiService.
@@ -204,5 +206,49 @@ export class ExportAdvanceApiService {
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<{ message: string }>(this._url, { params: newParams });
+    }
+
+    requestExportMedeaGo(params: IQueryParams): Observable<{ message: string }> {
+        let body: any = {};
+        let exportUrl = ''
+
+        switch (params['page'] as ExportConfigurationPage) {
+            case 'returns':
+                exportUrl = `${this._medeaGoExportEndoint}/return-parcels/export`;
+                break;
+            default: {
+                const err: ErrorHandler = {
+                    id: 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED',
+                    errors: params,
+                };
+
+                throw new ErrorHandler(err);
+            }
+        };
+
+        if (params['status']) {
+            if (params['page'] === 'returns') {
+                body.returnStatus = params['status'];
+            } else {
+                body.status = params['status'];
+            }
+        };
+
+        body.returnDate = {
+            start: params['dateGte'] ? params['dateGte'] : '',
+            end: params['dateLte'] ? params['dateLte'] : ''
+        };
+
+        this._url = this.helperSvc.handleApiRouter(exportUrl);
+
+        return this.http.post<{ message: string }>(this._url, body);
+    }
+
+    /** get status list for filter export, default url is return status list */
+    getStatusList<T>(params?: IQueryParams, customUrl?: string): Observable<T> {
+        this._url = this.helperSvc.handleApiRouter(customUrl || this._returnStatusEndpoint);
+        const newParams = this.helperSvc.handleParams(this._url, params);
+
+        return this.http.get<T>(this._url, { params: newParams });
     }
 }

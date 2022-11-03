@@ -16,8 +16,8 @@ import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { ITab } from 'app/shared/models/tab.model';
 import { take } from 'rxjs/operators';
 
-import { ExportDialogComponent } from './export-dialog/export-dialog.component';
-import { IButtonExportConfig, IDialogData } from './models';
+import { ExportDialogComponent, } from './export-dialog/export-dialog.component';
+import { IButtonExportConfig, IDialogData, ExportConfigurationPage } from './models';
 
 @Component({
     selector: 'sinbad-export-advanced',
@@ -28,24 +28,20 @@ import { IButtonExportConfig, IDialogData } from './models';
 export class ExportAdvancedComponent implements OnInit, AfterViewInit {
     BtnDesignType = ButtonDesignType;
 
-    @Input() pageType: string;
+    @Input() pageType: ExportConfigurationPage;
     @Input() title?: string;
     @Input() action?: string;
     @Input() color?: ThemePalette;
     @Input() formConfig?: any;
     @Input() btnConfig: IButtonExportConfig;
+    @Input() useMedeaGo: boolean = false;
 
     @ViewChild('exportBtn', { read: ElementRef, static: false }) private exportBtn: ElementRef;
 
     private _tabs: Array<ITab> = [
         {
             id: 'main-data',
-            label: 'Data',
-            disabled: false
-        },
-        {
-            id: 'invoice',
-            label: 'Invoice',
+            label: 'Export',
             disabled: false
         },
         {
@@ -82,6 +78,15 @@ export class ExportAdvancedComponent implements OnInit, AfterViewInit {
             return;
         }
 
+        if (this.pageType === 'payments') {
+            this._tabs[0].label = 'Data';
+            this._tabs.splice(1, 0, {
+                id: 'invoice',
+                label: 'Invoice',
+                disabled: false
+            });
+        }
+        
         const dialogRef = this.matDialog.open<ExportDialogComponent, IDialogData>(
             ExportDialogComponent,
             {
@@ -92,7 +97,8 @@ export class ExportAdvancedComponent implements OnInit, AfterViewInit {
                     },
                     pageType: this.pageType,
                     formConfig: this.formConfig,
-                    tabConfig: this._tabs
+                    tabConfig: this._tabs,
+                    useMedeaGo: this.useMedeaGo
                 },
                 maxWidth: '80vw',
                 maxHeight: '80vh',

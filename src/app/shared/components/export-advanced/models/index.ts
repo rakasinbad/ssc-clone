@@ -4,6 +4,8 @@ import {
     ExportFilterConfiguration,
     ExportFormData,
     ExportFormFilterConfiguration,
+    ExportConfigurationPage,
+    IFetchStatusList
 } from './export-filter.model';
 import { ExportHistory } from './export-history.model';
 import { IButtonExportConfig, IDialogData, ExportAdvanced } from './export-advanced.model';
@@ -17,5 +19,7 @@ export {
     ExportConfiguration,
     ExportFilterConfiguration,
     ExportFormData,
-    ExportFormFilterConfiguration
+    ExportFormFilterConfiguration,
+    ExportConfigurationPage,
+    IFetchStatusList
 };

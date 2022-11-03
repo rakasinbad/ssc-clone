@@ -8,7 +8,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { HelperService, NoticeService } from 'app/shared/helpers';
+import { HelperService, NoticeService, LogService } from 'app/shared/helpers';
 import {
     ErrorHandler,
     TNullable,
@@ -48,6 +48,7 @@ export class ExportFilterEffects {
         private exportsApiService: ExportAdvanceApiService,
         private notice$: NoticeService,
         private helper$: HelperService,
+        private $log: LogService,
     ) { }
 
     startExportRequest$ = createEffect(() =>
@@ -154,6 +155,70 @@ export class ExportFilterEffects {
         { dispatch: false }
     );
 
+    fetchStatusListRequest$ = createEffect(() => {
+        return this.actions$.pipe(
+            ofType(ExportFilterActions.fetchStatusListRequest),
+            switchMap(({ payload }) => {
+                const params = payload && payload.params ? payload.params : null;
+                const customUrl = payload && payload.customUrl ? payload.customUrl : null
+                return this.exportsApiService.getStatusList(params, customUrl).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        this.$log.generateGroup('[EXPORT ADCANCED COMPONENT - RESPONSE REQUEST FETCH STATUS LIST]', {
+                            payload: {
+                                type: 'log',
+                                value: payload
+                            },
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+                    
+                        return ExportFilterActions.fetchStatusListSuccess({
+                            payload: resp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            ExportFilterActions.fetchStatusListFailure({
+                                payload: { id: 'fetchStatusListFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        );
+    });
+
+    fetchStatusListFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ExportFilterActions.fetchStatusListFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = resp.errors.error.message || resp.errors.message;
+
+                    this.$log.generateGroup('[EXPORT ADCANCED COMPONENT - REQUEST FETCH STATUS LIST FAILURE]', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        },
+                        message: {
+                            type: 'log',
+                            value: message
+                        }
+                    });
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // Fungsi ini untuk memeriksa apakah nilainya terisi atau tidak.
     isFilterRequirementOverriden(
         pageType: ExportConfigurationPage,
@@ -182,7 +247,7 @@ export class ExportFilterEffects {
     
     processStartExportRequest = ([userData, queryParams]: [
         User,
-        IQueryParams & ExportConfiguration & { formData: ExportFormData }
+        IQueryParams & ExportConfiguration & { formData: ExportFormData, useMedeaGo: boolean }
     ]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
@@ -203,19 +268,37 @@ export class ExportFilterEffects {
         // Memasukkan tipe halaman yang ingin di-export.
         newQuery['page'] = queryParams.page;
 
-        return this.exportsApiService.requestExport(newQuery).pipe(
-            catchOffline(),
-            switchMap((response) => {
-                return of(
-                    ExportFilterActions.startExportSuccess({
-                        payload: {
-                            message: response.message,
-                        },
-                    })
-                );
-            }),
-            catchError((err) => this.sendErrorToState(err, 'startExportFailure'))
-        );
+        if (queryParams.useMedeaGo) {
+            delete queryParams.useMedeaGo
+
+            return this.exportsApiService.requestExportMedeaGo(newQuery).pipe(
+                catchOffline(),
+                switchMap((response) => {
+                    return of(
+                        ExportFilterActions.startExportSuccess({
+                            payload: {
+                                message: response.message,
+                            },
+                        })
+                    );
+                }),
+                catchError((err) => this.sendErrorToState(err, 'startExportFailure'))
+            );
+        } else {
+            return this.exportsApiService.requestExport(newQuery).pipe(
+                catchOffline(),
+                switchMap((response) => {
+                    return of(
+                        ExportFilterActions.startExportSuccess({
+                            payload: {
+                                message: response.message,
+                            },
+                        })
+                    );
+                }),
+                catchError((err) => this.sendErrorToState(err, 'startExportFailure'))
+            );
+        }
     };
 
     sendErrorToState = (

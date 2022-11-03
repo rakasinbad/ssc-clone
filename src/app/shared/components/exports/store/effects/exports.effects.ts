@@ -485,7 +485,8 @@ export class ExportsEffects {
                 case 'payments':
                 case 'journey-plans':
                 case 'sales-rep':
-                case 'stores': {
+                case 'stores':
+                case 'returns': {
                     // Memeriksa konfigurasi OMS.
                     if (configuration[payload.page]) {
                         // Memeriksa apakah requirement filter telah tertimpa oleh payload-nya action atau tidak.
@@ -512,7 +513,6 @@ export class ExportsEffects {
 
                 case 'warehouses':
                 case 'portfolios':
-                case 'returns':
                     break;
 
                 default: {

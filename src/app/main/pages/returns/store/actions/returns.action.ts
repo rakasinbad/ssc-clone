@@ -62,7 +62,7 @@ export const fetchTotalReturnSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Amoun Returns
+// Fetch Amount Returns
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchReturnAmountRequest = createAction(

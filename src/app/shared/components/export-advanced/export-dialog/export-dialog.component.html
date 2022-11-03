@@ -50,7 +50,7 @@
 </div>
 
 <ng-template #mainData let-pageType>
-    <app-export-advanced-filter (selectedTabIndex)="onSelectedTabIndex($event)" [pageType]="'payments'"></app-export-advanced-filter>
+    <app-export-advanced-filter (selectedTabIndex)="onSelectedTabIndex($event)" [pageType]="data?.pageType" [useMedeaGo]="data?.useMedeaGo"></app-export-advanced-filter>
 </ng-template>
 
 <ng-template #invoice let-pageType>

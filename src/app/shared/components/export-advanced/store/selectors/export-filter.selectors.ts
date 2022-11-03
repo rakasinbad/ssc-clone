@@ -9,3 +9,5 @@ export const getRequesting = createSelector(getExportFilterState, state => state
 export const getIsError = createSelector(getExportFilterState, state => state.isError);
 
 export const getExportFilter = createSelector(getExportFilterState, state => state.filter);
+
+export const getStatusList = createSelector(getExportFilterState, state => state.statusList);

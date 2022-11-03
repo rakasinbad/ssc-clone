@@ -10,6 +10,7 @@ export const environment = {
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50],
     host: 'https://kong-sandbox.sinbad.web.id',
+    urlMedeaGo: '/medeago/api/sc/v1',
     hiddenMenu: [
         'dashboard',
         // 'voucher', // Supplier Voucher

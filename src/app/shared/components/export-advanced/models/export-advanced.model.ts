@@ -1,6 +1,7 @@
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { IDialogConfig } from 'app/shared/models/dialog.model';
 import { ITab } from 'app/shared/models/tab.model';
+import { ExportConfigurationPage } from './export-filter.model';
 
 export interface IButtonExportConfig {
     readonly id: NonNullable<string>;
@@ -16,9 +17,10 @@ export interface IDialogData {
         title: string;
         cssToolbar: string | Array<string>;
     };
-    pageType: string;
+    pageType: ExportConfigurationPage;
     formConfig: any;
     tabConfig: Array<ITab>;
+    useMedeaGo?: boolean;
 }
 
 interface IExport {

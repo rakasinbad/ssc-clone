@@ -37,7 +37,7 @@ import { environment } from 'environments/environment';
 import { TExportHistoryAction } from '../../models/export-history.model';
 import { ExportFilterSelector } from '../../store/selectors';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-export-advanced-filter',
@@ -48,6 +48,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class FilterComponent implements OnInit, OnDestroy {
     @Input() pageType: ExportConfigurationPage;
+    @Input() useMedeaGo: boolean = false;
     @Output() selectedTabIndex: EventEmitter<number> = new EventEmitter<number>();
 
     readonly defaultPageSize = environment.pageSize;
@@ -120,6 +121,18 @@ export class FilterComponent implements OnInit, OnDestroy {
 
             case 'journey-plans':
                 hasDefaultConfig = true;
+                break;
+            
+            case 'returns':
+                hasDefaultConfig = true;
+                this.exportFilterStore.select(ExportFilterSelector.getStatusList)
+                    .pipe(
+                        takeUntil(this._unSubs$),
+                        map(data => 
+                            data && data.map(val => ({ id: val.status, label: val.title }))
+                        )
+                    )
+                    .subscribe(data => this.statusSources = data);
                 break;
 
             case 'warehouses':
@@ -461,7 +474,8 @@ export class FilterComponent implements OnInit, OnDestroy {
                 payload: {
                     page: this.pageType,
                     formData: formSend,
-                    paginate: false
+                    paginate: false,
+                    useMedeaGo: this.useMedeaGo
                 }
             })
         );
