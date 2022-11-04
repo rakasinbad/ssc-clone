@@ -117,7 +117,6 @@ export class ExportHistoryEffects {
         IExportHistoryPage,
         IExportHistoryRequest
     ]): Observable<AnyAction> => {
-        console.log('useMedeaGO => ', queryParams)
         // Hanya mengambil ID user saja.
         const { userId } = userData.userSupplier;
 
@@ -182,8 +181,8 @@ export class ExportHistoryEffects {
                 newQuery['page'] = page;
             }
         }
-
-        return this.exportsApiService.getExportHistory<IPaginatedResponse<ExportHistory>>(newQuery).pipe(
+    
+        return this.exportsApiService.getExportHistory<IPaginatedResponse<ExportHistory>>(newQuery, exportPage.useMedeaGo).pipe(
             catchOffline(),
             switchMap((response) => {
                 if (newQuery.paginate) {

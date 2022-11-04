@@ -10,6 +10,12 @@ export interface IQueryParams {
     isWaitingForPayment?: boolean;
 }
 
+export interface IQueryParamsMedeaGo {
+    /** PAGINATION */
+    page?: number;
+    size?: number;
+}
+
 export interface IQuerySearchParams {
     fieldName: string;
     keyword: string | number;
@@ -54,4 +60,9 @@ export interface IQueryParamsVoucherStore {
     paginate?: boolean;
     keyword?: string;
     search?: IQuerySearchParams[];
+}
+ 
+export interface IArgs {
+    key: string;
+    value: string | number;
 }

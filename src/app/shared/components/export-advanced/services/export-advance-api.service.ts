@@ -1,10 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { ErrorHandler } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IArgs, IQueryParamsMedeaGo } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
-import { environment } from 'environments/environment';
 
 import { ExportConfigurationPage } from '../models';
 
@@ -53,8 +52,8 @@ export class ExportAdvanceApiService {
      */
     constructor(private http: HttpClient, private helperSvc: HelperService) {}
 
-    getExportHistory<T>(params: IQueryParams): Observable<T> {
-        const newArgs = [];
+    getExportHistory<T>(params: IQueryParams & IQueryParamsMedeaGo, useMedeaGo?: boolean): Observable<T> {
+        let newArgs: IArgs[] = [];
 
         if (params['userId']) {
             newArgs.push({
@@ -84,10 +83,49 @@ export class ExportAdvanceApiService {
             });
         }
 
-        this._url = this.helperSvc.handleApiRouter(this._exportHistoryEndpoint);
-        const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
-
+        this._url = this.helperSvc.handleApiRouter(this._exportHistoryEndpoint, useMedeaGo);
+        let newParams: HttpParams;
+        if (useMedeaGo) {
+            newParams = this.onBuildParamsExportHistory(params);
+        } else {
+            newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
+        }
+        
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    onBuildParamsExportHistory(params: IQueryParams & IQueryParamsMedeaGo): HttpParams {
+        let newArgs: IArgs[] = [];
+        
+        if (params['action']) {
+            newArgs.push({
+                key: 'action',
+                value: params['action'],
+            });
+        }
+
+        if (params['aPage']) {
+            newArgs.push({
+                key: 'aPage',
+                value: params['aPage'],
+            });
+        }
+
+        if (params['pageIndex']) {
+            newArgs.push({
+                key: 'page',
+                value: params['pageIndex']
+            })
+        }
+
+        if (params['size']) {
+            newArgs.push({
+                key: 'size',
+                value: params['size']
+            })
+        }
+
+        return this.helperSvc.handleParams(this._url, null, ...newArgs);;
     }
 
     requestExport(params: IQueryParams): Observable<{ message: string }> {

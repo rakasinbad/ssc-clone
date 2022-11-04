@@ -225,7 +225,9 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 page: this.pageType,
                 paginate: true,
                 action: this.pageTab,
-                useMedaGo: this.useMedeaGo
+                useMedaGo: this.useMedeaGo,
+                pageIndex: this.paginator.pageIndex + 1,
+                size: this.paginator.pageSize
             };
 
             if (this.pageType) {

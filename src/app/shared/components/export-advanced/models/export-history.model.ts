@@ -1,5 +1,5 @@
 import { ExportConfigurationPage } from "./export-filter.model";
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQueryParamsMedeaGo } from 'app/shared/models/query.model';
 import { ExportConfiguration } from './index';
 
 export type TExportHistoryType = 'Data' | 'Invoice';
@@ -14,9 +14,10 @@ export interface IExportHistoryPage {
     useMedeaGo?: boolean;
 }
 
-export interface IExportHistoryRequest extends IQueryParams, ExportConfiguration {
+export interface IExportHistoryRequest extends IQueryParams, Omit<IQueryParamsMedeaGo, 'page'>, ExportConfiguration {
     action: TExportHistoryAction;
     useMedaGo?: boolean;
+    pageIndex?: number;
 }
 
 export interface IExportHistory {
