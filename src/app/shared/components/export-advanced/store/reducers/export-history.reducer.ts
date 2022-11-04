@@ -30,7 +30,8 @@ export const initialState: State = ({
     data: [],
     exportPage: {
         page: '',
-        tab: ''
+        tab: '',
+        useMedeaGo: false
     },
     isLoading: false,
     total: 0

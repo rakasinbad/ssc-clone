@@ -27,7 +27,7 @@ export const resetExportHistory = createAction('[Export History] Reset Export Hi
 
 export const setExportHistoryPage = createAction(
     '[Export History] Set Export Page',
-    props<{ payload: { page: ExportConfigurationPage, tab: TExportHistoryAction } }>()
+    props<{ payload: { page: ExportConfigurationPage, tab: TExportHistoryAction, useMedeaGo?: boolean } }>()
 );
 
 export const resetExportHistoryPage = createAction('[Export History] Reset Export Page');

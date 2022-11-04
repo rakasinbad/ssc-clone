@@ -6,15 +6,17 @@ export type TExportHistoryType = 'Data' | 'Invoice';
 
 type TExportHistoryStatus = 'Pending' | 'Error' | 'Download';
 
-export type TExportHistoryAction = '' | 'export_fms' | 'export_invoices';
+export type TExportHistoryAction = '' | 'export_fms' | 'export_invoices' | 'export_returns';
 
 export interface IExportHistoryPage {
     page: ExportConfigurationPage;
     tab: TExportHistoryAction;
+    useMedeaGo?: boolean;
 }
 
 export interface IExportHistoryRequest extends IQueryParams, ExportConfiguration {
-    action: TExportHistoryAction
+    action: TExportHistoryAction;
+    useMedaGo?: boolean;
 }
 
 export interface IExportHistory {

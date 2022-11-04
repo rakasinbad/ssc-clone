@@ -158,12 +158,13 @@ export class FilterComponent implements OnInit, OnDestroy {
         // History Type
         switch (this.pageType) {
             case 'payments':
-            case 'returns':
                 this.historyTab = 'export_fms';
                 break;
             case 'invoices':
                 this.historyTab = 'export_invoices';
                 this.minStartDate = moment().subtract(1, 'years').toDate();
+            case 'returns':
+                this.historyTab = 'export_returns';
                 break;
         }
         
@@ -171,7 +172,8 @@ export class FilterComponent implements OnInit, OnDestroy {
             ExportHistoryActions.setExportHistoryPage({
                 payload: {
                     page: this.pageType,
-                    tab: this.historyTab
+                    tab: this.historyTab,
+                    useMedeaGo: this.useMedeaGo
                 }
             })
         )

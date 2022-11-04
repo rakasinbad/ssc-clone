@@ -75,6 +75,7 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
 
     pageType: ExportConfigurationPage;
     pageTab: TExportHistoryAction;
+    useMedeaGo: boolean = false;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -104,6 +105,7 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.pageType = data.page;
                     this.pageTab = data.tab;
                 }
+                this.useMedeaGo = data.useMedeaGo;
             });
     }
 
@@ -222,7 +224,8 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 sortBy: 'created_at',
                 page: this.pageType,
                 paginate: true,
-                action: this.pageTab
+                action: this.pageTab,
+                useMedaGo: this.useMedeaGo
             };
 
             if (this.pageType) {

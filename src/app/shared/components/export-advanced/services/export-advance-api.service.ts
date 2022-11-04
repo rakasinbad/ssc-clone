@@ -34,7 +34,7 @@ export class ExportAdvanceApiService {
      * @memberof ExportAdvanceApiService
      */
     private readonly _exportEndpoint = '/download/export-';
-    private readonly _medeaGoExportEndoint = `${environment.urlMedeaGo};`
+    private readonly _medeaGoEndpoint = `/medeago/api/sc/v1`;
 
     /**
      *
@@ -214,7 +214,7 @@ export class ExportAdvanceApiService {
 
         switch (params['page'] as ExportConfigurationPage) {
             case 'returns':
-                exportUrl = `${this._medeaGoExportEndoint}/return-parcels/export`;
+                exportUrl = `${this._medeaGoEndpoint}/return-parcels/export`;
                 break;
             default: {
                 const err: ErrorHandler = {

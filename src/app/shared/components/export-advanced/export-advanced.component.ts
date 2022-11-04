@@ -78,7 +78,7 @@ export class ExportAdvancedComponent implements OnInit, AfterViewInit {
             return;
         }
 
-        if (this.pageType === 'payments') {
+        if (this.pageType === 'payments' && this._tabs.length < 3) {
             this._tabs[0].label = 'Data';
             this._tabs.splice(1, 0, {
                 id: 'invoice',

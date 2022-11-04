@@ -117,6 +117,7 @@ export class ExportHistoryEffects {
         IExportHistoryPage,
         IExportHistoryRequest
     ]): Observable<AnyAction> => {
+        console.log('useMedeaGO => ', queryParams)
         // Hanya mengambil ID user saja.
         const { userId } = userData.userSupplier;
 
@@ -169,6 +170,11 @@ export class ExportHistoryEffects {
 
             case 'sales-rep': {
                 newQuery['page'] = 'sales-rep';
+                break;
+            }
+
+            case 'returns': {
+                newQuery['aPage'] = 'return_parcels';
                 break;
             }
 
