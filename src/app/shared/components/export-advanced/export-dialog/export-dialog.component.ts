@@ -3,12 +3,15 @@ import {
     Component,
     Inject,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    OnDestroy
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { ITab } from 'app/shared/models/tab.model';
-
 import { IDialogData } from '../models';
+import { Store as NgRxStore } from '@ngrx/store';
+import { fromExportHistory } from '../store/reducers';
+import { ExportHistoryActions } from '../store/actions';
 
 @Component({
     templateUrl: './export-dialog.component.html',
@@ -16,7 +19,7 @@ import { IDialogData } from '../models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ExportDialogComponent implements OnInit {
+export class ExportDialogComponent implements OnInit, OnDestroy {
     selectedTabIndex = 0; // default 0
     dialogTitle: string;
     exportContext = { $implicit: this.data.pageType };
@@ -25,7 +28,8 @@ export class ExportDialogComponent implements OnInit {
 
     constructor(
         @Inject(MAT_DIALOG_DATA) private data: IDialogData,
-        private matDialogRef: MatDialogRef<ExportDialogComponent>
+        private matDialogRef: MatDialogRef<ExportDialogComponent>,
+        private exportHistoryStore: NgRxStore<fromExportHistory.State>
     ) {
         this.dialogTitle = this.data.dialog.title;
         this.cssToolbar = this.data.dialog.cssToolbar;
@@ -35,6 +39,10 @@ export class ExportDialogComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+    }
+
+    ngOnDestroy(): void {
+        this.exportHistoryStore.dispatch(ExportHistoryActions.resetExportHistory());
     }
 
     onClose(): void {

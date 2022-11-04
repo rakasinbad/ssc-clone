@@ -97,7 +97,7 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.selectedViewHistoryId = VIEW_HISTORY_DATA
                 }
 
-                if (data.tab === '') {
+                if (data.page === '' || data.page === 'payments') {
                     this.pageType = 'payments'
                     this.pageTab = 'export_fms';
                 } else {
@@ -188,9 +188,6 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Reset ExportHistory state
-                this.exportHistoryStore.dispatch(ExportHistoryActions.resetExportHistory());
-
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;

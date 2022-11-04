@@ -158,6 +158,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         // History Type
         switch (this.pageType) {
             case 'payments':
+            case 'returns':
                 this.historyTab = 'export_fms';
                 break;
             case 'invoices':
@@ -165,6 +166,15 @@ export class FilterComponent implements OnInit, OnDestroy {
                 this.minStartDate = moment().subtract(1, 'years').toDate();
                 break;
         }
+        
+        this.exportHistoryStore.dispatch(
+            ExportHistoryActions.setExportHistoryPage({
+                payload: {
+                    page: this.pageType,
+                    tab: this.historyTab
+                }
+            })
+        )
 
         if (hasDefaultConfig) {
             DEFAULT_CONFIG = defaultExportFilterConfiguration[this.pageType];
@@ -290,7 +300,6 @@ export class FilterComponent implements OnInit, OnDestroy {
 
         this.cd$.markForCheck();
         this.exportFilterStore.dispatch(ExportFilterActions.truncateExportFilter());
-        this.exportHistoryStore.dispatch(ExportHistoryActions.resetExportHistory());
 
         this.isError$ = this.exportFilterStore.select(ExportFilterSelector.getIsError);
         this.isError$
