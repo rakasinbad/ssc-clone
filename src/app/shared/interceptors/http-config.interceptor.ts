@@ -1,9 +1,17 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { exhaustMap, take } from 'rxjs/operators';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
+    constructor(
+        private store: Store<fromAuth.FeatureState>,
+    ) {}
+
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         if (req.url.includes('google.com') || req.url.endsWith('ping')) {
             // if (req.headers.has('Origin')) {
@@ -63,7 +71,25 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                     headers: req.headers.set('X-Platform', 'SC')
                 });
             }
+
+
+            this.store.select(AuthSelectors.getUserState).pipe(
+                take(1),
+            ).subscribe(user => {
+                if (!user) {
+                    return next.handle(req);
+                }
+
+                req = req.clone({
+                    headers: req.headers.set('x-user-id', user.user.id)
+                });
+                req = req.clone({
+                    headers: req.headers.set('x-seller-id', user.user.userSuppliers[0].supplierId)
+                });
+
+            })
         }
+        
 
         return next.handle(req);
     }
