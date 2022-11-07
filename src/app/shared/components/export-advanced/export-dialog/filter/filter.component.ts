@@ -496,7 +496,8 @@ export class FilterComponent implements OnInit, OnDestroy {
             ExportHistoryActions.setExportHistoryPage({
                 payload: {
                     page: this.pageType,
-                    tab: this.historyTab
+                    tab: this.historyTab,
+                    useMedeaGo: this.useMedeaGo
                 }
             })
         )

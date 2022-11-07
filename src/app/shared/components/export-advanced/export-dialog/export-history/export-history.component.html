@@ -51,7 +51,7 @@
             User
         </th>
         <td [id]="'tbody__user-' + i" mat-cell *matCellDef="let row; let i = index">
-            {{ row?.user || '-' }}
+            {{ row?.user?.fullName || row?.user || '-' }}
         </td>
     </ng-container>
 
@@ -71,7 +71,7 @@
             Periode
         </th>
         <td [id]="'tbody__period-' + i" mat-cell *matCellDef="let row; let i = index">
-            {{ row?.period || '-' }}
+            {{ getPeriod(row) || '-' }}
         </td>
     </ng-container>
 
@@ -89,18 +89,18 @@
     <ng-container matColumnDef="progress">
         <th id="thead__progress" mat-header-cell *matHeaderCellDef>Progress</th>
         <td [id]="'row__progress-' + i" mat-cell *matCellDef="let row; let i = index">
-            <ng-container *ngIf="row?.progress === 'Download'; else otherProgress">
+            <ng-container *ngIf="row?.progress === 'Download' || row?.status === 'done'; else otherProgress">
                 <a
                     [id]="'btn__download-report_' + i"
                     href="javascript:;"
-                    (click)="onDownload(row?.downloadUrl)"
+                    (click)="onDownload(row?.downloadUrl || row?.url)"
                 >
-                    {{ row?.progress || '-' }}
+                    {{ getStatus(row) || '-' }}
                 </a>
             </ng-container>
             
             <ng-template #otherProgress>
-                {{ row?.progress || '-' }}
+                {{ getStatus(row) || '-' }}
             </ng-template>
         </td>
     </ng-container>

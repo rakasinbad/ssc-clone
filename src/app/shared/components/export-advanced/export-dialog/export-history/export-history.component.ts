@@ -20,7 +20,8 @@ import { ExportHistoryActions } from '../../store/actions';
 import { ExportHistorySelector } from '../../store/selectors';
 import { fromExportHistory } from '../../store/reducers';
 import { ExportConfigurationPage } from '../../models/export-filter.model';
-import { IExportHistoryPage, IExportHistoryRequest, TExportHistoryAction } from '../../models/export-history.model';
+import { IExportHistory, IExportHistoryPage, IExportHistoryRequest, TExportHistoryAction } from '../../models/export-history.model';
+import moment from 'moment';
 
 export const VIEW_HISTORY_DATA = 'history-data'
 export const VIEW_HISTORY_INVOICE = 'history-invoice'
@@ -36,10 +37,10 @@ export const VIEW_HISTORY_INVOICE = 'history-invoice'
 export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 5;
     readonly defaultPageOpts = environment.pageSizeTable;
+    console = console;
 
     displayedColumns = [
         'user',
-        'type',
         'period',
         'date',
         'progress'
@@ -101,6 +102,7 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 if (data.page === '' || data.page === 'payments') {
                     this.pageType = 'payments'
                     this.pageTab = 'export_fms';
+                    this.displayedColumns.splice(1, 0, 'type')
                 } else {
                     this.pageType = data.page;
                     this.pageTab = data.tab;
@@ -243,5 +245,22 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
         this._initTable();
+    }
+
+    getPeriod(row: IExportHistory): string {
+        if (row.period.start && row.period.end) {
+            return `${moment(row.period.start).format('MMM DD, YYYY')} - ${moment(row.period.end).format('MMM DD, YYYY')}`;
+        }
+        return row.period;
+    }
+
+    getStatus(row: IExportHistory): string {
+        if (row.status) {
+            if (row.status === 'done') {
+                return 'Download';
+            }
+            return `${row.status.charAt(0).toUpperCase()}${row.status.slice(1)}`;
+        }
+        return row.progress;
     }
 }
