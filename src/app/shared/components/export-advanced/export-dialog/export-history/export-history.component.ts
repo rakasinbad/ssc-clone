@@ -98,8 +98,7 @@ export class ExportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 } else {
                     this.selectedViewHistoryId = VIEW_HISTORY_DATA
                 }
-
-                if (data.page === '' || data.page === 'payments') {
+                if (data.page === '' || data.page === 'payments' || data.page === 'invoices') {
                     this.pageType = 'payments'
                     this.pageTab = 'export_fms';
                     this.displayedColumns.splice(1, 0, 'type')
