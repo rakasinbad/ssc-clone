@@ -28,7 +28,7 @@
     "start-pwa": "cd dist/admin-portal && http-server -c-1 -P http://localhost:9000",
     "bundle-report": "webpack-bundle-analyzer dist/stats.json",
     "build:single-spa": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng --prod --deploy-url http://localhost:4200/",
-    "build:single-spa-production": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration production --deploy-url ./dist",
+    "build:single-spa-production": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration production --deploy-url $(grep ASSET_URL .env | cut -d '=' -f2)",
     "build:single-spa-staging": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration staging --deploy-url http://localhost:4200/",
     "build:single-spa-demo": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration demo --deploy-url http://localhost:4200/",
     "build:single-spa-development": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration development --deploy-url http://localhost:4200/",
@@ -129,6 +129,7 @@
     "@ngrx/schematics": "8.5.2",
     "@types/faker": "4.1.8",
     "@types/file-saver": "2.0.1",
+    "@types/geojson": "7946.0.7",
     "@types/googlemaps": "3.39.2",
     "@types/jasmine": "3.3.14",
     "@types/jasminewd2": "2.0.6",
@@ -137,8 +138,7 @@
     "@types/lodash": "4.14.149",
     "@types/node": "8.9.5",
     "@types/numeral": "0.0.26",
-    "@types/react": "^16.9.17",
-    "@types/react-dom": "^16.9.4",
+    "@types/pdfjs-dist": "2.1.5",
     "codelyzer": "5.1.0",
     "jasmine-core": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -147,14 +147,12 @@
     "karma-coverage-istanbul-reporter": "2.0.5",
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.2",
+    "pdfjs-dist": "2.5.207",
     "protractor": "5.4.2",
     "ts-node": "7.0.1",
     "tslib": "1.10.0",
     "tslint": "5.15.0",
     "typescript": "3.5.3",
     "webpack-bundle-analyzer": "3.3.2"
-  },
-  "volta": {
-    "node": "12.22.12"
   }
 }

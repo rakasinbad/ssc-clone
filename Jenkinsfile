@@ -33,7 +33,7 @@ def getDomainURL(env) {
 pipeline {
     agent {
         node {
-            label 'worker'
+            label 'worker-frontend-medea'
         }
     }
 

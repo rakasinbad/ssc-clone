@@ -124,49 +124,49 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/core/errors/404/error-404.theme';
 
 // Accounts
-// @import 'src/app/main/pages/accounts/internal/internal.theme';
-// @import 'src/app/main/pages/accounts/merchant-segmentation/merchant-segmentation.theme';
-// @import 'src/app/main/pages/accounts/merchants/merchants.theme';
-// @import 'src/app/main/pages/accounts/merchants/merchant-setting/merchant-setting.theme';
+@import 'src/app/main/pages/accounts/internal/internal.theme';
+@import 'src/app/main/pages/accounts/merchant-segmentation/merchant-segmentation.theme';
+@import 'src/app/main/pages/accounts/merchants/merchants.theme';
+@import 'src/app/main/pages/accounts/merchants/merchant-setting/merchant-setting.theme';
 
 // Attendances
-// @import 'src/app/main/pages/attendances/attendances.theme';
+@import 'src/app/main/pages/attendances/attendances.theme';
 
 // Catalogues
-// @import 'src/app/main/pages/catalogues/catalogues.theme';
+@import 'src/app/main/pages/catalogues/catalogues.theme';
 
 // Catalogue Segmentation
-// @import 'src/app/main/pages/catalogue-segmentation/catalogue-segmentation.theme';
+@import 'src/app/main/pages/catalogue-segmentation/catalogue-segmentation.theme';
 
 // Finances
-// @import 'src/app/main/pages/finances/banks/banks.theme';
-// @import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
-// @import 'src/app/main/pages/finances/payment-status/payment-status.theme';
+@import 'src/app/main/pages/finances/banks/banks.theme';
+@import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
+@import 'src/app/main/pages/finances/payment-status/payment-status.theme';
 
 // Inventories
-// @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
-// @import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
+@import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
+@import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
 
 // Logistics
-// @import 'src/app/main/pages/logistics/warehouses/warehouses.theme';
-// @import 'src/app/main/pages/logistics/warehouse-coverages/warehouse-coverages.theme';
-// @import 'src/app/main/pages/logistics/sku-assignments/sku-assignments.theme';
-// @import 'src/app/main/pages/logistics/stock-managements/stock-managements.theme';
+@import 'src/app/main/pages/logistics/warehouses/warehouses.theme';
+@import 'src/app/main/pages/logistics/warehouse-coverages/warehouse-coverages.theme';
+@import 'src/app/main/pages/logistics/sku-assignments/sku-assignments.theme';
+@import 'src/app/main/pages/logistics/stock-managements/stock-managements.theme';
 
 // OMS
-// @import 'src/app/main/pages/orders/orders.theme';
+@import 'src/app/main/pages/orders/orders.theme';
 
 // Promos
-// @import 'src/app/main/pages/promos/flexi-combo/flexi-combo.theme';
+@import 'src/app/main/pages/promos/flexi-combo/flexi-combo.theme';
 
 // Sales force
-// @import 'src/app/main/pages/sales-forces/associations/associations.theme';
-// @import 'src/app/main/pages/sales-forces/journey-plans/journey-plans.theme';
-// @import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
-// @import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
+@import 'src/app/main/pages/sales-forces/associations/associations.theme';
+@import 'src/app/main/pages/sales-forces/journey-plans/journey-plans.theme';
+@import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
+@import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
 
 // Settings
-// @import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
+@import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
 
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
@@ -194,49 +194,49 @@ $typography: mat-typography-config(
     @include profile-theme($theme);
 
     // Accounts
-    // @include internals-theme($theme);
-    // @include merchant-segmentation-theme($theme);
-    // @include merchants-theme($theme);
-    // @include merchant-setting-theme($theme);
+    @include internals-theme($theme);
+    @include merchant-segmentation-theme($theme);
+    @include merchants-theme($theme);
+    @include merchant-setting-theme($theme);
 
     // Attendances
-    // @include attendances-theme($theme);
+    @include attendances-theme($theme);
 
     // Catalogues
-    // @include catalogues-theme($theme);
+    @include catalogues-theme($theme);
 
     // Catalogue Segmentation
-    // @include catalogue-segmentation-theme($theme);
+    @include catalogue-segmentation-theme($theme);
 
     // Finances
-    // @include banks-theme($theme);
-    // @include credit-limit-balance-theme($theme);
-    // @include payment-status-theme($theme);
+    @include banks-theme($theme);
+    @include credit-limit-balance-theme($theme);
+    @include payment-status-theme($theme);
 
     // Inventories
-    // @include in-store-inventories-theme($theme);
-    // @include supplier-inventories-theme($theme);
+    @include in-store-inventories-theme($theme);
+    @include supplier-inventories-theme($theme);
 
     // Logistics
-    // @include warehouses-theme($theme);
-    // @include warehouse-coverages-theme($theme);
-    // @include sku-assignments-theme($theme);
-    // @include stock-managements-theme($theme);
+    @include warehouses-theme($theme);
+    @include warehouse-coverages-theme($theme);
+    @include sku-assignments-theme($theme);
+    @include stock-managements-theme($theme);
 
     // OMS
-    // @include orders-theme($theme);
+    @include orders-theme($theme);
 
     // Promos
-    // @include flexi-combo-theme($theme);
+    @include flexi-combo-theme($theme);
 
     // Sales force
-    // @include associations-theme($theme);
-    // @include journey-plans-theme($theme);
-    // @include portfolios-theme($theme);
-    // @include sales-reps-theme($theme);
+    @include associations-theme($theme);
+    @include journey-plans-theme($theme);
+    @include portfolios-theme($theme);
+    @include sales-reps-theme($theme);
 
     // Settings
-    // @include accounts-settings-theme($theme);
+    @include accounts-settings-theme($theme);
 
     // Plugin
     // @include mat-datepicker-theme($theme);

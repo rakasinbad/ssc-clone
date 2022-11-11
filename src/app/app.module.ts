@@ -98,8 +98,8 @@ registerLocaleData(localId, 'id');
         FuseModule.forRoot(fuseConfig),
         FuseProgressBarModule,
         FuseSharedModule,
-        FuseSidebarModule,
         FuseThemeOptionsModule,
+        FuseSidebarModule,
 
         SharedModule,
 
@@ -152,7 +152,7 @@ registerLocaleData(localId, 'id');
         { provide: APP_INITIALIZER, useFactory: initPrivileges, deps: [AppService], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
 })

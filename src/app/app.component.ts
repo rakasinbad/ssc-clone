@@ -13,6 +13,7 @@ import {
 import { AngularFireDatabase } from '@angular/fire/database';
 import { MatSnackBarConfig } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -105,6 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private angularFireDatabase: AngularFireDatabase,
         private dialog: MatDialog,
         private _cookieService: CookieService,
+        private _router: Router,
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -248,6 +250,15 @@ export class AppComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        const router = this._router;
+        (window as any).sscGoTo = function(goToPath: string){
+            if (router) {
+                console.info(`[navigation] SSC Route To '${goToPath}'`);
+                
+                router.navigateByUrl(goToPath);
+            }
+        }
+
         this._initPage();
 
         this.store
@@ -346,6 +357,8 @@ export class AppComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this._initPage(LifecyclePlatform.OnDestroy);
+
+        (window as any).sscGoTo = null;
     }
 
     // -----------------------------------------------------------------------------------------------------
