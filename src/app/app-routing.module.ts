@@ -50,52 +50,52 @@ const routes: Routes = [
             //     redirectTo: 'dashboard',
             //     pathMatch: 'full'
             // },
-            {
-                path: 'dashboard',
-                loadChildren: () =>
-                    import('./main/pages/dashboard/dashboard.module').then(
-                        (m) => m.DashboardModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'attendances',
-                loadChildren: () =>
-                    import('./main/pages/attendances/attendances.module').then(
-                        (m) => m.AttendancesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('attendances'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'dashboard',
+            //     loadChildren: () =>
+            //         import('./main/pages/dashboard/dashboard.module').then(
+            //             (m) => m.DashboardModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'attendances',
+            //     loadChildren: () =>
+            //         import('./main/pages/attendances/attendances.module').then(
+            //             (m) => m.AttendancesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('attendances'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             {
                 path: 'finances',
                 // children: [
@@ -112,7 +112,7 @@ const routes: Routes = [
                 //             ).then(m => m.CreditLimitBalanceModule),
                 //         canLoad: [AuthGuard]
                 //     }
-                // ]
+                // ],
                 loadChildren: () =>
                     import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
                 canLoad: [AuthGuard],
@@ -129,221 +129,221 @@ const routes: Routes = [
                 //     },
                 // },
             },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('orders'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             {
                 path: 'returns',
                 loadChildren: () =>
                     import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
                 canLoad: [AuthGuard],
             },
-            {
-                path: 'catalogues',
-                loadChildren: () =>
-                    import('./main/pages/catalogues/catalogues.module').then(
-                        (m) => m.CataloguesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogues'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'in-store-inventories',
-                loadChildren: () =>
-                    import('./main/pages/in-store-inventories/in-store-inventories.module').then(
-                        (m) => m.InStoreInventoriesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('in-store-inventories'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'inventory',
-                loadChildren: () =>
-                    import('./main/pages/in-store-inventoriesv2/store-inventories.module').then((m) => m.StoreInventoriesModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('survey'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'sales-force',
-                loadChildren: () =>
-                    import('./main/pages/sales-forces/sales-forces.module').then(
-                        (m) => m.SalesForcesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('sales-force'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'supplier-inventories',
-                loadChildren: () =>
-                    import('./main/pages/supplier-inventories/supplier-inventories.module').then(
-                        (m) => m.SupplierInventoriesModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'settings',
-                loadChildren: () =>
-                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('settings'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'errors',
-                loadChildren: () =>
-                    import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(
-                        (m) => m.LogisticsModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'promos',
-                loadChildren: () =>
-                    import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('promos'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'catalogue-segmentations',
-                loadChildren: () =>
-                    import(
-                        './main/pages/catalogue-segmentation/catalogue-segmentation.module'
-                    ).then((m) => m.CatalogueSegmentationModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogue-segmentations'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'survey',
-                loadChildren: () =>
-                    import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('survey'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'skp',
-                loadChildren: () => import('./main/pages/skp/skp.module').then((m) => m.SkpModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('skp'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // }
-            },
+            // {
+            //     path: 'catalogues',
+            //     loadChildren: () =>
+            //         import('./main/pages/catalogues/catalogues.module').then(
+            //             (m) => m.CataloguesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogues'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'in-store-inventories',
+            //     loadChildren: () =>
+            //         import('./main/pages/in-store-inventories/in-store-inventories.module').then(
+            //             (m) => m.InStoreInventoriesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('in-store-inventories'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'inventory',
+            //     loadChildren: () =>
+            //         import('./main/pages/in-store-inventoriesv2/store-inventories.module').then((m) => m.StoreInventoriesModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('survey'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'sales-force',
+            //     loadChildren: () =>
+            //         import('./main/pages/sales-forces/sales-forces.module').then(
+            //             (m) => m.SalesForcesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('sales-force'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'supplier-inventories',
+            //     loadChildren: () =>
+            //         import('./main/pages/supplier-inventories/supplier-inventories.module').then(
+            //             (m) => m.SupplierInventoriesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'settings',
+            //     loadChildren: () =>
+            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('settings'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'errors',
+            //     loadChildren: () =>
+            //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'logistics',
+            //     loadChildren: () =>
+            //         import('./main/pages/logistics/logistics.module').then(
+            //             (m) => m.LogisticsModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'promos',
+            //     loadChildren: () =>
+            //         import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('promos'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'catalogue-segmentations',
+            //     loadChildren: () =>
+            //         import(
+            //             './main/pages/catalogue-segmentation/catalogue-segmentation.module'
+            //         ).then((m) => m.CatalogueSegmentationModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogue-segmentations'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'survey',
+            //     loadChildren: () =>
+            //         import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('survey'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'skp',
+            //     loadChildren: () => import('./main/pages/skp/skp.module').then((m) => m.SkpModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('skp'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // }
+            // },
             {
                 path: 'landing',
                 canActivate: [AuthGuard, RoleGuard],
@@ -356,63 +356,88 @@ const routes: Routes = [
             },
         ],
     },
-    {
-        path: '**',
-        loadChildren: () =>
-            import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-    },
+    // {
+    //     path: '**',
+    //     loadChildren: () =>
+    //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+    // },
 ];
 
 const singleSpaRoutes: Routes = [
     {
+        path: 'invoices',
+        loadChildren: () =>
+            import('./main/invoices/view-invoices/view-invoices.module').then(
+                (m) => m.ViewInvoicesModule
+            ),
+    },
+    {
+        path: 'profile',
+        loadChildren: () =>
+            import('./main/pages/core/profile/profile.module').then((m) => m.ProfileModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
+    {
         path: 'pages',
         children: [
-            {
-                path: 'dashboard',
-                loadChildren: () =>
-                    import('./main/pages/dashboard/dashboard.module').then(
-                        (m) => m.DashboardModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'attendances',
-                loadChildren: () =>
-                    import('./main/pages/attendances/attendances.module').then(
-                        (m) => m.AttendancesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('attendances'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'dashboard',
+            //     loadChildren: () =>
+            //         import('./main/pages/dashboard/dashboard.module').then(
+            //             (m) => m.DashboardModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'attendances',
+            //     loadChildren: () =>
+            //         import('./main/pages/attendances/attendances.module').then(
+            //             (m) => m.AttendancesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('attendances'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             {
                 path: 'finances',
                 // children: [
@@ -429,238 +454,238 @@ const singleSpaRoutes: Routes = [
                 //             ).then(m => m.CreditLimitBalanceModule),
                 //         canLoad: [AuthGuard]
                 //     }
-                // ]
+                // ],
                 loadChildren: () =>
                     import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
                 canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('finances'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
+                data: {
+                    permissions: {
+                        only: getRoleByRouter('finances'),
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true,
+                            },
+                        },
+                    },
+                },
             },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('orders'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             {
                 path: 'returns',
                 loadChildren: () =>
                     import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
                 canLoad: [AuthGuard],
             },
-            {
-                path: 'catalogues',
-                loadChildren: () =>
-                    import('./main/pages/catalogues/catalogues.module').then(
-                        (m) => m.CataloguesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogues'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'in-store-inventories',
-                loadChildren: () =>
-                    import('./main/pages/in-store-inventories/in-store-inventories.module').then(
-                        (m) => m.InStoreInventoriesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('in-store-inventories'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'inventory',
-                loadChildren: () =>
-                    import('./main/pages/in-store-inventoriesv2/store-inventories.module').then((m) => m.StoreInventoriesModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('survey'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'sales-force',
-                loadChildren: () =>
-                    import('./main/pages/sales-forces/sales-forces.module').then(
-                        (m) => m.SalesForcesModule
-                    ),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('sales-force'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'supplier-inventories',
-                loadChildren: () =>
-                    import('./main/pages/supplier-inventories/supplier-inventories.module').then(
-                        (m) => m.SupplierInventoriesModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'settings',
-                loadChildren: () =>
-                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('settings'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'errors',
-                loadChildren: () =>
-                    import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(
-                        (m) => m.LogisticsModule
-                    ),
-                canLoad: [AuthGuard],
-            },
-            {
-                path: 'promos',
-                loadChildren: () =>
-                    import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('promos'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'catalogue-segmentations',
-                loadChildren: () =>
-                    import(
-                        './main/pages/catalogue-segmentation/catalogue-segmentation.module'
-                    ).then((m) => m.CatalogueSegmentationModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('catalogue-segmentations'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'survey',
-                loadChildren: () =>
-                    import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('survey'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'skp',
-                loadChildren: () => import('./main/pages/skp/skp.module').then((m) => m.SkpModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('skp'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // }
-            },
+            // {
+            //     path: 'catalogues',
+            //     loadChildren: () =>
+            //         import('./main/pages/catalogues/catalogues.module').then(
+            //             (m) => m.CataloguesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogues'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'in-store-inventories',
+            //     loadChildren: () =>
+            //         import('./main/pages/in-store-inventories/in-store-inventories.module').then(
+            //             (m) => m.InStoreInventoriesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('in-store-inventories'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'inventory',
+            //     loadChildren: () =>
+            //         import('./main/pages/in-store-inventoriesv2/store-inventories.module').then((m) => m.StoreInventoriesModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('survey'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'sales-force',
+            //     loadChildren: () =>
+            //         import('./main/pages/sales-forces/sales-forces.module').then(
+            //             (m) => m.SalesForcesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('sales-force'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'supplier-inventories',
+            //     loadChildren: () =>
+            //         import('./main/pages/supplier-inventories/supplier-inventories.module').then(
+            //             (m) => m.SupplierInventoriesModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'settings',
+            //     loadChildren: () =>
+            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('settings'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'errors',
+            //     loadChildren: () =>
+            //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'logistics',
+            //     loadChildren: () =>
+            //         import('./main/pages/logistics/logistics.module').then(
+            //             (m) => m.LogisticsModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
+            // {
+            //     path: 'promos',
+            //     loadChildren: () =>
+            //         import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('promos'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'catalogue-segmentations',
+            //     loadChildren: () =>
+            //         import(
+            //             './main/pages/catalogue-segmentation/catalogue-segmentation.module'
+            //         ).then((m) => m.CatalogueSegmentationModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('catalogue-segmentations'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'survey',
+            //     loadChildren: () =>
+            //         import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('survey'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'skp',
+            //     loadChildren: () => import('./main/pages/skp/skp.module').then((m) => m.SkpModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('skp'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // }
+            // },
             {
                 path: 'landing',
                 canActivate: [AuthGuard, RoleGuard],
@@ -671,13 +696,8 @@ const singleSpaRoutes: Routes = [
                 redirectTo: 'landing',
                 pathMatch: 'full',
             },
-        ]
-    },
-    {
-        path: '**',
-        loadChildren: () =>
-            import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-    },
+        ],
+    }
 ];
 
 @NgModule({
