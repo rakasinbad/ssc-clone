@@ -1,6 +1,0 @@
-@import 'src/@fuse/scss/fuse';
-
-.credit-box-action-fill.active {
-    @include mat-elevation-transition;
-    @include mat-elevation(2);
-}

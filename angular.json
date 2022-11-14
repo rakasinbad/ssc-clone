@@ -19,18 +19,12 @@
           "options": {
             "outputPath": "dist/fuse",
             "index": "src/index.html",
-            "main": "src/main.single-spa.ts",
+            "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "rebaseRootRelativeCssUrls": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              {
-                "glob": "**/*",
-                "input": "node_modules/@material/dist/collection/assets",
-                "output": "/assets"
-              }
+              "src/assets"
             ],
             "styles": [
               "src/styles.scss"
@@ -41,7 +35,7 @@
           "configurations": {
             "production": {
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
@@ -58,7 +52,7 @@
               ]
             },
             "ec": {
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true
             },
             "hmr": {
@@ -74,8 +68,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "fuse:build",
-            "publicHost":"http://localhost:4200"
+            "browserTarget": "fuse:build"
           },
           "configurations": {
             "production": {
@@ -152,11 +145,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/supplier-center",
             "index": "src/index.html",
-            "main": "src/main.single-spa.ts",
+            "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
@@ -180,29 +173,24 @@
             "scripts": [
               "./node_modules/quill/dist/quill.min.js"
             ],
-            "showCircularDependencies": true,
-            "customWebpackConfig": {
-              "path": "./extra-webpack.config.js",
-              "libraryName": "supplier-center",
-              "libraryTarget": "umd"
-            }
+            "showCircularDependencies": true
           },
           "configurations": {
             "production": {
               "optimization": true,
-              "outputHashing": "none",
-              "sourceMap": false,
+              "outputHashing": "all",
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
-                  "maximumError": "11mb"
+                  "maximumError": "10mb"
                 }
               ],
               "serviceWorker": true,
@@ -210,19 +198,19 @@
             },
             "staging": {
               "optimization": true,
-              "outputHashing": "none",
-              "sourceMap": false,
+              "outputHashing": "all",
+              "sourceMap": true,
               "extractCss": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
-                  "maximumError": "11mb"
+                  "maximumError": "10mb"
                 }
               ],
               "serviceWorker": true,
@@ -230,19 +218,19 @@
             },
             "demo": {
               "optimization": true,
-              "outputHashing": "none",
-              "sourceMap": false,
+              "outputHashing": "all",
+              "sourceMap": true,
               "extractCss": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
-                  "maximumError": "11mb"
+                  "maximumError": "10mb"
                 }
               ],
               "serviceWorker": true,
@@ -250,7 +238,7 @@
             },
             "development": {
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
@@ -262,14 +250,14 @@
                 {
                   "type": "initial",
                   "maximumWarning": "4mb",
-                  "maximumError": "11mb"
+                  "maximumError": "10mb"
                 }
               ],
               "serviceWorker": true,
               "ngswConfigPath": "ngsw-config.json"
             },
             "ec": {
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true
             },
             "hmr": {
@@ -283,10 +271,9 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "supplier-center:build",
-            "publicHost":"http://localhost:4200"
+            "browserTarget": "supplier-center:build"
           },
           "configurations": {
             "production": {

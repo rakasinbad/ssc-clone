@@ -1,0 +1,129 @@
+@import 'src/@fuse/scss/fuse';
+
+app-oms-order-line {
+    .order-line-list {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+
+        .text-center{
+            text-align: center;
+        }
+
+        .mat-form-field-wrapper{
+            padding: 0 !important;
+        }
+
+        .mat-form-field-infix{
+            padding: 5px 0 12px;
+        }
+
+        // No record table
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
+
+            .mat-footer-row {
+                border-bottom: none;
+                position: relative;
+                height: 100%;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+
+            // For horizontal scroll
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-header-cell,
+        .mat-cell {
+            padding: 0 16px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+        }
+
+        .order-line-list-item {
+            position: relative;
+            // If row can be click
+            // cursor: pointer;
+        }
+
+        mat-header-cell:first-of-type,
+        mat-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-right: 0;
+        }
+
+        .mat-header-cell:nth-last-of-type(2),
+        .mat-cell:nth-last-of-type(2) {
+            padding-right: 0;
+        }
+
+        mat-header-cell:last-of-type,
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-left: 0;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mat-column-sku {
+            flex: 0 1 120px;
+            min-width: 120px;
+        }
+
+        .mat-column-product {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+
+        .mat-column-order-qty {
+            flex: 0 1 120px;
+            min-width: 120px;
+        }
+
+        .mat-column-unit-price {
+            flex: 1 1 10em;
+            min-width: 100px;
+        }
+
+        .mat-column-discount-price {
+            flex: 1 1 10em;
+            min-width: 100px;
+        }
+
+        .mat-column-gross-price {
+            flex: 1 1 10em;
+            min-width: 100px;
+        }
+
+        .mat-column-type {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            justify-content: center;
+        }
+    }
+}

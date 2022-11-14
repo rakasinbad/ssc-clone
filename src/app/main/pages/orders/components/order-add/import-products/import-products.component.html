@@ -1,0 +1,110 @@
+<div id="import-product">
+  <mat-toolbar-row class="p-0" fxLayoutAlign="space-between center">
+    <p style="font-size: 18px;font-weight: 600;">Import Product</p>
+    <span class="spacer"></span>
+    <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar-row>
+  <!-- post success dan error get import progress -->
+  <div *ngIf="(idImport$ | async) && (payloadImportProgress$?.status === 'failed' || payloadImportProgress$?.status === 'progress') && alertMessage.length !== 0" style="background-color: #FFF8EB;padding: 0px 12px;border-radius: 4px;margin-bottom: 16px;display: flex;align-items: center;">
+    <mat-icon style="color: #FCC149;margin-right: 8px;" >error</mat-icon>
+    <p style="color: #E79B04;font-size: 12px;">{{ alertMessage }}</p>
+  </div>
+  <div style="padding: 0px 16px; border: 1px solid #DAE0E7; margin-bottom: 16px;border-radius: 4px;">
+    <p style="font-size: 18px;font-weight: 600;height: 12px;">Instructions</p>
+    <ol>
+      <li>Download the template <span style="color: #f0444c;cursor: pointer;"> <a href="{{linkTemplate}}" style="text-decoration: none;">here</a></span></li>
+      <li>Add data to the template file.</li>
+      <ul>
+        <li style="font-size: 12px;">Make sure the data is separated by comma (,).</li>
+        <li style="font-size: 12px;">If using Excel, please make sure to export it into CSV.</li>
+      </ul>
+      <li>Import CSV File the filled-in template.</li>
+    </ol>
+  </div>
+  <div [ngStyle]="calculateBackgroundColor()" style="height: 120px;display: flex;justify-content: center;align-items: center;border-radius: 4px;">
+    <!-- before upload (initial) -->
+    <div *ngIf="firstImport" style="display: flex;align-items: center;">
+      <img style="width: 48px;height: 48px;margin-right: 24px;" src="assets/images/file-manager/csv-file.svg" />
+      <p 
+        style="color: #237AE1;cursor: pointer;" 
+        (click)="filePicker.click()"
+      >Browse File</p>
+    </div>
+
+    <!-- loading process (get import progress) -->
+    <div *ngIf="!firstImport && !errorImport$ && payloadImportProgress$?.status === 'progress' && payloadImportProgress$?.progress !== 100" style="display: flex;align-items: center;">
+      <p>Uploading...</p>
+      <mat-progress-bar class="custom-mat-progress-bar" style="width: 24vw;margin: 0px 16px;border-radius: 100px;height: 10px" [mode]="determinate" [value]="payloadImportProgress$?.progress" color="warn"></mat-progress-bar>
+      <p>{{ payloadImportProgress$?.progress }}%</p>
+    </div>
+
+    <!-- failed import file -->
+    <div *ngIf="!firstImport && errorImport$ && errorImport$?.data?.errCode !== 'invalid-mime'" style="display: flex;align-items: center;">
+      <p style="color: #E79B04;margin-right: 24px;">Upload failed</p>
+      <div style="cursor: pointer; background-color: #677A8E;padding: 0px 12px;border-radius: 4px;height: fit-content;" (click)="filePicker.click()">
+        <p style="color: white;font-size: 12px;">Upload Again</p>
+      </div>
+    </div>
+
+    <!-- success -->
+    <div *ngIf="!firstImport && payloadImportProgress$?.status === 'success' && payloadImportProgress$.progress === 100" style="display: flex;align-items: center;">
+      <img style="width: 48px;height: 48px;margin-right: 24px;" src="assets/images/file-manager/csv-file.svg" />
+      <div>
+        <p style="color: #31B057;font-weight: 600;height: 12px;">Upload success</p>
+        <p style="font-size: 11px;color: #677A8E;">[{{ fileName }}]</p>
+      </div>
+    </div>
+    
+    <!-- wrong file's format (post) -->
+    <!-- failed get progress && text: Upload File -->
+    <div *ngIf="!firstImport && (errorImport$?.data?.errCode === 'invalid-mime' || payloadImportProgress$?.status === 'failed') " style="display: flex;align-items: center;">
+      <img style="width: 48px;height: 48px;margin-right: 34px;" src="assets/images/file-manager/csv-file.svg" />
+      <div style="margin-right: 24px;">
+        <p style="color: #E79B04;font-weight: 600;height: 8px;">{{ errorImport$?.data.errCode === 'invalid-mime' ? 'File type not supported' : 'Upload File' }}</p>
+        <p style="font-size: 11px;color: #677A8E;">[{{ fileName }}]</p>
+      </div>
+      <div style="cursor: pointer; background-color: #677A8E;padding: 0px 12px;border-radius: 4px;height: fit-content;" (click)="filePicker.click()">
+        <p style="color: white;font-size: 12px;" >Choose Another</p>
+      </div>
+    </div>
+
+    <input
+      id="input__file"
+      class="custom-file"
+      type="file"
+      #filePicker
+      accept=".csv"
+      (click)="filePicker.value = null"
+      (change)="onFileBrowse($event)"
+  />
+    
+  </div>
+
+  <!-- before import file -->
+  <p *ngIf="firstImport" style="color: #677A8E;font-size: 12px;">Support only CSV file format</p>
+
+  <!-- after import file -->
+  <p *ngIf="!firstImport" style="color: #677A8E;font-size: 12px;">Support only CSV file with max 30 products.</p>
+  
+  <mat-dialog-actions align="end" style="margin-bottom: 0px">
+    <button
+        class="btn-cancel"
+        mat-button
+        [mat-dialog-close]="{ status: 'cancel' }"
+        mat-dialog-close
+    >
+        Cancel
+    </button>
+    <button
+        class="btn-submit"
+        mat-button
+        mat-dialog-close
+        [disabled]="!payloadImportProgress$ || payloadImportProgress$?.status !== 'success' "
+        (click)="applyResult()"
+    >
+        Apply
+    </button>
+  </mat-dialog-actions>
+</div>

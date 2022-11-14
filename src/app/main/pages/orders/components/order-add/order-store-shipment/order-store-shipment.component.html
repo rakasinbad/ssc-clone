@@ -1,0 +1,136 @@
+<div id="sc-oms-add-manual-order-store-shipment-info" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <div class="center p-0">
+        <!-- CONTENT CARD -->
+        <div class="content-card p-16 pb-0" style="margin-bottom: -10px;">
+            <div class="font-weight-600 m-0 font-size-16 pb-16">Store & Shipment Information</div>
+
+            <form id="oms-add-store-shipment-info-form" name="omsAddStoreShipmentInfoForm"
+                class="oms-add-store-shipment-info-form horizontal w-100-p pd-16" [formGroup]="form" novalidate
+                autocomplete="off" fxLayout="row" fxFlex fxLayoutAlign="start stretch">
+                <!-- LEFT COLUMN -->
+                <div fxFlex="50" class="custom-field pr-16">
+
+                    <!-- Order Date -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Order Date</div>
+                        <mat-form-field appearance="outline">
+                            <input 
+                                matInput 
+                                [matDatepicker]="picker" 
+                                [max]="maxOrderDate" 
+                                [min]="minOrderDate"
+                                (dateChange)="onChangeOrderDate($event)" 
+                                formControlName="orderDate"
+                                placeholder="Select date"
+                                readonly
+                            />
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            
+                            <mat-error *ngIf="hasError(form.get('orderDate'))">
+                                {{ getFormError(form.get('orderDate')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div> <!-- / Order Date -->
+
+                    <!-- Store Name -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Store Name</div>
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                autocomplete="off"
+                                placeholder="Select Store"
+                                formControlName="storeName"
+                                [matAutocomplete]="storeNameAutoComplete"
+                            />
+                          
+                            <span matSuffix>
+                                <mat-icon>keyboard_arrow_down</mat-icon>
+                            </span>
+
+                            <mat-autocomplete
+                                #storeNameAutoComplete="matAutocomplete"
+                                (opened)="listenStoreNameAutoComplete()"
+                                (optionSelected)="onSelectedStoreName($event)"
+                            >
+                                <!-- STORE NAME OPTIONS -->
+                                <mat-option
+                                    *ngFor="let availableStoreName of (availableStoresName$ | async)"
+                                    [value]="availableStoreName"
+                                >
+                                    {{ availableStoreName.storeName }} ({{ availableStoreName.storeExternalId }})
+                                </mat-option>
+                                <!-- / STORE NAME OPTIONS -->
+
+                                <!-- LOADING OPTION -->
+                                <mat-option
+                                    [disabled]="true"
+                                    style="text-align: center; font-style: italic; max-height: 30px;"
+                                    *ngIf="!(totalStoreName$ | async) && ((totalStoreName$ | async) > (availableStoresName$ | async)?.length)"
+                                >
+                                    Loading ...
+                                </mat-option>
+                                <!-- / LOADING OPTION -->
+                            </mat-autocomplete>
+                            <mat-error *ngIf="hasError(form.get('storeName'))">
+                                {{ getFormError(form.get('storeName')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Owner Name -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Owner Name</div>
+                        <mat-form-field appearance="outline">
+                            <input matInput formControlName="ownerName" [placeholder]="placeholder" />
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Store Address -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Store Address</div>
+                        <mat-form-field appearance="outline">
+                            <textarea matInput rows="5" formControlName="storeAddress" [placeholder]="placeholder"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div> <!-- / LEFT COLUMN -->
+
+                <!-- RIGHT COLUMN -->
+                <div fxFlex="50" class="custom-field">
+
+                    <!-- Delivery Address -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Delivery Address</div>
+                        <mat-form-field appearance="outline">
+                            <textarea matInput rows="5" formControlName="deliveryAddress" [placeholder]="placeholder"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Urban -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Urban</div>
+                        <mat-form-field appearance="outline">
+                            <input matInput formControlName="urban" [placeholder]="placeholder" />
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Warehouse -->
+                    <div class="custom-field" fxLayout="column">
+                        <div fxLayoutAlign="start stretch">Warehouse</div>
+                        <mat-form-field appearance="outline" class="input__disabled">
+                            <input matInput formControlName="warehouse" [placeholder]="placeholder" />
+                        </mat-form-field>
+                    </div>
+
+                </div><!-- / RIGHT COLUMN -->
+
+            </form>
+        </div><!-- / CONTENT CARD -->
+    </div>
+</div>

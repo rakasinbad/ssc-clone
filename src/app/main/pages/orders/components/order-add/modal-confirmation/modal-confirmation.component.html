@@ -1,0 +1,24 @@
+
+<div fxLayout="row" fxFlex fxLayoutAlign="start stretch">
+    <div fxFlex="11">
+        <img src="assets/images/errors/alert_error.svg" />
+    </div>
+    <div fxFlex="89">
+        <h2 mat-dialog-title *ngIf="data?.title" class="title">
+            {{ data?.title }}
+        </h2>
+        
+        <mat-dialog-content class="mat-typography">
+            <p [innerHTML]="data?.message" class="message"></p>
+        </mat-dialog-content>
+        
+        <mat-dialog-actions align="end" class="pb-24">
+            <button *ngIf="data.txtButtonLeft" class="btn-cancel" mat-button [mat-dialog-close]="{ type: data.type, btn: 'left' }">
+                {{ data?.txtButtonLeft }}
+            </button>
+            <button *ngIf="data.txtButtonRight" class="btn-submit" mat-button [mat-dialog-close]="{ type: data.type, btn: 'right' }" cdkFocusInitial>
+                {{ data?.txtButtonRight }}
+            </button>
+        </mat-dialog-actions>
+    </div>
+</div>

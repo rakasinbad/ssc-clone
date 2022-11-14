@@ -10,10 +10,6 @@ import {
     SegmentationViewPipe,
     TaxPipe,
     VisibilityTypePipe,
-    CalculateGrossPricePipe,
-    CatalogueTypePipe,
-    OrderLogPipe,
-    OrderStatusPipe,
 } from './pipes';
 
 @NgModule({
@@ -28,10 +24,6 @@ import {
         SegmentationViewPipe,
         TaxPipe,
         VisibilityTypePipe,
-        CalculateGrossPricePipe,
-        CatalogueTypePipe,
-        OrderLogPipe,
-        OrderStatusPipe,
     ],
     exports: [
         ConvertArrayToStringPipe,
@@ -44,10 +36,6 @@ import {
         SegmentationViewPipe,
         TaxPipe,
         VisibilityTypePipe,
-        CalculateGrossPricePipe,
-        CatalogueTypePipe,
-        OrderLogPipe,
-        OrderStatusPipe,
     ],
 })
 export class PipeSharedModule {}
