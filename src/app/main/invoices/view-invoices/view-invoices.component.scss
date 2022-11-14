@@ -1,7 +1,13 @@
-.invoice-header-card {
-    -webkit-box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
-    -moz-box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
-    box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
-    padding: 30px 10px;
-    margin-bottom: 35px;
+#invoices-view {
+    width: 100vw !important;
+    height: 100vh !important;
+    
+    .invoice-header-card {
+        width: 100%;
+        -webkit-box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
+        -moz-box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
+        box-shadow: 10px 2px 28px -6px rgba(0,0,0,0.75);
+        padding: 30px 10px;
+        margin-bottom: 35px;
+    }
 }

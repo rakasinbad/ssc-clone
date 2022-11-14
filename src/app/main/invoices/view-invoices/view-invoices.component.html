@@ -41,12 +41,26 @@
     </div>
     <div class="center">
         <div class="order-box info-box inner-scroll" fxFlex="30">
-            <pdf-viewer
+            <!-- solusi sementara menggunakan iframe, karena pdf-viewer tidak berfungsi-->
+            
+            <div style="height: 100vh !important;">
+                <iframe
+                    [src]="url"
+                    frameBorder="0"
+                    scrolling="auto"
+                    height="100%"
+                    width="100%"
+                    style="position: absolute; height: 100%; border: none"
+                ></iframe>
+            </div>
+
+            <!-- <pdf-viewer
+                class="pdf-viewer"
                 [src]="url"
                 [render-text]="true"
                 [original-size]="false"
-                style="display: block;">
-            </pdf-viewer>
+                style="position: absolute; height: 100%; border: none; display: block;">
+            </pdf-viewer> -->
         </div>
     </div>
 </div>

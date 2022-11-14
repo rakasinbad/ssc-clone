@@ -392,6 +392,13 @@ const singleSpaRoutes: Routes = [
     {
         path: 'pages',
         children: [
+            {
+                path: 'invoices',
+                loadChildren: () =>
+                    import('./main/invoices/view-invoices/view-invoices.module').then(
+                        (m) => m.ViewInvoicesModule
+                    ),
+            },
             // {
             //     path: 'dashboard',
             //     loadChildren: () =>

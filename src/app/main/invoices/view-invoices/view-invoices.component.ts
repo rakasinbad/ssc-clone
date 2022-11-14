@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '../../../../@fuse/animations';
-import { MatTableDataSource } from '@angular/material';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '../../../../@fuse/services/translation-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -25,9 +24,9 @@ import { FuseConfigService } from '../../../../@fuse/services/config.service';
 })
 export class ViewInvoicesComponent implements OnInit, OnDestroy {
 
-     fileName: string;
-     url: string;
-
+    fileName: string;
+    url: SafeResourceUrl;
+    originalUrl: string; /** original url pdf yang tidak di bypass */
 
     constructor(
         private route: ActivatedRoute,
@@ -35,6 +34,7 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
         public translate: TranslateService,
         private http: HttpClient,
         private _fuseConfigService: FuseConfigService,
+        private domSanitizer: DomSanitizer,
     ) {
         // Configure the layout
         this._fuseConfigService.config = {
@@ -53,7 +53,8 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
                 }
             }
         };
-        this.url = decodeURIComponent(this.route.snapshot.queryParamMap.get('url'));
+        this.originalUrl = decodeURIComponent(this.route.snapshot.queryParamMap.get('url'));
+        this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(decodeURIComponent(`https://drive.google.com/viewerng/viewer?embedded=true&url=${this.route.snapshot.queryParamMap.get('url')}#toolbar=0&scrollbar=0`));
     }
 
 
@@ -66,7 +67,7 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
 
 
     print(): void {
-        const url = this.url; // Url from API
+        const url = this.originalUrl; // Url from API
         this.http.get(url, { // fetch file from s3 as blob data
             responseType: 'blob',
             headers: {}
