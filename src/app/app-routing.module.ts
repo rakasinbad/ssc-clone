@@ -620,24 +620,24 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'promos',
-            //     loadChildren: () =>
-            //         import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('promos'),
-            //     //     },
-            //     //     redirectTo: {
-            //     //         navigationCommands: ['/pages/errors/403'],
-            //     //         navigationExtras: {
-            //     //             replaceUrl: true,
-            //     //             skipLocationChange: true,
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'promos',
+                loadChildren: () =>
+                    import('./main/pages/promos/promos.module').then((m) => m.PromosModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('promos'),
+                //     },
+                //     redirectTo: {
+                //         navigationCommands: ['/pages/errors/403'],
+                //         navigationExtras: {
+                //             replaceUrl: true,
+                //             skipLocationChange: true,
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'catalogue-segmentations',
             //     loadChildren: () =>

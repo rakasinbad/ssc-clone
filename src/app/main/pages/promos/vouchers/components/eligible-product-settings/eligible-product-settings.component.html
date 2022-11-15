@@ -1,0 +1,163 @@
+<!-- CONTENT CARD (INFORMASI PRODUK) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Eligible Product</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- *HIDDEN* ID -->
+            <input hidden name="id" formControlName="id" />
+            <!-- / *HIDDEN* ID -->
+            <!-- BASE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Base
+                </label>
+
+                <mat-radio-group
+                    formControlName="base"
+                    [fxFlex]="formFieldLength"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    (change)="onChangeSegmentBase($event)"
+                >
+                    <mat-radio-button value="sku"> SKU </mat-radio-button>
+                    <mat-radio-button value="brand"> Brand </mat-radio-button>
+                    <mat-radio-button value="faktur"> Faktur </mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <!-- / BASE -->
+            <!-- CHOSEN SKU -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'sku'"
+            >
+                <label
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Chosen SKU<br />({{
+                        form.get('chosenSku').value?.length || '0'
+                    }}
+                    Selected)
+                </label>
+
+                <select-catalogues
+                    *ngIf="!isViewMode()"
+                    [typeCatalogue]="'voucherPromo'"
+                    [initialSelection]="chosenSku$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onCatalogueSelected($event)"
+                    [fakturIdSelect]="null"
+                >
+                    <div error>
+                        {{ getFormError(form.get('chosenSku')) }}
+                    </div>
+                </select-catalogues>
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let sku of form.get('chosenSku').value">
+                        {{ (sku?.catalogue?.name | uppercase) || '-' }}
+                    </span>
+                </div>
+            </div>
+            <!-- / CHOSEN SKU -->
+            <!-- CHOSEN BRAND -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'brand'"
+            >
+                <label
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Chosen Brand<br />({{
+                        form.get('chosenBrand').value?.length || '0'
+                    }}
+                    Selected)
+                </label>
+
+                <select-brands
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosenBrand$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onBrandSelected($event)"
+                >
+                    <div error>
+                        {{ getFormError(form.get('chosenBrand')) }}
+                    </div>
+                </select-brands>
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let brand of form.get('chosenBrand').value">
+                        {{ brand?.brand?.name || '-' }}
+                    </span>
+                </div>
+            </div>
+            <!-- / CHOSEN BRAND -->
+            <!-- CHOSEN FAKTUR -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'faktur'"
+            >
+                <label
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Chosen Faktur<br />({{
+                        form.get('chosenFaktur').value?.length || '0'
+                    }}
+                    Selected)
+                </label>
+
+                <select-faktur
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosenFaktur$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onFakturSelected($event)"
+                >
+                    <div error>
+                        {{ getFormError(form.get('chosenFaktur')) }}
+                    </div>
+                </select-faktur>
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" fxFlexAlign="center" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let faktur of form.get('chosenFaktur').value">
+                        {{ faktur?.invoiceGroup?.name || '-' }}
+                    </span>
+                </div>
+            </div>
+            <!-- / CHOSEN FAKTUR -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->

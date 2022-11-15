@@ -1,0 +1,362 @@
+<div class="pb-16">
+    <span class="mat-headline"> General Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Allocation</div>
+
+        <div class="info" fxFlex="100" style="padding-top: 9px;">
+            
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container *ngIf="promoAllocation; else noPromoAllocatione">
+                    <mat-radio-group [value]="(flexiCombo$ | async)?.promoAllocationType">
+                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" [disabled]="true">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noPromoAllocatione>
+                    -
+                </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller ID</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.externalId || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Name</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.name || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Platform</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ platform || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+                Max Redemption<br />per Buyer
+        </div>
+        
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.maxRedemptionPerStore || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <ng-container *ngIf="!(isLoading$ | async)">
+        <ng-container *ngIf="(flexiCombo$ | async)?.promoAllocationType == 'promo_budget'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption
+                    <br />(Rp)
+                </div>
+
+                <div class="info" fxFlex="100">
+                    <p thousandSeparator=".">
+                        Rp {{ ((flexiCombo$ | async)?.promoBudget | number) || '-' }}
+                    </p>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading$ | async"
+                    ></ngx-skeleton-loader>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="!(isLoading$ | async)">
+        <ng-container *ngIf="(flexiCombo$ | async)?.promoAllocationType == 'promo_slot'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption<br />(transaction)</div>
+
+                <div class="info" fxFlex="100">
+                    <p>
+                        {{ ((flexiCombo$ | async)?.promoSlot | number) || '-' }}
+                    </p>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading$ | async"
+                    ></ngx-skeleton-loader>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Active From</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        {{ ((flexiCombo$ | async)?.startDate | date: 'dd/MM/yyyy': '+0700') || '-' }}
+                    </span>
+
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+
+                    <span class="time">
+                        {{ ((flexiCombo$ | async)?.startDate | date: 'HH:mm': '+0700') || '-' }}
+                    </span>
+                </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">To</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        {{ ((flexiCombo$ | async)?.endDate | date: 'dd/MM/yyyy': '+0700') || '-' }}
+                    </span>
+
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+
+                    <span class="time">
+                        {{ ((flexiCombo$ | async)?.endDate | date: 'HH:mm': '+0700') || '-' }}
+                    </span>
+                </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Linked SKP</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ skpName || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Short Description</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.shortDescription || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Image Suggestion</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <button
+                    type="button"
+                    mat-button
+                    color="accent"
+                    class="btn-sinbad-link"
+                    (click)="onShowImage(imageUrl, 'Image Suggestion')"
+                    *ngIf="(flexiCombo$ | async)?.imageUrl as imageUrl; else notFoundImg"
+                >
+                    View
+                </button>
+
+                <ng-template #notFoundImg> - </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <mat-checkbox [checked]="(flexiCombo$ | async)?.voucherCombine" [disabled]="true">
+                    Allow Combine with Voucher
+                </mat-checkbox>
+
+                <mat-checkbox [checked]="(flexiCombo$ | async)?.firstBuy" [disabled]="true">
+                    First Buy
+                </mat-checkbox>
+            </ng-container>
+
+            <ng-container *ngIf="isLoading$ | async">
+                <ngx-skeleton-loader
+                    [theme]="{ width: '150px', 'margin-bottom': '-5px', 'margin-right': '16px' }"
+                ></ngx-skeleton-loader>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                ></ngx-skeleton-loader>
+            </ng-container>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <!-- berdasarkan hasil respon dari belakang multiplication -->
+                <mat-checkbox
+                    [checked]="(flexiCombo$ | async)?.promoConditions[0].multiplication"
+                    [disabled]="true"
+                >
+                    Multiplication
+                </mat-checkbox>
+            </ng-container>
+
+            <ng-container *ngIf="isLoading$ | async">
+                <ngx-skeleton-loader
+                    [theme]="{ width: '150px', 'margin-bottom': '-5px', 'margin-right': '16px' }"
+                ></ngx-skeleton-loader>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                ></ngx-skeleton-loader>
+            </ng-container>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,650 @@
+<mat-card>
+    <div fxLayout="column">
+        <span
+            class="mat-headline"
+            [@animate]="{ value: '*', params: { delay: '120ms', x: '-25px' } }"
+        >
+            General Information
+        </span>
+
+        <!-- PROMO ALLOCATION -->
+        <div class="form-box">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('promoAllocationType').value ||
+                            form.get('promoAllocationType').touched
+                            | hasErrorField: form.get('promoAllocationType'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    fxFill
+                >
+                    Promo Allocation
+                </label>
+
+                <div fxFlexAlign="center" fxFlex="60" fxFill>
+                    <ng-container *ngIf="promoAllocation; else noPromoAllocation">
+                        <mat-radio-group
+                            [formControl]="form.get('promoAllocationType')"
+                            (change)="onChangePromoAllocationType($event)"
+                        >
+                            <mat-radio-button *ngFor="let row of promoAllocation" [value]="row.id">
+                                {{ row.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+
+                    <ng-template #noPromoAllocation> - </ng-template>
+
+                    <mat-hint
+                        class="mat-error"
+                        *ngIf="
+                            form.get('promoAllocationType').value ||
+                                form.get('promoAllocationType').touched
+                                | hasErrorField: form.get('promoAllocationType')
+                        "
+                    >
+                        {{
+                            form.get('promoAllocationType').value
+                                | errorMessage: form:'promoAllocationType'
+                        }}
+                    </mat-hint>
+                </div>
+            </div>
+            <!-- / PROMO ALLOCATION -->
+
+            <!-- PROMO SELLER ID -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('promoSellerId').value || form.get('promoSellerId').touched
+                            | hasErrorField: form.get('promoSellerId'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Promo Seller ID
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input
+                        matInput
+                        [formControl]="form.get('promoSellerId')"
+                        autocapitalize="characters"
+                        autocomplete="off"
+                    />
+
+                    <mat-error>
+                        {{ form.get('promoSellerId').value | errorMessage: form:'promoSellerId' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO SELLER ID -->
+
+            <!-- PROMO NAME -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('promoName').value || form.get('promoName').touched
+                            | hasErrorField: form.get('promoName'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Promo Name
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input
+                        matInput
+                        [formControl]="form.get('promoName')"
+                        autocapitalize="words"
+                        autocomplete="off"
+                    />
+
+                    <mat-error>
+                        {{ form.get('promoName').value | errorMessage: form:'promoName' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO NAME -->
+
+            <!-- PLATFORM -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('platform').value || form.get('platform').touched
+                            | hasErrorField: form.get('platform'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Platform
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <ng-container *ngIf="platformsSinbad; else noPlatformsSinbad">
+                        <mat-select
+                            [formControl]="form.get('platform')"
+                            placeholder="Choose Platform"
+                        >
+                            <mat-option>None</mat-option>
+                            <mat-option *ngFor="let row of platformsSinbad" [value]="row.id">
+                                {{ row.label }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
+
+                    <ng-template #noPlatformsSinbad>
+                        <mat-select placeholder="Platform not found" disabled>
+                            <mat-option>None</mat-option>
+                        </mat-select>
+                    </ng-template>
+
+                    <mat-error>
+                        {{ form.get('platform').value | errorMessage: form:'platform' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / PLATFORM -->
+
+            <!-- MAX REDEMPTION -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('maxRedemption').value || form.get('maxRedemption').touched
+                            | hasErrorField: form.get('maxRedemption'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    Max Redemption<br />per Buyer
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input
+                        matInput
+                        [formControl]="form.get('maxRedemption')"
+                        mask="0*"
+                        autocomplete="off"
+                    />
+
+                    <mat-error>
+                        {{ form.get('maxRedemption').value | errorMessage: form:'maxRedemption' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / MAX REDEMPTION -->
+
+            <!-- ALLOCATE REDEMPTION -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                *ngIf="promoBudgetLabel"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('promoBudget').value || form.get('promoBudget').touched
+                            | hasErrorField: form.get('promoBudget'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    {{ promoBudgetLabel }}
+                </label>
+
+                <ng-container [ngSwitch]="form.get('promoAllocationType').value">
+                    <ng-container *ngSwitchCase="promoAllocationType.PROMOSLOT">
+                        <ng-container
+                            *ngTemplateOutlet="typePromoSlot; context: { form: form }"
+                        ></ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="promoAllocationType.PROMOBUDGET">
+                        <ng-container
+                            *ngTemplateOutlet="typePromoBudget; context: { form: form }"
+                        ></ng-container>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <!-- / ALLOCATE REDEMPTION -->
+
+            <!-- START DATE -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('startDate').value || form.get('startDate').touched
+                            | hasErrorField: form.get('startDate'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Active From
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input
+                        matInput
+                        [matDatetimepicker]="startDatePicker"
+                        [max]="maxStartDate"
+                        [min]="minStartDate"
+                        [formControl]="form.get('startDate')"
+                        (dateChange)="onChangeStartDate($event)"
+                        autocomplete="off"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="startDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #startDatePicker
+                        [disabled]="false"
+                        type="datetime"
+                    ></mat-datetimepicker>
+
+                    <mat-error>
+                        {{ form.get('startDate').value | errorMessage: form:'startDate' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / START DATE -->
+
+            <!-- END DATE -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('endDate').value || form.get('endDate').touched
+                            | hasErrorField: form.get('endDate'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    To
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input
+                        matInput
+                        [matDatetimepicker]="endDatePicker"
+                        [max]="maxEndDate"
+                        [min]="minEndDate"
+                        [formControl]="form.get('endDate')"
+                        (dateChange)="onChangeEndDate($event)"
+                        autocomplete="off"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="endDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #endDatePicker
+                        [disabled]="false"
+                        type="datetime"
+                    ></mat-datetimepicker>
+
+                    <mat-error>
+                        {{ form.get('endDate').value | errorMessage: form:'endDate' }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / END DATE -->
+
+            <!-- Linked List -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> Linked SKP </label>
+
+                <app-select-linked-skp
+                    #selectSkpLinked
+                    [required]="false"
+                    (selected)="onSelectedSkpLinked($event)"
+                    fxFlexAlign="center"
+                    fxFlex="50"
+                    [disabled]="dateStatus"
+                    [promoDateEnd]="promoEnd"
+                >
+                    <!-- <ng-container *ngIf="errorSkpLinkedList == true">
+                        <mat-error>
+                            {{ form.get('skpId').value | errorMessage: form:'skpId' }}
+                        </mat-error>
+                    </ng-container> -->
+                </app-select-linked-skp>
+            </div>
+            <!-- / Linked List -->
+
+            <!-- IMAGE SUGGESTION -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('imgSuggestion').value || form.get('imgSuggestion').touched
+                            | hasErrorField: form.get('imgSuggestion'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    Image<br />Suggestion
+
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="Image Suggestion"
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-form-field
+                        class="sinbad-file-field"
+                        appearance="outline"
+                        [class.mat-sinbad-field-error]="
+                            form.get('imgSuggestion').value || form.get('imgSuggestion').touched
+                                | hasErrorField: form.get('imgSuggestion'):false
+                        "
+                        fxFlex="44.5"
+                    >
+                        <input
+                            #imgSuggestionPicker
+                            type="file"
+                            class="custom-file"
+                            accept=".jpg, .jpeg, .png"
+                            [formControl]="form.get('imgSuggestion')"
+                            (click)="imgSuggestionPicker.value = null"
+                            (change)="onFileBrowse($event, 'imgSuggestion')"
+                            autocomplete="off"
+                        />
+
+                        <input
+                            matInput
+                            placeholder="No file choose"
+                            [formControl]="tmp.imgSuggestion"
+                            [value]="
+                                tmp.imgSuggestion.value && tmp.imgSuggestion.value.name
+                                    ? tmp.imgSuggestion.value.name
+                                    : null
+                            "
+                            autocomplete="off"
+                        />
+
+                        <mat-hint
+                            class="mat-error"
+                            *ngIf="
+                                form.get('imgSuggestion').value || form.get('imgSuggestion').touched
+                                    | hasErrorField: form.get('imgSuggestion')
+                            "
+                        >
+                            {{
+                                form.get('imgSuggestion').value | errorMessage: form:'imgSuggestion'
+                            }}
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        (click)="imgSuggestionPicker.click()"
+                        fxFlexAlign="center"
+                    >
+                        Upload Your File
+                    </button>
+
+                    <!-- <ng-container *ngIf="pageType === 'edit' && flexiCombo && flexiCombo?.imageUrl">
+                        <a
+                            [href]="flexiCombo?.imageUrl"
+                            target="_blank"
+                            *ngIf="flexiCombo?.imageUrl"
+                            style="position: relative; top: -0.78em"
+                        >
+                            <mat-icon>remove_red_eye</mat-icon>
+                        </a>
+                    </ng-container> -->
+                </div>
+            </div>
+            <!-- / IMAGE SUGGESTION -->
+
+            <!-- DESCRIPTION -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('shortDescription').value || form.get('shortDescription').touched
+                            | hasErrorField: form.get('shortDescription'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    Description
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <textarea
+                        matInput
+                        [formControl]="form.get('shortDescription')"
+                        rows="5"
+                    ></textarea>
+
+                    <mat-error>
+                        {{
+                            form.get('shortDescription').value
+                                | errorMessage: form:'shortDescription'
+                        }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / DESCRIPTION -->
+
+            <!-- FIRST BUY -->
+            <div
+                class="custom-field mt-8"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> </label>
+
+                <div fxFlexAlign="center" fxFlex="50">
+                    <mat-checkbox
+                        [formControl]="form.get('firstBuy')"
+                        (change)="onChangeFirstBuy($event)"
+                    >
+                        First Buy
+
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                            matTooltipClass="tooltip-br"
+                        >
+                            help
+                        </mat-icon>
+                    </mat-checkbox>
+
+                    <mat-checkbox
+                        [formControl]="form.get('multiplication')"
+                        (change)="onChangeMultiplication($event)"
+                    >
+                        Multiplication
+
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="Check this checkbox if you want&#10;to apply multiplication logic for&#10;cross selling promo"
+                            matTooltipClass="tooltip-br"
+                        >
+                            help
+                        </mat-icon>
+                    </mat-checkbox>
+                </div>
+            </div>
+            <!-- / FIRST BUY -->
+        </div>
+    </div>
+</mat-card>
+
+<br />
+
+<mat-card>
+    <div fxLayout="column">
+        <span
+            class="mat-headline"
+            [@animate]="{ value: '*', params: { delay: '120ms', x: '-25px' } }"
+        >
+            Layer Settings
+        </span>
+
+        <div class="form-box">
+            <!-- PROMO LAYER -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> Promo LayerLevel </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <ng-container *ngIf="layerBase">
+                        <mat-select
+                            [formControl]="form.get('layer')"
+                            placeholder="Choose Promo Layer Level"
+                        >
+                            <mat-option *ngFor="let row of layerBase" [value]="row.id">
+                                {{ row.label }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO LAYER -->
+
+            <!-- PROMO OWNER -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> Promo Owner </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <ng-container *ngIf="groupBase">
+                        <mat-select [formControl]="form.get('promoOwner')" placeholder="Choose Promo Owner">
+                            <mat-option *ngFor="let row of groupBase" [value]="row.id">
+                                {{ row.label }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO OWNER -->
+        </div>
+    </div>
+</mat-card>
+
+<ng-template let-form="form" #typePromoSlot>
+    <mat-form-field appearance="outline" fxFlex="50">
+        <input
+            matInput
+            [formControl]="form.get('promoBudget')"
+            mask="09999999"
+            autocomplete="off"
+        />
+
+        <mat-error>
+            {{ form.get('promoBudget').value | errorMessage: form:'promoBudget' }}
+        </mat-error>
+    </mat-form-field>
+</ng-template>
+
+<ng-template let-form="form" #typePromoBudget>
+    <mat-form-field appearance="outline" fxFlex="50">
+        <input
+            matInput
+            [formControl]="form.get('promoBudget')"
+            mask="separator.2"
+            thousandSeparator="."
+            separatorLimit="100000000000"
+            prefix="Rp"
+            placeholder="Rp"
+        />
+
+        <mat-error>
+            {{ form.get('promoBudget').value | errorMessage: form:'promoBudget' }}
+        </mat-error>
+    </mat-form-field>
+</ng-template>

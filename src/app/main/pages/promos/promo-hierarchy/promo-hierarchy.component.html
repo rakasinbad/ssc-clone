@@ -1,0 +1,37 @@
+<div id="promo-hierarchy" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div class="center p-8">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <div class="label-info" *ngIf="!isHidden">
+                <mat-icon class="label-info__icon s-24" svgIcon="sinbad-info"></mat-icon>
+                <p class="label-info__text">{{ labelInfo }}</p>
+            </div>
+
+            <mat-tab-group
+                color="accent"
+                style="border-radius: 4px"
+                class="mx-32 sinbad-white sinbad-mat-tab-group mat-tab-header-px-12"
+                animationDuration="0ms"
+                (selectedIndexChange)="onSelectedTab($event)"
+            >
+                <mat-tab label="Layer 00"></mat-tab>
+                <mat-tab label="Layer 01"></mat-tab>
+                <mat-tab label="Layer 02"></mat-tab>
+                <mat-tab label="Layer 03"></mat-tab>
+                <mat-tab label="Layer 04"></mat-tab>
+            </mat-tab-group>
+
+            <app-list-promo-hierarchy
+                class="mx-16"
+                [selectedStatus]="section"
+                [searchValue]="search"
+                [viewByPromo]="selectedViewBy"
+            ></app-list-promo-hierarchy>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

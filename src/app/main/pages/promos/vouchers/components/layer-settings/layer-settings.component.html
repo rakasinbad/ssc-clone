@@ -1,0 +1,110 @@
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Layer Settings</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- *HIDDEN* ID -->
+            <input hidden name="id" formControlName="id" />
+            <!-- / *HIDDEN* ID -->
+
+            <!-- LAYER LEVEL -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    *ngIf="!isViewMode()"
+                >
+                    Promo Layer<br />
+                    Level
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="formMode !== 'view'"
+                >
+                    <mat-select placeholder="Choose Promo Layer Level" formControlName="layer">
+                        <mat-option *ngFor="let layer of sinbadPromoLayer" [value]="layer.id">
+                            {{ layer.label }}
+                        </mat-option>
+                    </mat-select>
+                   
+                </mat-form-field>
+
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="13"
+                    *ngIf="isViewMode()"
+                >
+                    Promo Layer Level
+                </label>
+                
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    Layer 0{{ (form.get('layer').value) || 0 }}
+                </span>
+            </div>
+            <!-- / LAYER LEVEL -->
+
+            <!-- PROMO OWNER -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12" *ngIf="!isViewMode()">
+                    Promo Owner
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="formMode !== 'view'"
+                >
+                    <mat-select placeholder="Choose Promo Owner" formControlName="promoOwner">
+                        <mat-option *ngFor="let promoOwner of sinbadPromoOwner" [value]="promoOwner.id">
+                            {{ promoOwner.label }}
+                        </mat-option>
+                    </mat-select>
+                  
+                </mat-form-field>
+
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="13" *ngIf="isViewMode()">
+                    Promo Owner
+                </label>
+
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ 
+                        form.get('promoOwner').value === 'distributor-promo'
+                        ? 'Distributor Promo'
+                        : form.get('promoOwner').value === 'principal-promo'
+                        ? 'Principal Promo'
+                        : form.get('promoOwner').value === 'none'
+                        ? 'None'
+                        : (form.get('promoOwner').value | titlecase) || '-'
+                    }}
+                </span>
+            </div>
+            <!-- / PROMO OWNER -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->

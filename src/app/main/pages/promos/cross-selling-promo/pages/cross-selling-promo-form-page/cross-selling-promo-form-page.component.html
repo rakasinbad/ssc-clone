@@ -1,0 +1,53 @@
+<div
+    id="cross-selling-promo-form"
+    class="page-layout carded fullwidth inner-scroll"
+    cdkScrollable
+    fusePerfectScrollbar
+>
+    <!-- CENTER -->
+    <div class="center p-8" fxLayout="column" fxLayoutGap="16px" [formGroup]="form">
+        <app-cross-selling-promo-general-info-form
+            [form]="form.get('generalInformation')"
+            (formStatus)="onSetGeneralInfoFormStatus($event)"
+            (formValue)="generalInfoFormDto = $event"
+        ></app-cross-selling-promo-general-info-form>
+
+        <app-cross-selling-promo-group-form
+            [form]="form.get('groupSetting')"
+            [getGeneral]= "form.get('generalInformation').value"
+            (formStatus)="onSetGroupSettingFormStatus($event)"
+            (formValue)="groupFormDto = $event"
+            (fakturName)="fakturName = $event"
+            (fakturId)="fakturId = $event"
+            (segmentationSelectId)="segmentationSelectId = $event"
+        ></app-cross-selling-promo-group-form>
+
+        <app-cross-selling-promo-benefit-form
+            [form]="form.get('benefitSetting')"
+            [fakturName]="fakturName"
+            (formStatus)="onSetBenefitSettingFormStatus($event)"
+            (formValue)="benefitFormDto = $event"
+            [getGeneral]= "form.get('generalInformation').value"
+            [fakturId]="fakturId"
+            [getGroup]= "form.get('groupSetting').value"
+            [getSegmentation]= "segmentationSelectId"
+        ></app-cross-selling-promo-benefit-form>
+
+        <app-cross-selling-promo-segment-setting-form
+            [form]="form.get('segmentSetting')"
+            [fakturId]="fakturId"
+            (formStatus)="onSetSegmentSettingFormStatus($event)"
+            (formValue)="segmentFormDto = $event"
+            [getGroup]= "segmentationSelectId"
+        ></app-cross-selling-promo-segment-setting-form>
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<ng-template #whatIsThisHint>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        This setting is only changeable if only when you have more than one condition & benefit
+        configuration. When you have more than one condition & benefit configuration, the default
+        setting of the calculation mechanism will be set to non-cumulative.
+    </p>
+</ng-template>

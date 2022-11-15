@@ -1,0 +1,45 @@
+voucher-reward-information {
+    .custom-field-right {
+        label {
+            text-align: left !important;
+        }
+    }
+
+    .img-container {
+        width: 260px; /*any size*/
+        height: 10 0px; /*any size*/
+        // border: 2px dashed sinbad-color('red', '50');
+        // border-radius: 4px;
+
+        .fit-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*magic*/
+        }
+    }
+
+    quill-editor {
+        max-width: 100%;
+        min-width: 100%;
+        height: calc(100% - 40px);
+        //
+        &.ql-error {
+            .ql-toolbar,
+            .ql-container {
+                border: 1px solid #f44336 !important;
+            }
+        }
+    }
+
+    quill-view-html.view-only {
+        .ql-container {
+            .ql-editor {
+                padding: 0px 0px !important;
+                font-size: 10pt;
+                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
+                line-height: 1.4 !important;
+                letter-spacing: -0.1px !important;
+            }
+        }
+    }
+}
