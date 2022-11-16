@@ -58,7 +58,8 @@ img {
     max-width: 100%;
     height: auto;
     vertical-align: top;
-    border: none;
+    border: none !important;
+    border-style: none !important;
 }
 
 // -----------------------------------------------------------------------------------------------------
