@@ -1,6 +1,6 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 /**
  *  @author Mufid Jamaluddin
@@ -15,7 +15,7 @@ import { Location } from '@angular/common';
 export class HeaderDetailComponent {
 
     constructor(
-        private location: Location,
+        private router: Router
     ) {
     }
 
@@ -32,7 +32,7 @@ export class HeaderDetailComponent {
     withDesc: boolean;
 
     goBack(): void {
-        this.location.back();
+        this.router.navigateByUrl('/pages/returns', { replaceUrl: true })
     }
 
 }
