@@ -19,7 +19,7 @@
                     </div>
                     <div dir="rtl" class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <div *ngIf='returnInfoViewData$ != null'>
-                            <app-return-status
+                         <app-return-status
                                 [status]='(returnInfoViewData$ | async)?.status'
                                 [returned]='(returnInfoViewData$ | async)?.returned'
                                 (returnStatusHandler)='onChangeReturnStatus($event)'
@@ -28,19 +28,24 @@
                         </div>
                     </div>
                 </div>
+                
+                
+                <div class="stepper-container" *ngIf="!(isLoading$ | async) && (activeIndexStepper | async) > -1">
+                    <app-stepper [stepperConfig]="(returnInfoViewData$ | async)?.returnLogsV2" [initialActiveIndex]="(activeIndexStepper | async) - 1"></app-stepper>
+                </div>
 
-                <div fxLayout="row" fxLayoutAlign="start stretch">
+                <div>
                     <div class="box-content__container return-content"
                          fxLayout="column"
                          fxLayoutAlign="start stretch"
                     >
                         <div class="box-container__title m-0">
-                            <span class="mat-headline"> Return Info </span>
+                            <span class="mat-headline"> Return Detail </span>
                         </div>
 
                         <br/>
 
-                        <div fxLayout="row" fxLayoutAlign="start start">
+                        <div fxLayout="row" fxLayoutAlign="start space-between">
                             <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Store Info"'
@@ -78,7 +83,7 @@
                         </div>
                     </div>
 
-                    <div class="box-content__container return-content log-section"
+                    <!-- <div class="box-content__container return-content log-section"
                          fxLayout="column"
                          fxLayoutAlign="start stretch"
                          fusePerfectScrollbar
@@ -88,7 +93,7 @@
 
                         <app-document-log [logData]='(returnInfoViewData$ | async)?.returnLogs || null'>
                         </app-document-log>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div
@@ -124,11 +129,11 @@
 
                         <ng-container matColumnDef="qty">
                             <mat-header-cell *matHeaderCellDef>
-                                Order Quantity
+                                Return Quantity
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.qty || '-' }}
+                                    {{ row?.returnQty || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>
@@ -144,13 +149,13 @@
                             </mat-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="sum-price">
+                        <ng-container matColumnDef="total-price">
                             <mat-header-cell *matHeaderCellDef>
-                                Sum Price
+                                Total Price
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ formatRp(row?.sumPrice) || '-' }}
+                                    {{ formatRp(row?.totalPrice) || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>
@@ -161,7 +166,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.reason || '-' }}
+                                    {{ row?.returnReason || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>

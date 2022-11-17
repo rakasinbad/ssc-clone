@@ -1,5 +1,5 @@
 <div>
-    <div *ngIf="status === 'pending' && returned === false">
+    <div *ngIf="(status === 'pending' && returned === false)">
         <button
             type="button"
             mat-button
@@ -25,7 +25,7 @@
             class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
             (click)="returnStatusHandler.emit('approved_returned')"
         >
-            Approved & Returned
+            Returned
         </button>
 
         <button
@@ -44,7 +44,16 @@
             class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
             (click)="returnStatusHandler.emit('approved_returned')"
         >
-            Approved & Returned
+            Returned
+        </button>
+        
+        <button
+            type="button"
+            mat-button
+            class="btn-marked-status sinbad-red-fg ml-8 sinbad-white-50-bg border-red small-button"
+            (click)="returnStatusHandler.emit('rejected')"
+        >
+            Rejected
         </button>
     </div>
     <div *ngIf="status === 'approved_returned'">

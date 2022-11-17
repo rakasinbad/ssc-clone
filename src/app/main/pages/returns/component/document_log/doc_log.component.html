@@ -4,7 +4,12 @@
          fxLayoutAlign="start stretch"
     >
         <div fxLayoutAlign="start stretch" class="{{ isLastItem(i) ? 'doc-log-line-last' : 'doc-log-line' }}">
-            <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon>
+            <!-- <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon> -->
+
+            <img 
+                [src]="'icons/sinbad/check-red.svg' | assetUrl" 
+                class="s-16 timeline-indicator"
+            />
         </div>
         <div class="timeline-label-wrap mb-8 log-detail">
             <p class="timeline-desc my-0 py-0">

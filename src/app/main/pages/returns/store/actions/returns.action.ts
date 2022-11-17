@@ -1,8 +1,9 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler } from 'app/shared/models/global.model';
-import { IReturnDetail, IReturnLine, ITotalReturnModel } from '../../models';
-import { IReturnDetailLog } from '../../models/returndetail.model';
+import { IReturnDetail, IReturnLine, ITotalReturnModel, IReturnAmount } from '../../models';
+import { IChangeStatusReturn, IConfirmChangeStatusReturn, IReturnDetailLog } from '../../models/returndetail.model';
+import { IConfirmChangeQuantityReturn } from '../../models/returndetail.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Returns
@@ -60,19 +61,43 @@ export const fetchTotalReturnSuccess = createAction(
     props<{ payload: ITotalReturnModel }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Fetch Amount Returns
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchReturnAmountRequest = createAction(
+    '[Amount Returns API] Fetch Return Amount Request',
+    props<{ payload: string | number }>()
+);
+
+export const fetchReturnAmountFailure = createAction(
+    '[Amount Returns API] Fetch Return Amount Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchReturnAmountSuccess = createAction(
+    '[Amount Returns API] Fetch Return Amount Success',
+    props<{ payload: IReturnAmount }>()
+);
+
 
 // -----------------------------------------------------------------------------------------------------
 // Update Status Return
 // -----------------------------------------------------------------------------------------------------
 
+export const confirmChangeQuantityReturn = createAction(
+    '[Returns Page] Confirm Change Quantity Return',
+    props<{ payload: IConfirmChangeQuantityReturn }>()
+);
+
 export const confirmChangeStatusReturn = createAction(
     '[Returns Page] Confirm Change Status Return',
-    props<{ payload: { status: string; id: number|string, returnNumber?: string } }>()
+    props<{ payload: IConfirmChangeStatusReturn }>()
 );
 
 export const updateStatusReturnRequest = createAction(
     '[Returns API] Update Status Return Request',
-    props<{ payload: { status: string; id: string, returned: boolean } }>()
+    props<{ payload: { change: IChangeStatusReturn; id: string, returned: boolean } }>()
 );
 
 export const updateStatusReturnSuccess = createAction(

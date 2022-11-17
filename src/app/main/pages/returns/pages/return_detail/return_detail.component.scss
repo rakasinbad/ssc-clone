@@ -137,7 +137,17 @@
             min-width: 135px;
         }
 
+        .mat-column-sum-price {
+            flex: 0 1 15%;
+            min-width: 135px;
+        }
+
         .mat-column-unit-price {
+            flex: 0 1 15%;
+            min-width: 135px;
+        }
+
+        .mat-column-total-price {
             flex: 0 1 15%;
             min-width: 135px;
         }
@@ -157,5 +167,10 @@
             top: 11em;
             justify-content: center;
         }
+    }
+
+    .stepper-container {
+        margin: 42px 0;
+        width: 100%;
     }
 }

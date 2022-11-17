@@ -3,7 +3,7 @@ import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 import { Action, createReducer, on } from '@ngrx/store';
 import { ReturnActions } from '../actions';
-import { ITotalReturnModel } from '../../models';
+import { ITotalReturnModel, IReturnAmount } from '../../models';
 
 export const FEATURE_KEY = 'returns';
 
@@ -13,6 +13,7 @@ interface ReturnState extends EntityState<any> {
     selectedReturnId: string | number;
     total: number;
     totalStatus: ITotalReturnModel;
+    returnAmount: IReturnAmount;
 }
 
 export interface State {
@@ -41,6 +42,11 @@ const initialReturnState = adapterReturn.getInitialState({
         totalApprovedReturned: 0,
         totalClosed: 0,
         totalRejected: 0
+    },
+    returnAmount: {
+        returnQty: 0,
+        returnAmount: 0,
+        returnItems: []
     }
 });
 
@@ -61,16 +67,19 @@ const returnReducer = createReducer(
         ReturnActions.fetchReturnRequest,
         ReturnActions.fetchReturnDetailRequest,
         ReturnActions.fetchTotalReturnRequest,
+        ReturnActions.fetchReturnAmountRequest,
         ReturnActions.updateStatusReturnRequest,
         (state) => ({
             ...state,
             isLoading: true,
+            isRefresh: false,
         })
     ),
     on(
         ReturnActions.fetchReturnFailure,
         ReturnActions.fetchReturnDetailFailure,
         ReturnActions.fetchTotalReturnFailure,
+        ReturnActions.fetchReturnAmountFailure,
         ReturnActions.updateStatusReturnFailure,
         (state, { payload }) => ({
             ...state,
@@ -94,7 +103,7 @@ const returnReducer = createReducer(
             isEdit: false,
             isLoading: false,
             isRefresh: undefined,
-            returns: adapterReturn.addOne(
+            returns: adapterReturn.upsertOne(
                 payload.data,
                 { ...state.returns, selectedReturnId: payload.data.returnParcelId  }
             ),
@@ -115,7 +124,7 @@ const returnReducer = createReducer(
             ...state,
             isEdit: false,
             isLoading: false,
-            isRefresh: undefined,
+            isRefresh: true,
             returns: adapterReturn.updateOne(
                 {
                     id: payload.id,
@@ -130,6 +139,15 @@ const returnReducer = createReducer(
             errors: adapterError.removeOne('updateStatusReturnFailure', state.errors),
         })
     ),
+    on(ReturnActions.fetchReturnAmountSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        returns: {
+            ...state.returns,
+            returnAmount: payload
+        },
+        errors: adapterError.removeOne('fetchReturnAmountFailure', state.errors)
+    })),
 
     on(ReturnActions.resetReturn, (state) => ({
         ...state,

@@ -20,10 +20,15 @@ export function createFetchReturnDetailRequest(props: IReturnsEffects):
                         catchOffline(),
                         map((resp: IReturnDetail) => {
                             resp.id = resp.returnParcelId;
-                            resp.returnsQty = resp.returns
-                                .map(item => Number(item.qty))
+                            resp.returnsQty = resp.returnItems
+                                .map(item => Number(item.returnQty))
                                 .filter(qty => !isNaN(qty))
                                 .reduce((a, b) => a + b);
+
+                            resp.returnItems = resp.returnItems.map(data => ({
+                                ...data,
+                                totalPrice: data.unitPrice * data.returnQty
+                            }));
 
                             const payload = {
                                 data: resp,

@@ -1,3 +1,4 @@
+import { StepConfig } from 'app/shared/components/react-components/Stepper/partials';
 import { IDocumentInfoData } from '../../component/document_info';
 import { DocumentLogItemViewModel } from '../../component/document_log';
 import { IReturnCatalogue } from '../../models/returndetail.model';
@@ -15,4 +16,5 @@ export interface ReturnDetailComponentViewModel {
     totalReturnLine: number;
     returnSummaries: Array<IDocumentInfoData>;
     returnLogs: Array<DocumentLogItemViewModel> | null;
+    returnLogsV2: Array<StepConfig> | null;
 }

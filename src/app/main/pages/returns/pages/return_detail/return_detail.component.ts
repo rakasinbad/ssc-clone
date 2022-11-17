@@ -1,6 +1,6 @@
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import moment from 'moment';
+import { Observable, Subject, BehaviorSubject} from 'rxjs';
+import { distinctUntilChanged, map, takeUntil, take } from 'rxjs/operators';
+import * as moment from 'moment';
 import 'moment-timezone';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +13,9 @@ import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
 import { DocumentLogItemViewModel } from '../../component/document_log';
+import { StepConfig } from 'app/shared/components/react-components/Stepper/partials';
+import { ISteps } from '../../models/returndetail.model';
+import { getReturnStatusTitle } from '../../models/returnline.model';
 
 /**
  * @author Mufid Jamaluddin
@@ -97,12 +100,13 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 },
             ],
             returnLogs: [],
+            returnLogsV2: []
         };
-
         this.displayedReturnLineColumns = [
             'product-name',
             'qty',
             'unit-price',
+            'total-price',
             'return-reason',
             'note',
         ];
@@ -113,6 +117,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     defaultViewData: ReturnDetailComponentViewModel;
 
     displayedReturnLineColumns: Array<string>;
+    activeIndexStepper: BehaviorSubject<number> = new BehaviorSubject(-1);
     private readonly _unSubscribe$: Subject<any>;
 
     loadData(): void {
@@ -131,9 +136,10 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 if (!data) {
                     return this.defaultViewData;
                 }
-
+                
                 let createdAtStr;
                 let dataLogs: Array<DocumentLogItemViewModel>|null = null;
+                let returnLogsV2 = this._onBuildStepConfig(data.steps, data.status, data.returned);
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -170,7 +176,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Created By',
-                            value: data.userName,
+                            value: data.steps.created.by,
                         },
                         {
                             key: 'Store Address',
@@ -188,10 +194,15 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         {
                             key: 'Returned By Store',
                             value: data.returned ? 'Yes' : 'No',
+                        },
+                        {
+                            key: 'Order Reference',
+                            value: data.orderCode,
+                            link: `/pages/orders/${data.orderParcelId}/detail`
                         }
                     ],
-                    returnLines: data.returns || [],
-                    totalReturnLine: (data.returns || []).length,
+                    returnLines: data.returnItems || [],
+                    totalReturnLine: (data.returnItems || []).length,
                     returnSummaries: [
                         {
                             key: 'Return Quantity',
@@ -199,16 +210,25 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Return Amount',
-                            value: this.formatRp(data.amount) || '-',
+                            value: this.formatRp(data.totalAmount) || '-',
                         },
                     ],
                     returnLogs: dataLogs,
+                    returnLogsV2
                 };
             }),
             takeUntil(this._unSubscribe$),
         );
 
         this.loadData();
+
+        /** handle refresh after edit data */
+        this.store.select(ReturnsSelector.getIsRefresh)
+            .subscribe((isRefresh) => {
+                if (isRefresh) {
+                    this.loadData();
+                }
+            });
     }
 
     formatRp(data: any): string {
@@ -225,12 +245,33 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     onChangeReturnStatus(status): void {
         const { id } = this.route.snapshot.params;
 
-        this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
-            payload: {
-                status: status,
-                id: id,
+        this.returnInfoViewData$
+        .pipe(
+            distinctUntilChanged(),
+            takeUntil(this._unSubscribe$),
+            take(1)
+        )
+        .subscribe(({ returnLines }) => {
+            if (status !== 'closed') {
+                this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                    payload: {
+                        status: status,
+                        id: id,
+                        tableData: [...returnLines]
+                    }
+                }));
+            } else {
+                this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+                    payload: { 
+                        id, 
+                        change: {
+                            status
+                        }, 
+                        tableData: [...returnLines], 
+                    }
+                }));
             }
-        }));
+        })
     }
 
     ngOnDestroy(): void {
@@ -244,5 +285,72 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             this._unSubscribe$.next();
             this._unSubscribe$.complete();
         }
+
+        this.activeIndexStepper.next(0);
+        this.activeIndexStepper.complete();
+    }
+
+    private _onBuildStepConfig(steps: ISteps, status: string, returned: boolean): StepConfig[] {
+        let logs: StepConfig[] = [];
+        const stepConfig = (id: string, value?: { date: string, by: string }): StepConfig => {
+            const description = value ? `${moment(value.date).format('DD/MM/YY')} by ${value.by}` : null;
+
+            return new StepConfig({
+                id,
+                title: getReturnStatusTitle(id),
+                description
+            })
+        };
+
+        if (steps.pending) {
+            logs.push(stepConfig('pending', steps.pending));
+        } else {
+            logs.push(stepConfig('pending', steps.created));
+        }
+        logs.push(stepConfig('approved', steps.approved));
+        logs.push(stepConfig('approved_returned', steps.approved_returned));
+        logs.push(stepConfig('closed', steps.closed));
+
+        const approvedIdx = logs.findIndex(data => data.id === 'approved');
+        let returnedIdx = logs.findIndex(data => data.id === 'approved_returned');
+        
+        if (steps.rejected) {
+            /** cek apakah ada rejected data */
+            const rejectedDesc = `${moment(steps.rejected.date).format('DD/MM/YY')} by ${steps.rejected.by}`;
+
+            if (approvedIdx > -1) {
+                logs[approvedIdx].description = rejectedDesc;
+                logs[approvedIdx].icon = 'x'
+            }
+            if (returnedIdx > -1) {
+                logs[returnedIdx].description = rejectedDesc;
+                logs[returnedIdx].icon = 'x'
+            }
+        } else {
+            /** handle selain status rejected */
+            if (
+                /** jika taken by salesman == true otomatis status akan ke approved_returned, tidak ada approved */
+                (status === 'pending' && returned) ||
+                /** cek apakah ada property approved dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status == approved_returned/closed */
+                (status !== 'pending' && !steps.approved && approvedIdx > -1)    
+            ) {
+                logs.splice(approvedIdx, 1)
+            }
+    
+            /** refresh return index */
+            returnedIdx = logs.findIndex(data => data.id === 'approved_returned');
+    
+            if ((status !== 'pending' && status !== 'approved') && !steps.approved_returned && returnedIdx > -1) {
+                /** cek apakah ada property returned dari BE jika tidak ada, tidak perlu ditampilkan, terjadi jika status closed */
+                logs.splice(returnedIdx, 1)
+            }
+        }
+
+        /** mencari data stepper yang sedang aktif saat ini */
+        let activeIndexStepper = 0;
+        logs.map(log => log.description && activeIndexStepper++);
+        this.activeIndexStepper.next(activeIndexStepper);
+
+        return logs;
     }
 }

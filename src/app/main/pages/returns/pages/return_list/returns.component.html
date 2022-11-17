@@ -11,9 +11,9 @@
             *ngIf="totalStatus$ != null"
         >
             <mat-tab [label]="'All (' + (totalStatus$ | async).totalReturn + ')'"></mat-tab>
-            <mat-tab [label]="'Pending (' + (totalStatus$ | async).totalPending + ')'"></mat-tab>
+            <mat-tab [label]="'Requested (' + (totalStatus$ | async).totalPending + ')'"></mat-tab>
             <mat-tab [label]="'Approved (' + (totalStatus$ | async).totalApproved + ')'"></mat-tab>
-            <mat-tab [label]="'Approved & Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
+            <mat-tab [label]="'Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
             <mat-tab [label]="'Closed (' + (totalStatus$ | async).totalClosed + ')'"></mat-tab>
             <mat-tab [label]="'Rejected (' + (totalStatus$ | async).totalRejected + ')'"></mat-tab>
         </mat-tab-group>
@@ -109,8 +109,7 @@
                             fxLayoutAlign="end center"
                             *ngIf="
                                 row?.status !== 'rejected' &&
-                                row?.status !== 'closed' &&
-                                row?.status !== 'approved_returned'
+                                row?.status !== 'closed'
                             "
                         >
                             <button
@@ -129,7 +128,7 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Approved"
-                                        *ngIf="row?.status === 'pending'"
+                                        *ngIf="isShowApproved(row)"
                                         (click)="changeReturnStatus('approved', row)"
                                     >
                                         <mat-icon>send</mat-icon>
@@ -140,12 +139,12 @@
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
-                                        aria-label="Approved & Returned"
-                                        *ngIf="row?.status === 'approved' || row?.status === 'pending'"
+                                        aria-label="Returned"
+                                        *ngIf="isShowReturned(row)"
                                         (click)="changeReturnStatus('approved_returned', row)"
                                     >
                                         <mat-icon>send</mat-icon>
-                                        <span>Approved & Returned</span>
+                                        <span>Returned</span>
                                     </button>
 
                                     <button
@@ -153,11 +152,23 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
-                                        *ngIf="row?.status !== 'rejected'"
+                                        *ngIf="isShowRejected(row)"
                                         (click)="changeReturnStatus('rejected', row)"
                                     >
                                         <mat-icon>highlight_off</mat-icon>
                                         <span>Rejected</span>
+                                    </button>
+
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Close"
+                                        *ngIf="isShowClosed(row)"
+                                        (click)="changeReturnStatus('closed', row)"
+                                    >
+                                        <mat-icon>highlight_off</mat-icon>
+                                        <span>Closed</span>
                                     </button>
                                 </ng-template>
                             </mat-menu>

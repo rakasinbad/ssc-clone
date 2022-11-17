@@ -18,9 +18,12 @@ import { DocumentInfoComponent, DocumentInfoDetailComponent } from './component/
 import { DocumentLogComponent } from './component/document_log';
 import { ReturnStatusComponent } from './component/return_status';
 import { ReturnStatusBarComponent } from './component/return_status_bar';
+import { ChangeConfirmationTableComponent } from './component/change_confirmation_table/change-confirmation-table.component';
 
 import { ReturnListPageComponent } from './pages/return_list';
 import { ReturnDetailPageComponent } from './pages/return_detail';
+import { PipeSharedModule } from 'app/shared';
+import { SingleSpaModule } from 'single-spa/single-spa.module';
 
 /**
  * @author Mufid Jamaluddin
@@ -38,6 +41,8 @@ import { ReturnDetailPageComponent } from './pages/return_detail';
 
         ReturnListPageComponent,
         ReturnDetailPageComponent,
+
+        ChangeConfirmationTableComponent
     ],
     imports: [
         ReturnsRoutingModule,
@@ -47,13 +52,19 @@ import { ReturnDetailPageComponent } from './pages/return_detail';
         SharedComponentsModule,
         MaterialModule,
         FuseSidebarModule,
+        PipeSharedModule,
 
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(returnsReducer.FEATURE_KEY, returnsReducer.reducer),
-        EffectsModule.forFeature([ReturnEffects])
+        EffectsModule.forFeature([ReturnEffects]),
+
+        SingleSpaModule
     ],
+    entryComponents: [
+        ChangeConfirmationTableComponent
+    ]
 })
 export class ReturnsModule {}

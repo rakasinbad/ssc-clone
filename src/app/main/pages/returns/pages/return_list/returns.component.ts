@@ -1,4 +1,4 @@
-import { merge, Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject, combineLatest } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute } from '@angular/router';
@@ -20,6 +20,8 @@ import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
 import { getReturnStatusTitle } from '../../models/returnline.model';
+import { IConfirmChangeQuantityReturn } from '../../models/returndetail.model';
+import { ExportFilterActions } from 'app/shared/components/export-advanced/store/actions';
 
 /**
  * @author Mufid Jamaluddin
@@ -76,6 +78,12 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                     this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
                 }
             },
+            export: {
+                permissions: [],
+                useAdvanced: false,
+                pageType: 'returns',
+                useMedeaGo: true
+            },
         };
 
         this.displayedColumns = [
@@ -104,6 +112,8 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     totalStatus$: Observable<ITotalReturnModel>;
+
+    payloadConfirmChangeQuantity: IConfirmChangeQuantityReturn;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -197,8 +207,26 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
         this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
+        
+
+        this.store
+            .select(ReturnsSelector.getReturnAmount)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubscribe$))
+            .subscribe((data) => {
+                if (this.payloadConfirmChangeQuantity) {
+                    this.payloadConfirmChangeQuantity.tableData = data.returnItems;
+                    this.store.dispatch(ReturnActions.confirmChangeQuantityReturn({
+                        payload: this.payloadConfirmChangeQuantity
+                    })); 
+                    
+                    this.payloadConfirmChangeQuantity = null;
+                }
+            });
 
         this.loadData(true);
+
+        /** FETCH STATUS LIST FOR FILTER EXPORT */
+        this.store.dispatch(ExportFilterActions.fetchStatusListRequest({}))
     }
 
     loadData(refresh?: boolean): void {
@@ -292,12 +320,31 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     }
 
     changeReturnStatus(status: string, row: IReturnLine|null): void {
-        const { id = null, returnNumber = null } = row || {};
+        const { id = null, returnNumber = null, returned = false } = row || {};
 
         if (id && returnNumber) {
-            this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
-                payload: { id, status, returnNumber }
-            }));
+            this.payloadConfirmChangeQuantity = {
+                status,
+                id,
+                returnNumber,
+                returned,
+                tableData: []
+            }
+
+            if (status === 'closed') {
+                this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+                    payload: { 
+                        ...this.payloadConfirmChangeQuantity,
+                        change: {
+                            status: this.payloadConfirmChangeQuantity.status
+                        }
+                    }
+                }));
+            } else {
+                this.store.dispatch(ReturnActions.fetchReturnAmountRequest({
+                    payload: id
+                }))
+            }
         }
     }
 
@@ -322,5 +369,33 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
             delete this._unSubscribe$;
         }
+    }
+
+    isShowApproved(row): boolean {
+        if (row) {
+            return row.status === 'pending' && !row.returned;
+        }
+        return false;
+    }
+
+    isShowReturned(row): boolean {
+        if (row) {
+            return row.status === 'approved' || (row.status === 'pending' && row.returned);
+        }
+        return false;
+    }
+
+    isShowRejected(row): boolean {
+        if (row) {
+            return row.status !== 'rejected' && row.status !== 'approved_returned';
+        }
+        return false;
+    }
+
+    isShowClosed(row): boolean {
+        if (row) {
+            return row.status === 'approved_returned';
+        }
+        return false;
     }
 }
