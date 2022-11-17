@@ -66,6 +66,10 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.snapshot.params;
         this.orderFacade.getById(id);
+
+        if ((window as any).headerChangeBreadcrumb) {
+            (window as any).headerChangeBreadcrumb();
+        }
     }
 
     ngOnDestroy(): void {

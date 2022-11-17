@@ -221,6 +221,10 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.loadData();
+        
+        if ((window as any).headerChangeBreadcrumb) {
+            (window as any).headerChangeBreadcrumb();
+        }
 
         /** handle refresh after edit data */
         this.store.select(ReturnsSelector.getIsRefresh)
