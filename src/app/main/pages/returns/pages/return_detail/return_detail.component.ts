@@ -16,6 +16,7 @@ import { DocumentLogItemViewModel } from '../../component/document_log';
 import { StepConfig } from 'app/shared/components/react-components/Stepper/partials';
 import { ISteps } from '../../models/returndetail.model';
 import { getReturnStatusTitle } from '../../models/returnline.model';
+import { FuseProgressBarService } from '@fuse/components/progress-bar/progress-bar.service';
 
 /**
  * @author Mufid Jamaluddin
@@ -32,6 +33,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     constructor(
         private store: Store<returnsReducer.FeatureState>,
         private route: ActivatedRoute,
+        private _fuseProgressBarService: FuseProgressBarService
     ) {
         this._unSubscribe$ = new Subject<any>();
 
@@ -158,6 +160,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         happenedAt: item.createdAt,
                     }));
                 }
+                
+                this._fuseProgressBarService.hide()
 
                 return {
                     title: data.returnNumber,
