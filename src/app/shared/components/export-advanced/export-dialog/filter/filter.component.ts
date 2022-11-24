@@ -278,10 +278,11 @@ export class FilterComponent implements OnInit, OnDestroy {
             });
         }
 
+        const defaultIsToday = this.pageType === 'returns';
         if (filterAspect.rangeDate) {
             const rangeDateRules: Array<ValidatorFn> = [];
-
-            this.form.addControl('isToday', this.formBuilder.control(false));
+            
+            this.form.addControl('isToday', this.formBuilder.control(defaultIsToday));
             this.form.addControl('startDate', this.formBuilder.control(''));
             this.form.addControl('endDate', this.formBuilder.control(''));
 
@@ -298,6 +299,10 @@ export class FilterComponent implements OnInit, OnDestroy {
                 this.form.get('startDate').setValidators(rangeDateRules);
                 this.form.get('endDate').setValidators(rangeDateRules);
             }
+        }
+
+        if (defaultIsToday) {
+            this.onChangeToday({ checked: true })
         }
 
         this.cd$.markForCheck();
@@ -422,7 +427,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
     }
 
-    onChangeToday(ev: MatSlideToggleChange): void {
+    onChangeToday(ev: Partial<MatSlideToggleChange>): void {
         if (typeof ev.checked !== 'boolean') {
             return;
         }
@@ -441,6 +446,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
             this.form.get('endDate').reset();
             this.form.get('endDate').enable();
+            this.minEndDate = null;
         }
     }
 
