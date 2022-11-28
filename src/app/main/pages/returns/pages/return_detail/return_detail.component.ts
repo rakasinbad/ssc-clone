@@ -202,7 +202,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         {
                             key: 'Order Reference',
                             value: data.orderCode,
-                            link: `/pages/orders/${data.orderParcelId}/detail`
+                            link: data.orderParcelId ? `/pages/orders/${data.orderParcelId}/detail` : null
                         }
                     ],
                     returnLines: data.returnItems || [],
