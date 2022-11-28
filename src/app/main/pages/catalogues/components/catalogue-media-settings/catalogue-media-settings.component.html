@@ -1,0 +1,161 @@
+<!-- CONTENT CARD (MEDIA PRODUK) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Media Settings</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
+            <!-- HARGA PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productMedia"
+            >
+                <label
+                    class="pr-0 mt-12"
+                    fxFlex="18"
+                    fxFlexAlign="start"
+                    [class.mat-error]="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
+                >
+                    Product Photos
+                </label>
+                                
+                <div appearance="outline"
+                    fxFlex="80"
+                    fxLayout="column"
+                    fxLayoutGap="10px"
+                    fxLayoutAlign="start start"
+                >
+                    <div appearance="outline"
+                        fxFlex="80"
+                        fxLayout="row"
+                        fxLayoutGap="10px"
+                        fxLayoutAlign="start start"
+                    >
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="start center"
+                            *ngFor="let photo of productPhotos.controls; let i = index;"
+                        >
+                            <input
+                                hidden
+                                #photos
+                                type="file"
+                                (change)="onFileBrowse($event, i)"
+                            />
+                            <ng-container *ngIf="!photo.value && !isViewMode(); else hasPhoto;">
+                                <div class="img-container">
+                                    <button
+                                        (click)="photos.click()"
+                                        mat-stroked-button
+                                        class="red-fg fit-image"
+                                    >
+                                        <mat-icon>add_circle</mat-icon>
+                                    </button>
+                                </div>
+                            </ng-container>
+                            <ng-template #hasPhoto>
+                                <div
+                                    class="img-container"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between start"
+                                    *ngIf="photo.value"
+                                >
+                                    <img class="fit-image" [src]="photo.value" *ngIf="photo.value"/>
+                                    <button
+                                        class="red-fg"
+                                        mat-icon-button
+                                        style="bottom: 26px; right: 22px;"
+                                        (click)="onAbortUploadPhoto(photos, i)"
+                                        *ngIf="!isViewMode()"
+                                    >
+                                        <mat-icon>remove_circle</mat-icon>
+                                    </button>
+                                </div>
+                            </ng-template>
+                            <ng-container *ngIf="i === 0; else optionalPhoto;">
+                                <div fxLayout="column" fxLayoutAlign="space-between center">
+                                    <p
+                                        *ngIf="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true }); else noPhotoError;"
+                                        class="mat-error"
+                                        style="margin-bottom: 0px;"
+                                    >    
+                                        <span
+                                            class="red-200-fg"
+                                        >* </span>Main Photo
+                                    </p>
+                                    <ng-template #noPhotoError>
+                                        <p
+                                            class="sinbad-black-60-fg"
+                                            style="margin-bottom: 0px;"
+                                        >    
+                                            <span
+                                                class="red-200-fg"
+                                            >* </span>Main Photo
+                                        </p>
+                                    </ng-template>
+                                    <button
+                                        class="red-fg"
+                                        matTooltip="Reset to original image"
+                                        mat-icon-button
+                                        (click)="onResetImage(i)"
+                                        *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                    >
+                                        <mat-icon>undo</mat-icon>
+                                    </button>
+                                    <ng-template #noUndo>
+                                        <button
+                                            disabled
+                                            mat-icon-button
+                                        >
+                                            <mat-icon></mat-icon>
+                                        </button>
+                                    </ng-template>
+                                </div>
+                            </ng-container>
+                            <ng-template #optionalPhoto>
+                                <div
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between center"
+                                    *ngIf="(!isViewMode()) || (isViewMode() && photo.value)"
+                                >
+                                    <p class="sinbad-black-60-fg" style="margin-bottom: 0px;">Photo {{ i }}</p>
+                                    <button
+                                        class="red-fg"
+                                        matTooltip="Reset to original image"
+                                        mat-icon-button
+                                        (click)="onResetImage(i)"
+                                        *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                    >
+                                        <mat-icon>undo</mat-icon>
+                                    </button>
+                                    <ng-template #noUndo>
+                                        <button
+                                            disabled
+                                            mat-icon-button
+                                        >
+                                            <mat-icon></mat-icon>
+                                        </button>
+                                    </ng-template>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <p
+                        fxFlexAlign="start"
+                        class="my-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
+                    >
+                        {{ getFormError(form.get('productMedia.photos.0')) }}
+                    </p>
+                </div>
+            </div>
+        <!-- / HARGA PRODUK -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (MEDIA PRODUK) -->

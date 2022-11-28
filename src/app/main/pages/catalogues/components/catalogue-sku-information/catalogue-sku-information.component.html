@@ -1,0 +1,494 @@
+<!-- CONTENT CARD (INFORMASI PRODUK) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">SKU Information</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- PRODUCT ID -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productInfo.externalId'))
+                    "
+                >
+                    <span class="red-500-fg">* </span>Produk ID
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
+                    <input hidden name="id" formControlName="id" />
+                    <input matInput name="externalId" formControlName="externalId" />
+                    <mat-error
+                        *ngIf="!isViewMode() && hasError(form.get('productInfo.externalId'))"
+                    >
+                        {{ getFormError(form.get('productInfo.externalId')) }}
+                    </mat-error>
+                    <mat-error
+                        *ngIf="
+                            !isViewMode() &&
+                            $any(form.get('productInfo.externalId').errors)?.skuSupplierExist
+                        "
+                    >
+                        SKU already exist.
+                    </mat-error>
+                    <mat-hint
+                        class="mb-4 primary-fg"
+                        *ngIf="form.get('productInfo.externalId').status === 'PENDING'"
+                    >
+                        Checking ...
+                    </mat-hint>
+                    <mat-hint
+                        class="mb-4 green-800-fg"
+                        *ngIf="form.get('productInfo.externalId').status === 'VALID'"
+                    >
+                        SKU is available.
+                    </mat-hint>
+                </mat-form-field>
+                <span fxFlex="80" class="grey-fg" *ngIf="isViewMode()">
+                    {{ form.get('productInfo.externalId').value }}
+                </span>
+            </div>
+            <!-- / PRODUCT ID -->
+            <!-- NAMA PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.name'))"
+                >
+                    <span class="red-500-fg">* </span>Product Name
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
+                    <input matInput name="name" formControlName="name" />
+                    <mat-error *ngIf="hasError(form.get('productInfo.name'))">
+                        {{ getFormError(form.get('productInfo.name')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('productInfo.name').value }}
+                </span>
+            </div>
+            <!-- / NAMA PRODUK -->
+            <!-- DETAIL PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                [class.pb-20]="!isViewMode()"
+                fxLayoutAlign="space-between strectch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlex="18"
+                    fxFlexAlign="start"
+                    class="pr-0"
+                    [class.pt-20]="!isViewMode()"
+                    [class.mat-error]="hasError(form.get('productInfo.information'))"
+                >
+                    Product Detail
+                </label>
+
+                <div
+                    fxFlex="80"
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    fxLayoutGap="20px"
+                    *ngIf="!isViewMode()"
+                >
+                    <quill-editor
+                        [class.ql-error]="hasError(form.get('productInfo.information'))"
+                        format="html"
+                        formControlName="information"
+                    ></quill-editor>
+                    <!-- <code>
+                        {{ form.get('productInfo.description').value }}
+                    </code> -->
+                    <mat-error *ngIf="hasError(form.get('productInfo.information'))">
+                        {{ getFormError(form.get('productInfo.information')) }}
+                    </mat-error>
+                </div>
+                <span
+                    class="grey-fg"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productInfo.information').value"
+                >
+                    <quill-view-html
+                        [innerHTML]="form.get('productInfo.information').value | safe: 'html'"
+                    ></quill-view-html>
+                </span>
+                <span
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productInfo.information').value"
+                >
+                    &nbsp;
+                </span>
+            </div>
+            <!-- / DETAIL PRODUK -->
+            <!-- DESKRIPSI PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between strectch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlex="18"
+                    fxFlexAlign="start"
+                    class="pr-0"
+                    [class.pt-28]="!isViewMode()"
+                    [class.mat-error]="hasError(form.get('productInfo.description'))"
+                >
+                    Product Description
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
+                    <textarea matInput rows="5" formControlName="description"></textarea>
+                    <mat-error *ngIf="hasError(form.get('productInfo.description'))">
+                        {{ getFormError(form.get('productInfo.description')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="grey-fg"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productInfo.description').value"
+                >
+                    {{ form.get('productInfo.description').value }}
+                </span>
+                <span
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productInfo.description').value"
+                >
+                    &nbsp;
+                </span>
+            </div>
+            <!-- / DESKRIPSI PRODUK -->
+
+            <!-- BRAND PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.brandId'))"
+                >
+                    <span class="red-500-fg">* </span>Brand
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
+                    <mat-select
+                        name="brandId"
+                        formControlName="brandId"
+                        (selectionChange)="onChangeBrand($event)"
+                    >
+                        <mat-option *ngFor="let brand of brands$ | async" [value]="brand.id">
+                            {{ brand.name }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('productInfo.brandId'))">
+                        {{ getFormError(form.get('productInfo.brandId')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productInfo.brandName').value"
+                >
+                    {{ form.get('productInfo.brandName').value }}
+                </span>
+                <span
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productInfo.brandName').value"
+                >
+                    &nbsp;
+                </span>
+            </div>
+            <!-- / BRAND PRODUK -->
+
+            <!-- SUB BRAND PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productInfo.subBrandId'))
+                    "
+                >
+                    Sub Brand
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
+                    <mat-select name="subBrandId" formControlName="subBrandId">
+                        <ng-container *ngIf="subBrands$ | async as subBrands; else noSubBrands">
+                            <ng-container *ngIf="subBrands?.length > 0; else noSubBrands">
+                                <mat-option>-</mat-option>
+                                <mat-option
+                                    *ngFor="let subBrand of subBrands"
+                                    [value]="subBrand.id"
+                                >
+                                    {{ subBrand.code + ' - ' + subBrand.name }}
+                                </mat-option>
+                            </ng-container>
+                        </ng-container>
+
+                        <ng-template #noSubBrands>
+                            <mat-option> None </mat-option>
+                        </ng-template>
+                    </mat-select>
+
+                    <mat-hint *ngIf="subBrandLoading"> Checking... </mat-hint>
+
+                    <mat-error *ngIf="hasError(form.get('productInfo.subBrandId'))">
+                        {{ getFormError(form.get('productInfo.subBrandId')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productInfo.subBrandName').value"
+                >
+                    {{ form.get('productInfo.subBrandName').value }}
+                </span>
+                <span
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productInfo.subBrandName').value"
+                >
+                    &nbsp;
+                </span>
+            </div>
+            <!-- / SUB BRAND PRODUK -->
+
+            <!-- KATEGORI PRODUK -->
+            <div
+                [ngClass]="formClass"
+                [class.pb-16]="!isViewMode()"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mt-16]="!isViewMode()"
+                    [class.mat-error]="
+                        !isViewMode() &&
+                        hasError(form.get('productInfo.category'), {
+                            ignoreTouched: true,
+                            ignoreDirty: true
+                        })
+                    "
+                >
+                    <span class="red-500-fg">* </span>Category
+                </label>
+
+                <span
+                    class="ml-20 grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                >
+                    <div fxFlex fxLayout="row">
+                        <strong [innerHTML]="productCategory$" fxFlexAlign="center"></strong>
+                        <button
+                            fxFlexAlign="center"
+                            class="red-fg"
+                            mat-icon-button
+                            [disableRipple]="true"
+                            style="margin-left: 10px"
+                            matTooltip="Change the category"
+                            matTooltipPosition="right"
+                            (click)="onEditCategory(form.get('productInfo.id').value)"
+                            *ngIf="!isViewMode()"
+                        >
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </div>
+                    <p
+                        class="mat-error my-0"
+                        *ngIf="
+                            !isViewMode() &&
+                            hasError(form.get('productInfo.category'), {
+                                ignoreTouched: true,
+                                ignoreDirty: true
+                            })
+                        "
+                    >
+                        {{ getFormError(form.get('productInfo.category')) }}
+                    </p>
+                </span>
+            </div>
+            <!-- / KATEGORI PRODUK -->
+            <!-- UOM -->
+            <!-- <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between start"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.uom'))"
+                >
+                    <span class="red-500-fg">* </span>UOM
+                </label>
+
+                <mat-form-field
+                    fxFlexAlign="center"
+                    appearance="outline"
+                    fxFlex="80"
+                    *ngIf="!isViewMode()"
+                >
+                    <mat-select name="uom" formControlName="uom">
+                        <mat-option *ngFor="let unit of catalogueUnits$ | async" [value]="unit.id">
+                            {{ unit.unit }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('productInfo.uom'))">
+                        {{ getFormError(form.get('productInfo.uom')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productInfo.uom').value"
+                >
+                    {{ form.get('productInfo.uomName').value }}
+                </span>
+                <span
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productInfo.uom').value"
+                >
+                    &nbsp;
+                </span>
+            </div> -->
+            <!-- / UOM -->
+            <!-- TAG PRODUK -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productInfo"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="18"
+                    class="pr-0"
+                    [class.mat-error]="
+                        !isViewMode() &&
+                        hasError(form.get('productInfo.tags'), {
+                            ignoreTouched: true,
+                            ignoreDirty: true
+                        })
+                    "
+                >
+                    <span class="red-500-fg">* </span>Product Tag
+                </label>
+
+                <div
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    fxLayout="column"
+                    fxLayoutAlign="start stretch"
+                >
+                    <div fxLayout="row">
+                        <mat-form-field
+                            fxFlex
+                            appearance="outline"
+                            [class.mat-form-field-invalid]="
+                                hasError(form.get('productInfo.tags'), {
+                                    ignoreTouched: true,
+                                    ignoreDirty: true
+                                })
+                            "
+                            *ngIf="!isViewMode()"
+                        >
+                            <mat-chip-list #chipList aria-label="Tags">
+                                <mat-chip
+                                    *ngFor="
+                                        let tag of productTagsControls?.controls;
+                                        index as $index
+                                    "
+                                    selectable="true"
+                                    removable="true"
+                                    (removed)="onRemoveTag($index)"
+                                >
+                                    {{ tag.value }}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]="true"
+                                    (matChipInputTokenEnd)="onAddTag($event)"
+                                />
+                            </mat-chip-list>
+                            <mat-hint
+                                class="mat-error pb-4"
+                                *ngIf="
+                                    !isViewMode() &&
+                                    hasError(form.get('productInfo.tags'), {
+                                        ignoreTouched: true,
+                                        ignoreDirty: true
+                                    })
+                                "
+                            >
+                                {{ getFormError(form.get('productSale.tags')) }}
+                            </mat-hint>
+                        </mat-form-field>
+                        <mat-chip-list #chipList aria-label="Tags" *ngIf="isViewMode()">
+                            <mat-chip
+                                selectable="false"
+                                *ngFor="let tag of productTagsControls?.controls; index as $index"
+                            >
+                                {{ tag.value }}
+                            </mat-chip>
+                        </mat-chip-list>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->
