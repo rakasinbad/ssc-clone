@@ -637,7 +637,7 @@ export class ExportsEffects {
         User,
         IQueryParams & ExportConfiguration & { formData: ExportFormData }
     ]): Observable<AnyAction> => {
-        if (queryParams.formData.viewHistory) {
+        if (queryParams.formData && queryParams.formData.viewHistory) {
             // Kemudian, memunculkan dialog log export-nya.
             return of(
                 ExportActions.showExportHistory({

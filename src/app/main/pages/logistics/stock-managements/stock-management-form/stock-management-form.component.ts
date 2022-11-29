@@ -73,14 +73,6 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         // add: {
         //     permissions: []
         // },
-        export: {
-            permissions: ['OMS.EXPORT'],
-        },
-        import: {
-            permissions: ['OMS.IMPORT'],
-            useAdvanced: true,
-            pageType: '',
-        },
     };
     displayedColumns = [
         'no',
