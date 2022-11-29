@@ -1,0 +1,36 @@
+.btn-cancel {
+    color: #f0444c !important;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 32px;
+    background: #ffffff !important;
+    border: 1px solid #f0444c;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+.btn-submit {
+    color: #ffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    height: 32px;
+    background-color: #f0444c !important;
+    border-radius: 4px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    font-size: 12px;
+    margin: 0px 8px;
+}
+.title {
+    font-size: 20px;
+    font-weight: bold;
+}
+.message {
+    font-size: 16px;
+    color: #677a8e;
+}

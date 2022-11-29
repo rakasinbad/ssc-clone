@@ -1,0 +1,57 @@
+@import 'src/@fuse/scss/fuse';
+
+#import-product {
+  .title-section {
+    font-size: 18px;
+    align-self: center;
+    font-weight: 600;
+  }
+
+  .btn-cancel {
+    color: #f0444c;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 32px;
+    background: #ffffff;
+    border: 1px solid #f0444c;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+  .btn-submit {
+    color: #ffff;
+    display: flex;
+    align-items: center;
+    position: static;
+    height: 32px;
+    background-color: #f0444c;
+    border-radius: 4px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    font-size: 12px;
+    margin: 0px 8px;
+
+    &:disabled {
+      cursor: not-allowed;
+      background-color: #FBC9CC;   
+    }
+  }
+
+  .custom-mat-progress-bar {
+
+    .mat-progress-bar-buffer {
+        background-color: #DAE0E7 !important;
+    }
+
+    .mat-progress-bar-fill {
+      &::after {
+          border-radius: 50px;
+          background-color: #f0444c;
+      }
+  }
+}
+
+}

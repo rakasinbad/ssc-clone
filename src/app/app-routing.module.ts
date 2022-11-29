@@ -58,24 +58,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'account',
-            //     loadChildren: () =>
-            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('account'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'account',
+                loadChildren: () =>
+                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('account'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -129,24 +129,24 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            // {
-            //     path: 'orders',
-            //     loadChildren: () =>
-            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('orders'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'orders',
+                loadChildren: () =>
+                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('orders'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'returns',
             //     loadChildren: () =>
@@ -263,14 +263,14 @@ const routes: Routes = [
             //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(
-                        (m) => m.LogisticsModule
-                    ),
-                canLoad: [AuthGuard],
-            },
+            // {
+            //     path: 'logistics',
+            //     loadChildren: () =>
+            //         import('./main/pages/logistics/logistics.module').then(
+            //             (m) => m.LogisticsModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
@@ -407,24 +407,24 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'account',
-            //     loadChildren: () =>
-            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('account'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'account',
+                loadChildren: () =>
+                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('account'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -478,24 +478,24 @@ const singleSpaRoutes: Routes = [
             //         },
             //     },
             // },
-            // {
-            //     path: 'orders',
-            //     loadChildren: () =>
-            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('orders'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'orders',
+                loadChildren: () =>
+                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('orders'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'returns',
             //     loadChildren: () =>
@@ -612,14 +612,14 @@ const singleSpaRoutes: Routes = [
                     import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
                 canLoad: [AuthGuard],
             },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(
-                        (m) => m.LogisticsModule
-                    ),
-                canLoad: [AuthGuard],
-            },
+            // {
+            //     path: 'logistics',
+            //     loadChildren: () =>
+            //         import('./main/pages/logistics/logistics.module').then(
+            //             (m) => m.LogisticsModule
+            //         ),
+            //     canLoad: [AuthGuard],
+            // },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
@@ -711,26 +711,22 @@ const singleSpaRoutes: Routes = [
             import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
     },
 ];
-console.log('single spa bukan ', environment.isSingleSpa ? 'singleSpaRoutes' : 'routes')
 @NgModule({
     imports: [
-        RouterModule.forRoot(
-            environment.isSingleSpa ? singleSpaRoutes : routes, 
-            { 
-                preloadingStrategy: PreloadAllModules
-            },
-        ),
+        RouterModule.forRoot(environment.isSingleSpa ? singleSpaRoutes : routes, {
+            preloadingStrategy: PreloadAllModules,
+        }),
     ],
     exports: [RouterModule],
     providers: [
         /*
-        * Should be same as mount in root, but have strange effects when navigate between apps.
-        * https://single-spa.js.org/docs/ecosystem-angular#configure-routes
-        */
-        { 
-            provide: APP_BASE_HREF, 
+         * Should be same as mount in root, but have strange effects when navigate between apps.
+         * https://single-spa.js.org/docs/ecosystem-angular#configure-routes
+         */
+        {
+            provide: APP_BASE_HREF,
             useValue: '/',
         },
-    ]
+    ],
 })
 export class AppRoutingModule {}

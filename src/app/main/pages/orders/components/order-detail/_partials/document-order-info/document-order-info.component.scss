@@ -1,0 +1,26 @@
+app-document-order-info {
+    width: 100%;
+
+    .table-data {
+        width: 100%;
+        vertical-align: top;
+        border-collapse: separate;
+        border-spacing: 0 1em;
+        word-break: break-word;
+        margin-bottom: 26px;
+        color: #25282B;
+
+        tr {
+            vertical-align: top;
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            .label {
+                color: #52575C;
+                @media (min-width: 800px) {
+                    width: 125px;
+                }
+            }
+        }
+    }
+}

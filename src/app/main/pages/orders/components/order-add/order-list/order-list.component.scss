@@ -1,0 +1,193 @@
+@import 'src/@fuse/scss/fuse';
+
+#sc-oms-add-manual-order-order-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    padding: 16px;
+    background-color: white;
+
+    .mat-form-field-flex {
+        height: 48px;
+    }
+    .mat-form-field-appearance-outline .mat-form-field-infix {
+        padding: 5px 0 5px 0;
+    }
+    .title-section {
+        font-size: 18px;
+        align-self: center;
+        font-weight: 600;
+    }
+
+    .order-list-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        min-height: 40px;
+        // max-height: 350px;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+            // max-height: 350px;
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row {
+            background: #f3f5f7;
+            min-width: fit-content;
+            width: 100%;
+        }
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .sinbad-order-list-table {
+            position: relative;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            color: #0b1a28;
+            // font-family: Inter;
+            font-size: 14px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-id {
+            flex: 0 1 84px;
+        }
+
+        .mat-column-order-sku-id {
+            flex: 0 1 114px;
+            min-width: 114px;
+            align-items: center;
+            padding: 12px 8px;
+            flex-direction: row;
+        }
+
+        .mat-column-order-sku-supplier {
+            flex: 0 1 114px;
+            min-width: 114px;
+            align-items: center;
+            padding: 12px 8px;
+            flex-direction: row;
+        }
+
+        .mat-column-order-product-name {
+            flex: 0 1 406px;
+            max-width: 406px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
+
+            .product-image {
+                height: 40px;
+                width: 40px;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+        }
+
+        .mat-column-order-qty {
+            flex: 0 1 111px;
+            min-width: 111px;
+            align-items: center;
+            justify-content: center;
+
+            .form-order-qty-input {
+                justify-content: center;
+                padding-top: 12px;
+            }
+        }
+
+        .mat-column-order-uom {
+            flex: 0 1 77px;
+            min-width: 77px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
+        }
+
+        .mat-column-order-price {
+            flex: 0 1 127px;
+            min-width: 127px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
+        }
+
+        .mat-column-order-tax {
+            flex: 0 1 77px;
+            min-width: 77px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
+        }
+        .mat-column-order-action {
+            flex: 0 1 64px;
+            max-width: 64px;
+            flex-direction: row;
+            padding: 12px 8px;
+            align-items: center;
+
+            .sinbad-mat-menu-item {
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                padding: 0px 8px;
+                background-color: white;
+            }
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 7em;
+            justify-content: center;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}
+
+.mat-menu-panel {
+    min-height: fit-content;
+}

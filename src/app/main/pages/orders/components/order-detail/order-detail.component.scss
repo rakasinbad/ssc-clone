@@ -1,0 +1,321 @@
+@import 'src/@fuse/scss/fuse';
+
+app-order-detail {
+    .split-wrap-content {
+        background-color: white;
+        box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+        border-radius: 10px;
+    }
+
+    .mat-tab-disabled {
+        display: none;
+    }
+    
+    .box-container {
+        padding: 16px;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+
+        &.no-border {
+            padding: 0;
+            border: none;
+        }
+
+        .button-order_propose{
+            height: 40px;
+            padding: 0 40px;
+            background-color: #4d4d4d;
+            color: white!important;
+        }
+
+        button[disabled].button-order_propose{
+            background-color: #a8a8a8!important;
+        }
+
+        .box-content__container {
+            &.column-mode {
+                height: 540px;
+            }
+
+            &.shadow-mode {
+                border-radius: 4px;
+                box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.16);
+                width: 337px;
+
+                .box-content {
+                    .form-field {
+                        .field {
+                            .label,
+                            .delimiter {
+                                color: #52575c;
+                            }
+
+                            .delimiter {
+                                + div {
+                                    color: #25282b;
+                                }
+                            }
+
+                            &:last-of-type {
+                                .label,
+                                .delimiter {
+                                    color: #25282b;
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                }
+
+                                .delimiter {
+                                    + div {
+                                        color: #25282b;
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .box-content {
+                .form-field {
+                    .field {
+                        height: 40px;
+
+                        .label {
+                            color: #52575c;
+
+                            + div {
+                                color: #25282b;
+                                opacity: 0.5;
+                            }
+                        }
+
+                        .status-active {
+                            color: #31b057;
+                        }
+                    }
+                }
+            }
+        }
+
+        // .tracking-info {
+        //     header {
+        //         border-bottom: 1px solid #dfdfdf;
+
+        //         .title {
+        //             font-weight: bold;
+        //         }
+        //     }
+
+        //     .content {
+        //         font-size: 13px;
+
+        //         .status {
+        //             .delivery-status-header {
+        //                 font-weight: bold;
+        //             }
+
+        //             .detail {
+        //                 .step {
+        //                     .indicator {
+        //                         margin-top: 5px;
+
+        //                         .circle {
+        //                             text-align: center;
+        //                             width: 1.2em;
+        //                             height: 1.2em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
+
+        //                             &::before {
+        //                                 content: '';
+        //                                 z-index: 2;
+        //                             }
+        //                         }
+
+        //                         &::before {
+        //                             content: '';
+        //                             z-index: 2;
+        //                         }
+        //                     }
+
+        //                     .v-line {
+        //                         border-left: 2px solid rgba(0, 0, 0, 0.12);
+        //                         margin-left: -11px;
+        //                         margin-right: 15px !important;
+        //                         position: relative;
+        //                         top: 10px;
+        //                         margin-top: 4px;
+        //                     }
+
+        //                     .content {
+        //                         // border: 1px solid black;
+
+        //                         .label {
+        //                             font-weight: bold;
+        //                             font-size: 12px;
+        //                         }
+
+        //                         .time {
+        //                             // margin
+        //                         }
+        //                     }
+
+        //                     &:last-child {
+        //                         .v-line {
+        //                             content: '';
+        //                             display: none;
+        //                         }
+
+        //                         .content {
+        //                             margin-left: 6px;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+
+        //     .status.active {
+        //         .delivery-status-header {
+        //             color: #f0444c;
+        //         }
+
+        //         .detail {
+        //             .step {
+        //                 &:last-child {
+        //                     .indicator {
+        //                         .circle {
+        //                             background: #f0444c;
+        //                         }
+        //                     }
+
+        //                     .content {
+        //                         .label {
+        //                             color: rgba(0, 0, 0, 0.87);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // .tracking-info-simple.horizontal {
+        //     .content {
+        //         font-size: 13px;
+
+        //         .status {
+        //             .detail {
+        //                 .step {
+        //                     .indicator {
+        //                         //  After second circle
+        //                         height: 42px;
+
+        //                         .circle {
+        //                             text-align: center;
+        //                             width: 1.2em;
+        //                             height: 1.2em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
+        //                             z-index: 1;
+        //                         }
+
+        //                         .second-circle {
+        //                             text-align: center;
+        //                             width: 1.8em;
+        //                             height: 1.8em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
+
+        //                             // After second circle
+        //                             position: relative;
+        //                             top: -12px;
+        //                             z-index: 0;
+        //                         }
+        //                     }
+
+        //                     .v-line {
+        //                         border-top: 2px solid rgba(0, 0, 0, 0.12);
+        //                         margin-left: 10px;
+        //                         position: relative;
+
+        //                         // After second circle
+        //                         top: -22px;
+        //                     }
+
+        //                     .content {
+        //                         max-width: 80%;
+
+        //                         .label {
+        //                             font-weight: bold;
+        //                             font-size: 12px;
+        //                         }
+        //                     }
+
+        //                     &:last-child {
+        //                         .v-line {
+        //                             content: '';
+        //                             display: none;
+        //                         }
+        //                     }
+        //                 }
+
+        //                 .step.active {
+        //                     .indicator {
+        //                         .circle {
+        //                             background: #f0444c;
+
+        //                             // After second circle
+        //                             position: relative;
+        //                             left: 2.3px;
+        //                         }
+
+        //                         .second-circle {
+        //                             background: #fcc0c3;
+        //                         }
+        //                     }
+
+        //                     // After second circle
+        //                     .v-line {
+        //                         top: -22px;
+        //                         margin-left: 15px;
+        //                     }
+
+        //                     .content {
+        //                         // After second circle
+        //                         position: relative;
+        //                         top: 10;
+
+        //                         .label {
+        //                             color: #f0444c;
+        //                         }
+        //                     }
+
+        //                     &:last-child {
+        //                         .indicator {
+        //                             // background: #fcc0c3;
+
+        //                             .circle {
+        //                                 background: #f0444c;
+        //                             }
+
+        //                             .second-circle {
+        //                                 background: #fcc0c3;
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+    }
+}
