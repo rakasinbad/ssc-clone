@@ -1,0 +1,162 @@
+<div class="box-container" fxLayout="column" fxLayoutGap="16px">
+
+    <!-- Action Button -->
+    <ng-container *ngIf="!loading">
+        <ng-container [ngSwitch]="data?.status">
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'confirm'"
+                (click)="orderStatus.emit('confirm')"
+            >
+                Mark as Packed
+            </button>
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'packing'"
+                (click)="orderStatus.emit('packing')"
+            >
+                Mark as Shipped
+            </button>
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'shipping'"
+                (click)="orderStatus.emit('shipping')"
+            >
+                Mark as Delivered
+            </button>
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'delivered'"
+                (click)="orderStatus.emit('delivered')"
+            >
+                Mark as Done
+            </button>
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'done'"
+                [disabled]="true"
+            >
+                Mark as Done
+            </button>
+            <button
+                type="button"
+                mat-button
+                class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                *ngSwitchCase="'cancel'"
+                [disabled]="true"
+            >
+                Mark as Cancel
+            </button>
+        </ng-container>
+        <!-- <button
+            type="button"
+            mat-button
+            class="btn-cancel-status sinbad-black-fg ml-8"
+            *ngIf="data?.status === 'confirm' || data?.status === 'pending_payment'"
+            (click)="orderStatus.emit('cancel')"
+        >
+            Cancel
+        </button> -->
+    </ng-container>
+
+    <!-- Current Status -->
+    <div class="box-container__title" fxLayout="row" fxLayoutAlign="start stretch">
+        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
+            <span class="mat-headline m-0"> Status : {{ (data?.status | orderStatus) || '-' }} </span>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar mb-0">
+        <div class="content" fxLayout="row">
+            <div class="bar-left-wrapper">
+                <div class="bar-left"></div>
+            </div>
+            <div class="bar-center-wrapper">
+                <div class="bar-center" [class.active]="['shipping', 'delivered', 'done', 'cancel'].includes(data?.status)"></div>
+            </div>
+            <div class="bar-right-wrapper">
+                <div class="bar-right" [class.active]="data?.status === 'done' || data?.status === 'cancel'"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Status -->
+    <div fxLayoutAlign="end end" class="final-status mb-8">{{ (data?.status === 'cancel' ? 'Cancel' : 'Done') || '-'}}</div>
+
+    <!-- Timeline -->
+    <div class="log-info mt-8" fxLayout="column" *ngIf="data?.orderParcelLogs as logs">
+        <div *ngFor="let log of logs; index as i" class="status secondary-text mb-0 pb-0" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+            <div class="timeline-indicator-wrap" fxLayoutAlign="center start" >
+                <!-- <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon> -->
+                <img 
+                    [src]="'icons/sinbad/check-red.svg' | assetUrl" 
+                    class="s-16 timeline-indicator"
+                />
+                <div *ngIf="i !== logs.length-1" class="s-line secondary-text"></div>
+            </div>
+            <div class="timeline-label-wrap mb-8">
+                <p class="timeline-desc my-0 py-0">
+                    {{ log | orderLog: data?.orderCancelReason?.reason }}
+                </p>
+                <p  class="timeline-time mt-0 pt-0">
+                    {{ (log?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                </p>
+            </div>    
+        </div>
+    </div>
+    
+    <ng-container *ngIf="!loading && isShowCancelOrder()">
+        <div fxFlex fxLayout="column">
+            <div class="custom-field" fxLayoutAlign="start center">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-select
+                        placeholder="Choose Cancellation Reason"
+                        [(ngModel)]="selectedCancelReason" 
+                        [ngModelOptions]="{standalone: true}"
+                        [disabled]="(isLoadingCancelOrderReasons$ | async) || isDisabledCancelReasonOrder()"
+                    >
+                        <ng-container>
+                            <mat-option>None</mat-option>
+                            <mat-option
+                                *ngFor="let row of (cancelOrderReasons$ | async)"
+                                [value]="row"
+                            >
+                                {{ row?.reasonName || '-' }}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            
+            <div>
+                <button
+                    type="button"
+                    mat-button
+                    fxFlex
+                    class="sinbad-white-fg sinbad-red-50-bg"
+                    (click)="cancelReason.emit(selectedCancelReason)"
+                    [disabled]="!selectedCancelReason || (isLoadingCancelOrderReasons$ | async) || isDisabledCancelReasonOrder()"
+                >
+                    <ng-container *ngIf="!(isLoadingCancelOrderReasons$ | async); else loadingButton">
+                        Cancel Order
+                    </ng-container>
+                    <ng-template #loadingButton>
+                        <mat-spinner color="accent" [diameter]="30" style="margin: 8px auto;"></mat-spinner>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+    </ng-container>
+
+</div>

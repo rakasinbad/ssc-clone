@@ -1,0 +1,1781 @@
+<div
+    id="order-detail"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+    fusePerfectScrollbar
+>
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent with-navigation"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/orders']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">Order Detail</div>
+                    <div class="subtitle secondary-text">
+                        <span>{{ (order$ | async)?.orderRef }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header sinbad" fxLayout="column" fxLayoutAlign="space-around stretch">
+            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
+
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        class="mr-0 mr-sm-16"
+                        [routerLink]="['/pages/orders']"
+                    >
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                </div> -->
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                    <!-- <button type="button" mat-flat-button [routerLink]="['/pages/orders']">
+                            Kembali
+                        </button> -->
+
+                    <!-- <button mat-flat-button color="accent">
+                        EXPORT
+                    </button> -->
+
+                    <!-- <button mat-stroked-button color="accent" class="sinbad">
+                            IMPORT
+                        </button> -->
+                </div>
+
+                <!-- SMALL BREADCRUMBS -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb"
+                >
+                    <!-- <span class="secondary-text">Quotations</span>
+                <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
+                <span class="secondary-text">Quotations Send</span>
+                <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
+                <span class="secondary-text">Sales Order</span> -->
+                    <ng-container *ngFor="let smallBreadcrumb of smallBreadcrumbs; last as isLast">
+                        <span
+                            [class.secondary-text]="!smallBreadcrumb?.active"
+                            [class.active]="smallBreadcrumb?.active"
+                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl"
+                        >
+                            {{
+                            smallBreadcrumb?.translate
+                                ? (smallBreadcrumb?.translate | translate | titlecase)
+                                : (smallBreadcrumb?.title | titlecase)
+                            }}
+                        </span>
+                        <ng-template #breadWithUrl>
+                            <a href>
+                                <span [class.secondary]="!smallBreadcrumb?.active">
+                                    {{ smallBreadcrumb?.title | titlecase }}
+                                </span>
+                            </a>
+                        </ng-template>
+                        <mat-icon class="secondary-text s-16" *ngIf="!isLast">
+                            chevron_right
+                        </mat-icon>
+                    </ng-container>
+                </div>
+                <!-- / SMALL BREADCRUMBS -->
+
+                <ng-template #noSmallBreadcrumb></ng-template>
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <div fxLayout="row" class="mb-24" fxLayoutGap="10px">
+            <mat-card fxFlex="70">
+                <div fxLayout="column">
+                    <span class="mat-headline m-0">
+                        {{ 'ORDER_DOCUMENT' | translate | titlecase }}
+                    </span>
+
+                    <span class="mt-0" fxLayout="row" fxLayoutAlign="start end">
+                        <span class="h4">{{ (order$ | async)?.orderRef }}</span>
+                        <!-- <span class="h5">&nbsp;/ {{ (order$ | async)?.id }}</span> -->
+                    </span>
+
+                    <div fxLayout="row wrap" fxLayoutAlign="space-between start">
+                        <div fxLayout="column" fxLayoutGap="10px">
+                            <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">Store</div>
+                                </header>
+
+                                <div class="content">
+                                    <table class="info-group-1">
+                                        <tr>
+                                            <td class="info-title">User</td>
+                                            <td>
+                                                {{
+                                                safeValue(
+                                                    (order$ | async)?.order?.store?.user
+                                                        ?.fullName
+                                                )
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Store Name</td>
+                                            <td>
+                                                {{
+                                                    safeValue((order$ | async)?.supplierStore?.name)
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Store ID</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.externalId
+                                                    )
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Store Address</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.address
+                                                    )
+                                                }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">Shipment</div>
+                                </header>
+
+                                <div class="content">
+                                    <table class="info-group-1">
+                                        <tr>
+                                            <td class="info-title">Delivery Address</td>
+                                            <td>
+                                                {{
+                                                safeValue(
+                                                    (order$ | async)?.order?.store?.address
+                                                )
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- <tr>
+                                            <td class="info-title">Selling Point</td>
+                                            <td>DC - TRS CIBINONG</td>
+                                        </tr> -->
+
+                                        <tr>
+                                            <td class="info-title">Geo Coverage</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.urban
+                                                    )
+                                                }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div fxLayout="column" fxLayoutGap="10px">
+                            <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">Invoice</div>
+                                </header>
+
+                                <div class="content">
+                                    <table class="info-group-1">
+                                        <tr>
+                                            <td class="info-title">Order ID</td>
+                                            <td>{{ safeValue((order$ | async)?.orderCode) }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Order Reference</td>
+                                            <td>{{ safeValue((order$ | async)?.orderRef) }}</td>
+                                        </tr>
+
+                                        <!-- <tr>
+                                            <td class="info-title">Faktur ID</td>
+                                            <td>SN1234/5678</td>
+                                        </tr> -->
+
+                                        <tr>
+                                            <td class="info-title">Group Faktur Name</td>
+                                            <td>
+                                                {{
+                                                safeValue((order$ | async)?.invoiceGroup?.name)
+                                                }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">NPS</div>
+                                </header>
+
+                                <div class="content">
+                                    <table class="info-group-1">
+                                        <tr>
+                                            <td class="info-title">NPS Score</td>
+                                            <td>-</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">NPS Comment</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div> -->
+                        </div>
+
+                        <div fxLayout="column" fxLayoutGap="10px">
+                            <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">Order</div>
+                                </header>
+
+                                <div class="content">
+                                    <table>
+                                        <!-- <tr>
+                                            <td class="info-title">Confirmation Date</td>
+                                            <td>07/02/2019 20:11:00</td>
+                                        </tr> -->
+
+                                        <tr>
+                                            <td class="info-title">Order Date</td>
+                                            <td>
+                                                {{
+                                                safeValue((order$ | async)?.createdAt) !== '-'
+                                                    ? ((order$ | async)?.createdAt
+                                                        | date: 'dd/MM/yyyy HH:mm:ss')
+                                                    : safeValue((order$ | async)?.createdAt)
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- <tr>
+                                            <td class="info-title">Voucher</td>
+                                            <td>-</td>
+                                        </tr> -->
+
+                                        <tr>
+                                            <td class="info-title">Order Status</td>
+                                            <td>
+                                                <ng-container [ngSwitch]="(order$ | async)?.status">
+                                                    <ng-container *ngSwitchCase="'checkout'">
+                                                        Quotation
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'pending_payment'">
+                                                        Pending Payment
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'pending'">
+                                                        Pending
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'confirm'">
+                                                        New Order
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'packing'">
+                                                        Packed
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'shipping'">
+                                                        Shipped
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'delivered'">
+                                                        Delivered
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'done'">
+                                                        Done
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'cancel'">
+                                                        Canceled
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchDefault>
+                                                        -
+                                                    </ng-container>
+                                                </ng-container>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="order-box info-box" fxFlex="30">
+                                <header>
+                                    <div class="title">Payment</div>
+                                </header>
+
+                                <div class="content">
+                                    <table>
+                                        <tr>
+                                            <td class="info-title">Payment Due Date</td>
+                                            <td>
+                                                {{
+                                                safeValue((order$ | async)?.dueDate) !== '-'
+                                                    ? ((order$ | async)?.dueDate
+                                                        | date: 'dd/MM/yyyy')
+                                                    : safeValue((order$ | async)?.dueDate)
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Payment Date</td>
+                                            <td>
+                                                {{
+                                                safeValue((order$ | async)?.paidTime) !== '-'
+                                                    ? ((order$ | async)?.paidTime
+                                                        | date: 'dd/MM/yyyy')
+                                                    : safeValue((order$ | async)?.paidTime)
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Payment Term</td>
+                                            <td>
+                                                {{
+                                                safeValue(
+                                                    (order$ | async)?.paymentType?.name
+                                                )
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="info-title">Payment Method</td>
+                                            <td>
+                                                {{
+                                                safeValue(
+                                                    (order$ | async)?.paymentChannel?.name
+                                                )
+                                                }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- <tr>
+                                            <td class="info-title">Bank Acc</td>
+                                            <td>-</td>
+                                        </tr> -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card fxFlex="30">
+                <div fxLayout="column" fxLayoutGap="10px">
+                    <div class="tracking-info px-36">
+                        <header>
+                            <div class="title h4">
+                                Delivery Status -
+
+                                <ng-container [ngSwitch]="(order$ | async)?.status">
+                                    <ng-container *ngSwitchCase="'checkout'">
+                                        Quotation
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'pending'">
+                                        Pending
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'pending_payment'">
+                                        Pending Payment
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'confirm'">
+                                        New Order
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'packing'">
+                                        Packed
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'shipping'">
+                                        Shipped
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'delivered'">
+                                        Delivered
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'done'"> Done</ng-container>
+
+                                    <ng-container *ngSwitchCase="'cancel'"> Canceled</ng-container>
+
+                                    <ng-container *ngSwitchDefault> -</ng-container>
+                                </ng-container>
+                            </div>
+                        </header>
+
+                        <div class="content">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'checkout'"
+                            >
+                                <div class="header">Quotation</div>
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'pending'"
+                            >
+                                <div class="header">Pending</div>
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'pending_payment'"
+                            >
+                                <div class="header">Pending Payment</div>
+                            </div>
+
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'confirm'"
+                            >
+                                <div class="header">New Order</div>
+                                <!-- <div class="header">Verifikasi</div> -->
+
+                                <!-- <div class="detail">
+                                    <mat-vertical-stepper>
+                                        <mat-step [completed]="true">
+                                            <ng-template matStepLabel>Siap dikemas</ng-template>
+
+                                            <div class="time">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </mat-step>
+
+                                        <mat-step [completed]="true">
+                                            <ng-template matStepLabel>
+                                                Parcel di input oleh distributor dari cabang
+                                            </ng-template>
+
+                                            <div class="time">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </mat-step>
+
+                                        <mat-step [completed]="true">
+                                            <ng-template matStepLabel>
+                                                Dikirim dari Warehouse
+                                            </ng-template>
+
+                                            <div class="time">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </mat-step>
+                                    </mat-vertical-stepper>
+                                </div> -->
+
+                                <!-- FIX <div
+                                    class="detail py-4 px-12"
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxLayoutGap="5px"
+                                >
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Siap dikemas
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel di input oleh distributor dari cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Dikirim dari Warehouse
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- <ul>
+                                        <li>
+                                            1
+                                            <span class="label">Siap dikemas</span>
+                                            <span class="time">07-02-2019 20:11</span>
+                                        </li>
+                                        <li>2</li>
+                                        <li>3</li>
+                                        <li class="active">4</li>
+                                        <li>5</li>
+                                        <li>6</li>
+                                        <li>7</li>
+                                    </ul> -->
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'packing'"
+                            >
+                                <div class="header">Packed</div>
+
+                                <!-- FIX <div
+                                    class="detail py-4 px-12"
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxLayoutGap="5px"
+                                >
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Dikemas di gudang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Siap dikirim
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                            </div>
+
+                            <!-- <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'confirm'"
+                            >
+                                <div class="header">Siap Dikirim</div>
+                            </div> -->
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'shipping'"
+                            >
+                                <div class="header">Shipped</div>
+
+                                <!-- FIX <div
+                                    class="detail py-4 px-12"
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxLayoutGap="5px"
+                                >
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel di input oleh distributor dari cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Dikirim dari Warehouse
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Diterima di cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Pengecekan di cabang
+                                            </div>                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'pay_now_pending_payment'"
+                            >
+                                <div class="header">Pending Payment</div>
+                            </div>
+
+
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel siap diantar oleh agen x ke delivery point
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Agen x mengantar parcel ke alamat pengantaran
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel sampai di tujuan
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'delivered'"
+                            >
+                                <div class="header">Delivered</div>
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'done'"
+                            >
+                                <div class="header">Done</div>
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'cancel'"
+                            >
+                                <div class="header">Cancel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+
+        <mat-card class="mb-24">
+            <div fxLayout="column">
+                <span class="mat-headline m-0">
+                    {{ 'ORDER_STATUS' | translate | titlecase }}
+                </span>
+
+                <span class="h4">
+                    <ng-container [ngSwitch]="(order$ | async)?.status">
+                        <ng-container *ngSwitchCase="'checkout'"> Quotation </ng-container>
+
+                        <ng-container *ngSwitchCase="'pending'"> Pending </ng-container>
+
+                        <ng-container *ngSwitchCase="'pending_payment'"> Pending Payment </ng-container>
+
+                        <ng-container *ngSwitchCase="'confirm'"> New Order </ng-container>
+
+                        <ng-container *ngSwitchCase="'packing'"> Packed </ng-container>
+
+                        <ng-container *ngSwitchCase="'shipping'"> Shipped </ng-container>
+
+                        <ng-container *ngSwitchCase="'delivered'"> Delivered </ng-container>
+
+                        <ng-container *ngSwitchCase="'done'"> Done </ng-container>
+
+                        <ng-container *ngSwitchCase="'cancel'"> Canceled </ng-container>
+
+                        <ng-container *ngSwitchDefault> - </ng-container>
+                    </ng-container>
+                </span>
+
+                <div fxLayout="column" fxLayoutGap="10px">
+                    <div class="tracking-info-simple horizontal py-12">
+                        <div class="content">
+                            <div class="status secondary-text">
+                                <div class="detail" fxLayout="row" fxFlex="70">
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'checkout'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Quotation</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'pending'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Pending
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'pending_payment'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Pending Payment
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'confirm'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                New Order
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'packing'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Packed</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'shipping'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Shipped</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'delivered'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Delivered</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'done'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Done</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'cancel'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">Canceled</div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <div class="status secondary-text">
+                                <div class="header">Dikemas</div>
+
+                                <div
+                                    class="detail py-4 px-12"
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxLayoutGap="5px"
+                                >
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Dikemas di gudang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Siap dikirim
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <!-- <div class="status secondary-text active">
+                                <div class="header">Dikirim</div>
+
+                                <div
+                                    class="detail py-4 px-12"
+                                    fxLayout="column"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxLayoutGap="5px"
+                                >
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel di input oleh distributor dari cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Dikirim dari Warehouse
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Diterima di cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Pengecekan di cabang
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel siap diantar oleh agen x ke delivery point
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Agen x mengantar parcel ke alamat pengantaran
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="step" fxLayout="row" fxLayoutGap="5px">
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content px-4" fxFlex="90">
+                                            <div class="label">
+                                                Parcel sampai di tujuan
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <small>07-02-2019 20:11</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+
+        <mat-card class="order-lines mb-24">
+            <div fxLayout="column">
+                <span class="mat-headline m-0">
+                    {{ 'ORDER_LINES' | translate | titlecase }}
+                </span>
+
+                <mat-table class="order-lines-table" [dataSource]="dataSource">
+                    <!-- Product Column -->
+                    <ng-container matColumnDef="product">
+                        <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word">
+                                {{ safeValue(row?.catalogue?.name) }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Bonus Column -->
+                    <!-- <ng-container matColumnDef="bonus">
+                        <mat-header-cell *matHeaderCellDef>
+                            Bonus
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word;">
+                                {{ row?.bonus }}
+                            </p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Order Qty Column -->
+                    <ng-container matColumnDef="order-qty">
+                        <mat-header-cell *matHeaderCellDef> Order Qty </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word">
+                                {{
+                                +row?.qty > 0 || +row?.qty === 0
+                                    ? (+row?.qty | number)
+                                    : safeValue(+row?.qty)
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Delivered Qty Column -->
+                    <!-- <ng-container matColumnDef="delivered-qty">
+                        <mat-header-cell *matHeaderCellDef>
+                            Delivered Qty
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p
+                                matTooltip="Click to edit delivered qty"
+                                style="word-break: break-word;cursor: pointer"
+                                (click)="onChangeQty(row, 'delivered')"
+                            >
+                                {{
+                                    row?.deliveredQty > 0 || row?.deliveredQty !== null
+                                        ? (+row?.deliveredQty | number)
+                                        : safeValue(row?.deliveredQty)
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Invoiced Qty Column -->
+                    <!-- <ng-container matColumnDef="invoiced-qty">
+                        <mat-header-cell *matHeaderCellDef>
+                            Invoiced Qty
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p
+                                matTooltip="Click to edit invoiced qty"
+                                style="word-break: break-word;cursor: pointer"
+                                (click)="onChangeQty(row, 'invoiced')"
+                            >
+                                {{
+                                    row?.invoicedQty > 0 || row?.deliveredQty !== null
+                                        ? (+row?.invoicedQty | number)
+                                        : safeValue(row?.invoicedQty)
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Unit Of Measured Column -->
+                    <!-- <ng-container matColumnDef="unitOfMeasured">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Unit of Measured
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.unitOfMeasured }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- {{
+                                    +row?.nettPrice > 0 &&
+                                    calculateUnit(+row?.nettPrice, +row?.qty) > 0
+                                        ? (calculateUnit(+row?.nettPrice, +row?.qty)
+                                          | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.nettPrice
+                                }} -->
+
+                    <!-- Unit Price Column -->
+                    <ng-container matColumnDef="unit-price">
+                        <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word">
+                                {{
+                                +row?.grossPrice > 0
+                                    ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : +row?.grossPrice
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Discount Price Column -->
+                    <ng-container matColumnDef="discount-price">
+                        <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word">
+                                {{
+                                +row?.cataloguePromo > 0
+                                    ? (+row?.cataloguePromo
+                                        | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : +row?.cataloguePromo
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!--  {{
+                                    +row?.nettPrice > 0
+                                        ? (+row?.nettPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.nettPrice
+                                }} -->
+
+                    <!-- Gross Column -->
+                    <ng-container matColumnDef="gross">
+                        <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">
+                                {{
+                                calculateGrossPrice(
+                                    +row?.grossPrice,
+                                    +row?.cataloguePromo,
+                                    +row?.qty
+                                ) > 0
+                                    ? (calculateGrossPrice(
+                                    +row?.grossPrice,
+                                    +row?.cataloguePromo,
+                                    +row?.qty
+                                    ) | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : calculateGrossPrice(
+                                    +row?.grossPrice,
+                                    +row?.cataloguePromo,
+                                    +row?.qty
+                                    )
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Amount Disc 1 Column -->
+                    <!-- <ng-container matColumnDef="amountDisc1">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Amount Disc I
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.amountDisc1 }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Amount Disc 2 Column -->
+                    <!-- <ng-container matColumnDef="amountDisc2">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Amount Disc II
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.amountDisc2 }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Amount Disc 3 Column -->
+                    <!-- <ng-container matColumnDef="amountDisc3">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Amount Disc III
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.amountDisc3 }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Promo Column -->
+                    <!-- <ng-container matColumnDef="promo">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Promo
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.promo }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Amount Promo Column -->
+                    <!-- <ng-container matColumnDef="amountPromo">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Amount Promo
+                        </mat-header-cell>
+
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ row?.amountPromo }}</p>
+                        </mat-cell>
+                    </ng-container> -->
+
+                    <mat-header-row
+                        *matHeaderRowDef="displayedColumns; sticky: true"
+                    ></mat-header-row>
+
+                    <mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                        class="order-line"
+                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    >
+                    </mat-row>
+                </mat-table>
+            </div>
+        </mat-card>
+
+        <mat-card class="mb-24">
+            <div fxLayout="column">
+                <span class="mat-headline m-0 mb-12 text-right">
+                    {{ 'ORDER_STATUS' | translate | titlecase }}
+                </span>
+
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="25px">
+                    <div class="price-order-status-box info-box">
+                        <header>
+                            <div class="title">Original</div>
+                        </header>
+
+                        <div class="content">
+                            <table class="info-group-1">
+                                <tr>
+                                    <td class="info-title">Gross Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelNettPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Discount Original:</td>
+                                    <td>Rp0,00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Promo Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelPromo || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Voucher Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelVoucher || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Untaxed Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelGrossPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Tax Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelTaxes || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tfoot>
+                                <tr>
+                                    <td class="info-title">Total Original:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelFinalPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- <div class="price-order-status-box info-box">
+                        <header>
+                            <div class="title">Delivered</div>
+                        </header>
+
+                        <div class="content">
+                            <table class="info-group-1">
+                                <tr>
+                                    <td class="info-title">Gross Delivered:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Discount Delivered:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Promo Delivered:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Voucher Delivered:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Untaxed Delivered:</td>
+                                    <td>Rp 218,520.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Tax Delivered:</td>
+                                    <td>Rp 21,852.00</td>
+                                </tr>
+
+                                <tfoot>
+                                    <tr>
+                                        <td class="info-title">Total Delivered:</td>
+                                        <td>Rp 240,372.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="price-order-status-box info-box">
+                        <header>
+                            <div class="title">Invoiced</div>
+                        </header>
+
+                        <div class="content">
+                            <table class="info-group-1">
+                                <tr>
+                                    <td class="info-title">Gross Invoiced:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Discount Invoiced:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Promo Invoiced:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Voucher Invoiced:</td>
+                                    <td>Rp 0.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Untaxed Invoiced:</td>
+                                    <td>Rp 218,520.00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Tax Invoiced:</td>
+                                    <td>Rp 21,852.00</td>
+                                </tr>
+
+                                <tfoot>
+                                    <tr>
+                                        <td class="info-title">Total Invoiced:</td>
+                                        <td>Rp 240,372.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div> -->
+
+                    <div class="price-order-status-box info-box">
+                        <header>
+                            <div class="title">Final</div>
+                        </header>
+
+                        <div class="content">
+                            <table class="info-group-1">
+                                <tr>
+                                    <td class="info-title">Gross:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelNettPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Discount:</td>
+                                    <td>Rp0,00</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Promo:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelPromo || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Voucher:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelVoucher || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Untaxed:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelGrossPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">Tax:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelTaxes || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+
+                                <tfoot>
+                                <tr>
+                                    <td class="info-title">Total:</td>
+                                    <td>
+                                        {{
+                                        +(order$ | async)?.parcelFinalPrice || 0
+                                            | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+
+        <!-- <mat-card class="log-note mb-12">
+            <div fxLayout="column">
+                <div fxLayout="row">
+                    <span class="mat-headline m-0 mb-12 pb-4" fxFlex="30">
+                        Log-note
+                    </span>
+                </div>
+
+                <div class="log-note-box">
+                    <div class="activities">
+                        <div class="activity" fxLayout="row" fxLayoutAlign="start start">
+                            <img src="assets/images/avatars/default.png" class="avatar" />
+
+                            <div
+                                class="line-height-18"
+                                fxLayout="column"
+                                fxLayoutAlign="start start"
+                            >
+                                <div class="secondary-text m-0">
+                                    <span>Note by Alan - 9 Minutes Ago</span> -->
+        <!-- <span class="username">Note by Alan</span>
+                                    <span class="time">- 9 Minutes Ago</span> -->
+        <!-- </div> -->
+
+        <!-- <span class="message m-0">Order Created</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-card> -->
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<!-- <app-scroll-top></app-scroll-top> -->
