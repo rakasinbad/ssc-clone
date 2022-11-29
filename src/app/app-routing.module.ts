@@ -58,24 +58,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -129,24 +129,24 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('orders'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'returns',
             //     loadChildren: () =>
@@ -239,38 +239,38 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'settings',
-                loadChildren: () =>
-                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('settings'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'settings',
+            //     loadChildren: () =>
+            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('settings'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'errors',
             //     loadChildren: () =>
             //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'logistics',
-            //     loadChildren: () =>
-            //         import('./main/pages/logistics/logistics.module').then(
-            //             (m) => m.LogisticsModule
-            //         ),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'logistics',
+                loadChildren: () =>
+                    import('./main/pages/logistics/logistics.module').then(
+                        (m) => m.LogisticsModule
+                    ),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
@@ -407,24 +407,24 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -478,24 +478,24 @@ const singleSpaRoutes: Routes = [
             //         },
             //     },
             // },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('orders'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'returns',
             //     loadChildren: () =>
@@ -588,38 +588,38 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'settings',
-                loadChildren: () =>
-                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('settings'),
-                //     },
-                //     redirectTo: {
-                //         navigationCommands: ['/pages/errors/403'],
-                //         navigationExtras: {
-                //             replaceUrl: true,
-                //             skipLocationChange: true,
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'settings',
+            //     loadChildren: () =>
+            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('settings'),
+            //     //     },
+            //     //     redirectTo: {
+            //     //         navigationCommands: ['/pages/errors/403'],
+            //     //         navigationExtras: {
+            //     //             replaceUrl: true,
+            //     //             skipLocationChange: true,
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             {
                 path: 'errors',
                 loadChildren: () =>
                     import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
                 canLoad: [AuthGuard],
             },
-            // {
-            //     path: 'logistics',
-            //     loadChildren: () =>
-            //         import('./main/pages/logistics/logistics.module').then(
-            //             (m) => m.LogisticsModule
-            //         ),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'logistics',
+                loadChildren: () =>
+                    import('./main/pages/logistics/logistics.module').then(
+                        (m) => m.LogisticsModule
+                    ),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'promos',
             //     loadChildren: () =>
