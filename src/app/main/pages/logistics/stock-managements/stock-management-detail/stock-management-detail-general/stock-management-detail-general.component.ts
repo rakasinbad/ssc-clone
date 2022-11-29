@@ -64,14 +64,14 @@ export class StockManagementDetailGeneralComponent implements OnInit, AfterViewI
         add: {
             // permissions: []
         },
-        export: {
-            permissions: ['OMS.EXPORT']
-        },
-        import: {
-            permissions: ['OMS.IMPORT'],
-            useAdvanced: true,
-            pageType: ''
-        }
+        // export: {
+        //     permissions: ['OMS.EXPORT']
+        // },
+        // import: {
+        //     permissions: ['OMS.IMPORT'],
+        //     useAdvanced: true,
+        //     pageType: ''
+        // }
     };
 
     search: FormControl = new FormControl('');
