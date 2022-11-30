@@ -1,0 +1,299 @@
+<!-- CARD HEADER -->
+<sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+<!-- / CARD HEADER -->
+
+<!-- THE CONTENT -->
+<mat-table
+    id="stores-table"
+    class="stores-table sinbad-table mx-12"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    #table
+    [dataSource]="dataSource$ | async"
+    [trackBy]="onTrackBy"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>
+            Store Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.store?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Credit Limit Column -->
+    <ng-container matColumnDef="credit-limit">
+        <mat-header-cell *matHeaderCellDef>
+            Credit Limit
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <span
+                class="quantity-indicator text-truncate"
+                [matTooltip]="
+                    row?.allowCreditLimit ? 'Allow Credit Limit' : 'Disallow Credit Limit'
+                "
+                [ngClass]="{
+                    'indicator-error': !row?.allowCreditLimit,
+                    'indicator-success': row?.allowCreditLimit
+                }"
+            >
+            </span>
+            <p class="price text-word-break-break-word">
+                {{
+                    +row?.creditLimit > 0
+                        ? (+row?.creditLimit | price: 'short') || '-'
+                        : +row?.creditLimit
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Invoice Name Column -->
+    <ng-container matColumnDef="invoice-name">
+        <mat-header-cell *matHeaderCellDef>
+            Invoice Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.invoiceGroup?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Account Receivable Column -->
+    <ng-container matColumnDef="receivable">
+        <mat-header-cell *matHeaderCellDef>
+            Account Receivable
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="price text-word-break-break-word">
+                {{
+                    +row?.totalOrder > 0
+                        ? (+row?.totalOrder | price: 'short') || '-'
+                        : +row?.totalOrder
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Balance Column -->
+    <ng-container matColumnDef="balance">
+        <mat-header-cell *matHeaderCellDef>
+            Balance
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <span
+                class="quantity-indicator text-truncate"
+                [matTooltip]="row?.freezeStatus ? 'Freeze Balance' : 'Unfreeze Balance'"
+                [ngClass]="{
+                    'indicator-success': !row?.freezeStatus,
+                    'indicator-error': row?.freezeStatus
+                }"
+            >
+            </span>
+            <p class="price text-word-break-break-word">
+                {{
+                    +row?.balanceAmount > 0
+                        ? (+row?.balanceAmount | price: 'short') || '-'
+                        : +row?.balanceAmount
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Average Monthly Order Column -->
+    <ng-container matColumnDef="avg-monthly">
+        <mat-header-cell *matHeaderCellDef>
+            Average Monthly Order
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="price text-word-break-break-word">
+                {{
+                    +row?.averageOrder > 0
+                        ? (+row?.averageOrder | price: 'short') || '-'
+                        : +row?.averageOrder
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Credit Limit Group Column -->
+    <ng-container matColumnDef="credit-limit-group">
+        <mat-header-cell *matHeaderCellDef>
+            Credit Limit Group
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.creditLimitGroup?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Store Segment Column -->
+    <ng-container matColumnDef="store-segment">
+        <mat-header-cell *matHeaderCellDef>
+            Segment
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.store?.storeSegment?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- ToP Column -->
+    <ng-container matColumnDef="top">
+        <mat-header-cell *matHeaderCellDef>
+            ToP
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.termOfPayment || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Last Update Column -->
+    <ng-container matColumnDef="last-update">
+        <mat-header-cell *matHeaderCellDef>
+            Last Update
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ (row?.updatedAt | date: 'dd MMMM yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>
+            Actions
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button
+                    id='btn__actions'
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.UPDATE']">
+                        <button
+                            id='btn__edit'
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="Edit"
+                            (click)="onEdit(row)"
+                        >
+                            <!-- <mat-icon>edit</mat-icon> -->
+                            <span>Edit</span>
+                        </button>
+
+                        <button
+                            id='btn__freeze-balance'
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            [attr.aria-label]="
+                                row?.freezeStatus ? 'Unfreeze Balance' : 'Freeze Balance'
+                            "
+                            (click)="onFreezeBalance(row)"
+                        >
+                            <!-- <mat-icon>ac_unit</mat-icon> -->
+                            <span>
+                                {{ row?.freezeStatus ? 'Unfreeze Balance' : 'Freeze Balance' }}
+                            </span>
+                        </button>
+
+                        <button
+                            id='btn__credit-limit'
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            [attr.aria-label]="
+                                row?.freezeStatus ? 'Disallow Credit Limit' : 'Allow Credit Limit'
+                            "
+                            (click)="onCreditLimit(row)"
+                        >
+                            <span>
+                                {{
+                                    row?.allowCreditLimit
+                                        ? 'Disallow Credit Limit'
+                                        : 'Allow Credit Limit'
+                                }}
+                            </span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8">
+            No records found
+        </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="store"
+        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+    >
+    </mat-row>
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    ></mat-footer-row>
+
+    <!-- <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="store"
+            [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+            matRipple
+            [routerLink]="['/pages/account/stores', row?.id, 'employee']"
+        >
+        </mat-row> -->
+</mat-table>
+
+<div
+    class="loader-content"
+    *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+>
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<!-- <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div> -->
+
+<mat-paginator
+    [disabled]="
+        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+    "
+    [length]="totalDataSource$ | async"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+>
+</mat-paginator>
+
+<!-- / THE CONTENT -->

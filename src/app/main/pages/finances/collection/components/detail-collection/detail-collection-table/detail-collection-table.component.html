@@ -1,0 +1,143 @@
+<div class="pb-16">
+    <span class="mat-title-headline"> Billing </span>
+</div>
+
+<mat-table
+    id="finance-billing-list-table"
+    class="sinbad-table"
+    [class.sinbad-table-no-record]="
+        ((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0
+    "
+    #table
+    [dataSource]="(detailCollection$ | async)?.data?.billingPayments"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Collection Code Column -->
+    <ng-container matColumnDef="finance-billing-code">
+        <mat-header-cell *matHeaderCellDef> Billing Code </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.billingPaymentCode || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Invoice Number Column -->
+    <ng-container matColumnDef="finance-invoice-number">
+        <mat-header-cell *matHeaderCellDef> Invoice Number </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.orderCode || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Total Invoice Amount Column -->
+    <ng-container matColumnDef="finance-total-invoice-amount">
+        <mat-header-cell *matHeaderCellDef> Total Invoice Amount </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ totalAmountFormat(row?.totalAmount) }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Invoice Due Date Column -->
+    <ng-container matColumnDef="finance-invoice-due-date">
+        <mat-header-cell *matHeaderCellDef> Invoice Due Date </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.dueDate | date: 'dd MMM yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Amount Use Column -->
+    <ng-container matColumnDef="finance-amount-use">
+        <mat-header-cell *matHeaderCellDef> Amount Use</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ numberFormat(row?.totalBillingAmount) }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Sales Rep Column -->
+    <ng-container matColumnDef="finance-sales-rep">
+        <mat-header-cell *matHeaderCellDef> Sales Rep Name </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.salesRepName || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Reason Column -->
+    <ng-container matColumnDef="finance-reason">
+        <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.approvalReason || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Billing Status Column -->
+    <ng-container matColumnDef="finance-bill-status">
+        <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-{{ row?.approvalStatus }}">
+                {{ statusLabel(row?.approvalStatus) }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="finance-action">
+        <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['FINANCE.CL.READ']">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Detail"
+                            (click)="openDetailRow(row)"
+                        >
+                            <mat-icon>remove_red_eye</mat-icon>
+                            <span>Detail</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No data available </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
+
+    <mat-row
+        *matRowDef="let row; columns: displayedColumnsBilling"
+        class="sinbad-billing-list-item"
+    ></mat-row>
+
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0"
+    ></mat-footer-row>
+</mat-table>
+
+<br />

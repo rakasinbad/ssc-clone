@@ -1,0 +1,23 @@
+<div class="log-info mt-8" fxLayout="column" *ngIf="logData">
+    <div *ngFor="let log of logData; index as i" class="status secondary-text mb-0 pb-0"
+         fxLayout="row"
+         fxLayoutAlign="start stretch"
+    >
+        <div fxLayoutAlign="start stretch" class="{{ isLastItem(i) ? 'doc-log-line-last' : 'doc-log-line' }}">
+            <!-- <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon> -->
+
+            <img 
+                [src]="'icons/sinbad/check-red.svg' | assetUrl" 
+                class="s-16 timeline-indicator"
+            />
+        </div>
+        <div class="timeline-label-wrap mb-8 log-detail">
+            <p class="timeline-desc my-0 py-0">
+                {{ log?.title }}
+            </p>
+            <p  class="timeline-time mt-0 pt-0">
+                {{ (log?.happenedAt | date: 'dd/MM/yyyy HH:mm a') || '-' }}
+            </p>
+        </div>
+    </div>
+</div>

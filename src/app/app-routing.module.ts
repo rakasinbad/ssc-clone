@@ -96,39 +96,39 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            // {
-            //     path: 'finances',
-            //     // children: [
-            //     //     {
-            //     //         path: '',
-            //     //         redirectTo: 'credit-limit-balance',
-            //     //         pathMatch: 'full'
-            //     //     },
-            //     //     {
-            //     //         path: 'credit-limit-balance',
-            //     //         loadChildren: () =>
-            //     //             import(
-            //     //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
-            //     //             ).then(m => m.CreditLimitBalanceModule),
-            //     //         canLoad: [AuthGuard]
-            //     //     }
-            //     // ],
-            //     loadChildren: () =>
-            //         import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('finances'),
-            //     //         redirectTo: {
-            //     //             navigationCommands: ['/pages/errors/403'],
-            //     //             navigationExtras: {
-            //     //                 replaceUrl: true,
-            //     //                 skipLocationChange: true,
-            //     //             },
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'finances',
+                // children: [
+                //     {
+                //         path: '',
+                //         redirectTo: 'credit-limit-balance',
+                //         pathMatch: 'full'
+                //     },
+                //     {
+                //         path: 'credit-limit-balance',
+                //         loadChildren: () =>
+                //             import(
+                //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
+                //             ).then(m => m.CreditLimitBalanceModule),
+                //         canLoad: [AuthGuard]
+                //     }
+                // ],
+                loadChildren: () =>
+                    import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('finances'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             {
                 path: 'orders',
                 loadChildren: () =>
@@ -147,12 +147,12 @@ const routes: Routes = [
                 //     },
                 // },
             },
-            // {
-            //     path: 'returns',
-            //     loadChildren: () =>
-            //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'returns',
+                loadChildren: () =>
+                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'catalogues',
             //     loadChildren: () =>
@@ -445,39 +445,39 @@ const singleSpaRoutes: Routes = [
             //     //     },
             //     // },
             // },
-            // {
-            //     path: 'finances',
-            //     // children: [
-            //     //     {
-            //     //         path: '',
-            //     //         redirectTo: 'credit-limit-balance',
-            //     //         pathMatch: 'full'
-            //     //     },
-            //     //     {
-            //     //         path: 'credit-limit-balance',
-            //     //         loadChildren: () =>
-            //     //             import(
-            //     //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
-            //     //             ).then(m => m.CreditLimitBalanceModule),
-            //     //         canLoad: [AuthGuard]
-            //     //     }
-            //     // ],
-            //     loadChildren: () =>
-            //         import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
-            //     canLoad: [AuthGuard],
-            //     data: {
-            //         permissions: {
-            //             only: getRoleByRouter('finances'),
-            //             redirectTo: {
-            //                 navigationCommands: ['/pages/errors/403'],
-            //                 navigationExtras: {
-            //                     replaceUrl: true,
-            //                     skipLocationChange: true,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // },
+            {
+                path: 'finances',
+                // children: [
+                //     {
+                //         path: '',
+                //         redirectTo: 'credit-limit-balance',
+                //         pathMatch: 'full'
+                //     },
+                //     {
+                //         path: 'credit-limit-balance',
+                //         loadChildren: () =>
+                //             import(
+                //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
+                //             ).then(m => m.CreditLimitBalanceModule),
+                //         canLoad: [AuthGuard]
+                //     }
+                // ],
+                loadChildren: () =>
+                    import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
+                canLoad: [AuthGuard],
+                data: {
+                    permissions: {
+                        only: getRoleByRouter('finances'),
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true,
+                            },
+                        },
+                    },
+                },
+            },
             {
                 path: 'orders',
                 loadChildren: () =>
@@ -496,12 +496,12 @@ const singleSpaRoutes: Routes = [
                 //     },
                 // },
             },
-            // {
-            //     path: 'returns',
-            //     loadChildren: () =>
-            //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'returns',
+                loadChildren: () =>
+                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'catalogues',
             //     loadChildren: () =>
