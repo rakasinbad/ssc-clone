@@ -296,7 +296,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                         startDate: this.defaultStartDate,
                         endDate: this.defaultEndDate
                     });
-                    this.globalFilterDto = null;
+                    this.globalFilterDto = [
+                        {
+                            fieldName: 'startOrderDate',
+                            keyword: this.defaultStartDate.format('YYYY-MM-DD')
+                        },
+                        {
+                            fieldName: 'endOrderDate',
+                            keyword: this.defaultEndDate.format('YYYY-MM-DD')
+                        }
+                    ];
 
                     this.cardHeaderConfig = {
                         ...this.cardHeaderConfig,
@@ -381,7 +390,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     onSelectedTab(index: number): void {
         this.filterConfig.by.orderStatus.sources = [];
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
-        this.globalFilterDto = null;
+        this.globalFilterDto =  [
+            {
+                fieldName: 'startOrderDate',
+                keyword: this.defaultStartDate.format('YYYY-MM-DD')
+            },
+            {
+                fieldName: 'endOrderDate',
+                keyword: this.defaultEndDate.format('YYYY-MM-DD')
+            }
+        ];
         this.search.reset();
         this.form.reset({
             startDate: this.defaultStartDate,
@@ -774,7 +792,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     }
 
     private applyFilter(): void {
-        this.globalFilterDto = null;
+        this.globalFilterDto =  [
+            {
+                fieldName: 'startOrderDate',
+                keyword: this.defaultStartDate.format('YYYY-MM-DD')
+            },
+            {
+                fieldName: 'endOrderDate',
+                keyword: this.defaultEndDate.format('YYYY-MM-DD')
+            }
+        ];
         var data: IQuerySearchParams[] = [];
 
         const {
