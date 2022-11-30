@@ -1,4 +1,5 @@
 import { FormGroup } from '@angular/forms';
+import moment from 'moment';
 
 export type SinbadFilterActionType = 'reset' | 'submit';
 export type TFilterResetCheckbox = 'sourcePaymentType'|'sourcePayLaterType';
@@ -8,6 +9,7 @@ export interface SinbadFilterBy {
         sources: any[];
         title?: string;
         numberLimitMax?: number;
+        minDate?: Date | moment.Moment;
     };
 }
 

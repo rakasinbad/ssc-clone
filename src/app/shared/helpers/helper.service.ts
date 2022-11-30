@@ -762,7 +762,7 @@ export class HelperService {
     ];
 
     private static _host = environment.host;
-    private static _urlMedeaGo = '/medeago/api/sc/v1';
+    private static _urlMedeaGo = '/medeago/api/v1/ssc';
     private static _mockHostCollection = 'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io';
 
     // tslint:disable-next-line: max-line-length

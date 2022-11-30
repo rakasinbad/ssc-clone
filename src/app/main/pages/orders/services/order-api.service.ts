@@ -29,6 +29,7 @@ export class OrderApiService {
     private readonly _endpointCancelOrder = '/order-parcels-cancel';
 
     private readonly _listEndpoint = '/order-view/ssc';
+    private readonly _omsListMedeaGoEndpoint = '/oms';
 
     /**
      * Creates an instance of OrderApiService.
@@ -60,7 +61,7 @@ export class OrderApiService {
                 }
             });
 
-            this._url = this._$helper.handleApiRouter(this._listEndpoint);
+            this._url = this._$helper.handleApiRouter(this._omsListMedeaGoEndpoint, true);
             newParams = this._$helper.handleParams(this._url, newParam, ...newArg);
         } else {
             this._url = this._$helper.handleApiRouter(this._endpoint);

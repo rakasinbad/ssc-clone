@@ -8,6 +8,8 @@ import {
     SimpleChanges,
     ViewChild,
     ViewEncapsulation,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -57,23 +59,27 @@ import { OrderHelperService, WarehousesApiService } from './services';
     styleUrls: ['./orders.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
     readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
     private form: FormGroup;
 
-    allOrder: Observable<number>;
-    newOrder: Observable<number>;
-    packedOrder: Observable<number>;
-    shippedOrder: Observable<number>;
-    deliveredOrder: Observable<number>;
-    completedOrder: Observable<number>;
-    pendingOrder: Observable<number>;
-    canceledOrder: Observable<number>;
-    pendingPayment: Observable<number>;
-    pendingPartial: Observable<number>;
+    // allOrder: Observable<number>;
+    // newOrder: Observable<number>;
+    // packedOrder: Observable<number>;
+    // shippedOrder: Observable<number>;
+    // deliveredOrder: Observable<number>;
+    // completedOrder: Observable<number>;
+    // pendingOrder: Observable<number>;
+    // canceledOrder: Observable<number>;
+    // pendingPayment: Observable<number>;
+    // pendingPartial: Observable<number>;
     selectedTab: string;
+
+    defaultStartDate: moment.Moment = moment().subtract(30, 'days');
+    defaultEndDate: moment.Moment = moment();
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -116,6 +122,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             date: {
                 title: 'Order Date',
                 sources: null,
+                minDate:  this.defaultStartDate,
             },
             basePrice: {
                 title: 'Order Value',
@@ -214,7 +221,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         private _$notice: NoticeService,
         private sinbadFilterService: SinbadFilterService,
         private warehousesApiService: WarehousesApiService,
-        private orderHelperService: OrderHelperService
+        private orderHelperService: OrderHelperService,
+        private cd: ChangeDetectorRef
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -263,8 +271,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         // Add 'implements OnInit' to the class.
 
         this.form = this.fb.group({
-            startDate: null,
-            endDate: null,
+            startDate: this.defaultStartDate,
+            endDate: this.defaultEndDate,
             minAmount: null,
             maxAmount: null,
             orderStatus: null,
@@ -284,8 +292,20 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             )
             .subscribe((action) => {
                 if (action === 'reset') {
-                    this.form.reset();
+                    this.form.reset({
+                        startDate: this.defaultStartDate,
+                        endDate: this.defaultEndDate
+                    });
                     this.globalFilterDto = null;
+
+                    this.cardHeaderConfig = {
+                        ...this.cardHeaderConfig,
+                        title: {
+                            label: `Order Management (${this.defaultStartDate.format('DD MMM YYYY')} - ${this.defaultEndDate.format('DD MMM YYYY')})`
+                        },
+                    };
+                    this.cd.detectChanges();
+                    this.cd.markForCheck();
                 } else {
                     this.applyFilter();
                 }
@@ -296,6 +316,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     form: this.form,
                     filterConfig: this.filterConfig,
                 });
+
+                window.scrollTo({top: 0, behavior: 'smooth'});
             });
 
         this.filterSource();
@@ -331,8 +353,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         }
 
         this.form.patchValue({
-            startDate: this.route.snapshot.queryParams.startOrderDate,
-            endDate: this.route.snapshot.queryParams.endOrderDate,
+            startDate: this.route.snapshot.queryParams.startOrderDate
+                ? this.route.snapshot.queryParams.startOrderDate
+                : this.defaultStartDate,
+            endDate: this.route.snapshot.queryParams.endOrderDate
+                ? this.route.snapshot.queryParams.endOrderDate
+                : this.defaultEndDate,
             minAmount: this.route.snapshot.queryParams.minOrderValue,
             maxAmount: this.route.snapshot.queryParams.maxOrderValue,
             orderStatus: this.route.snapshot.queryParams['statuses'] ? this.route.snapshot.queryParams['statuses'].split("~") : null,
@@ -357,7 +383,18 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
         this.globalFilterDto = null;
         this.search.reset();
-        this.form.reset();
+        this.form.reset({
+            startDate: this.defaultStartDate,
+            endDate: this.defaultEndDate
+        });
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            title: {
+                label: `Order Management (${this.defaultStartDate.format('DD MMM YYYY')} - ${this.defaultEndDate.format('DD MMM YYYY')})`
+            },
+        };
+        this.cd.detectChanges();
+        this.cd.markForCheck();
         this.router.navigate(['.'], {relativeTo: this.route});
 
         switch (index) {
@@ -655,6 +692,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
         };
+        data['startOrderDate'] = this.defaultStartDate.format('YYYY-MM-DD');
+        data['endOrderDate'] = this.defaultEndDate.format('YYYY-MM-DD');
 
         data['paginate'] = true;
         data['listEndpoint'] = true;
@@ -845,29 +884,38 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             }
         }
 
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            title: {
+                label: `Order Management (${moment(this.form.get('startDate').value).format('DD MMM YYYY')} - ${moment(this.form.get('endDate').value).format('DD MMM YYYY')})`
+            },
+        };
+        this.cd.detectChanges();
+        this.cd.markForCheck();
+
         this.globalFilterDto = data;
     }
 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
 
-        this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        // this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
         this._initTable();
     }
 
     private _initStatusOrder(): void {
-        this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        // this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
 
-        this.allOrder = this.store.select(OrderSelectors.getTotalAllOrder);
-        this.newOrder = this.store.select(OrderSelectors.getTotalNewOrder);
-        this.packedOrder = this.store.select(OrderSelectors.getTotalPackedOrder);
-        this.shippedOrder = this.store.select(OrderSelectors.getTotalShippedOrder);
-        this.deliveredOrder = this.store.select(OrderSelectors.getTotalDeliveredOrder);
-        this.completedOrder = this.store.select(OrderSelectors.getTotalCompletedOrder);
-        this.pendingOrder = this.store.select(OrderSelectors.getTotalPendingOrder);
-        this.canceledOrder = this.store.select(OrderSelectors.getTotalCanceledOrder);
-        this.pendingPayment = this.store.select(OrderSelectors.getTotalPendingPayment);
-        this.pendingPartial = this.store.select(OrderSelectors.getTotalPendingPartialOrder);
+        // this.allOrder = this.store.select(OrderSelectors.getTotalAllOrder);
+        // this.newOrder = this.store.select(OrderSelectors.getTotalNewOrder);
+        // this.packedOrder = this.store.select(OrderSelectors.getTotalPackedOrder);
+        // this.shippedOrder = this.store.select(OrderSelectors.getTotalShippedOrder);
+        // this.deliveredOrder = this.store.select(OrderSelectors.getTotalDeliveredOrder);
+        // this.completedOrder = this.store.select(OrderSelectors.getTotalCompletedOrder);
+        // this.pendingOrder = this.store.select(OrderSelectors.getTotalPendingOrder);
+        // this.canceledOrder = this.store.select(OrderSelectors.getTotalCanceledOrder);
+        // this.pendingPayment = this.store.select(OrderSelectors.getTotalPendingPayment);
+        // this.pendingPartial = this.store.select(OrderSelectors.getTotalPendingPartialOrder);
 
     }
 

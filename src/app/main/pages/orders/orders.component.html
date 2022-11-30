@@ -73,16 +73,16 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <mat-tab [label]="'All (' + (allOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Pending (' + (pendingOrder | async)+ ')'"></mat-tab>
-            <mat-tab [label]="'Pending Payment (' + (pendingPayment | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Pending Partial (' + (pendingPartial | async) + ')'"></mat-tab>
-            <mat-tab [label]="'New Order (' + (newOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Packed (' + (packedOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Shipped (' + (shippedOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Delivered (' + (deliveredOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Done (' + (completedOrder | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Canceled (' + (canceledOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'All'"></mat-tab>
+            <mat-tab [label]="'Pending'"></mat-tab>
+            <mat-tab [label]="'Pending Payment'"></mat-tab>
+            <mat-tab [label]="'Pending Partial'"></mat-tab>
+            <mat-tab [label]="'New Order'"></mat-tab>
+            <mat-tab [label]="'Packed'"></mat-tab>
+            <mat-tab [label]="'Shipped'"></mat-tab>
+            <mat-tab [label]="'Delivered'"></mat-tab>
+            <mat-tab [label]="'Done'"></mat-tab>
+            <mat-tab [label]="'Canceled'"></mat-tab>
         </mat-tab-group>
 
         <!-- CONTENT CARD [class.mt-8]="!filterStatus || filterStatus === 'all-status'" -->
