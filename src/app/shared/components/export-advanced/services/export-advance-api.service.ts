@@ -33,7 +33,6 @@ export class ExportAdvanceApiService {
      * @memberof ExportAdvanceApiService
      */
     private readonly _exportEndpoint = '/download/export-';
-    private readonly _medeaGoEndpoint = `/medeago/api/sc/v1`;
 
     /**
      *
@@ -252,7 +251,7 @@ export class ExportAdvanceApiService {
 
         switch (params['page'] as ExportConfigurationPage) {
             case 'returns':
-                exportUrl = `${this._medeaGoEndpoint}/return-parcels/export`;
+                exportUrl = `/return-parcels/export`;
                 break;
             default: {
                 const err: ErrorHandler = {
@@ -277,7 +276,7 @@ export class ExportAdvanceApiService {
             end: params['dateLte'] ? params['dateLte'] : ''
         };
 
-        this._url = this.helperSvc.handleApiRouter(exportUrl);
+        this._url = this.helperSvc.handleApiRouter(exportUrl, true);
 
         return this.http.post<{ message: string }>(this._url, body);
     }
