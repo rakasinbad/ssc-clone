@@ -58,16 +58,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly defaultPageOpts = environment.pageSizeTable;
     private formFilter: FormGroup;
 
-    allPayment: number;
-    waitingPayment: number;
-    d7Payment: number;
-    d3Payment: number;
-    d0Payment: number;
-    overduePayment: number;
-    paidPayment: number;
-    waitingRefundPayment: number;
-    refundedPayment: number;
-    failPayment: number;
     selectedTab: string;
 
     // Untuk menentukan konfigurasi card header.
@@ -105,6 +95,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     private sourcesPayLaterType = cloneDeep(this._$helper.payLaterTypesV2());
     private sourcesOrderStatus = cloneDeep(this._$helper.orderStatusV2());
     private sourcesPaymentStatus = cloneDeep(this._$helper.paymentStatusV2());
+
+    defaultStartDate: moment.Moment = moment().subtract(30, 'days');
+    defaultEndDate: moment.Moment = moment();
 
     filterConfig: SinbadFilterConfig = {
         by: {
@@ -278,8 +271,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Add 'implements OnInit' to the class.
 
         this.formFilter = this.fb.group({
-            startDate: null, // order date
-            endDate: null, // order date
+            startDate: this.defaultStartDate, // order date
+            endDate: this.defaultEndDate, // order date
             startPaymentDueDate: null,
             endPaymentDueDate: null,
             startPaymentDate: null,
@@ -296,6 +289,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.formFilter });
 
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            title: {
+                label: `Payment Status (${this.defaultStartDate.format('DD MMM YYYY')} - ${this.defaultEndDate.format('DD MMM YYYY')})`
+            },
+        };  
+
         // Handle action in filter
         this.sinbadFilterService
             .getClickAction$()
@@ -306,8 +306,26 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe((action) => {
 
                 if (action === 'reset') {
-                    this.formFilter.reset();
-                    this.globalFilterDto = null;
+                    this.formFilter.reset({
+                        startDate: this.defaultStartDate,
+                        endDate: this.defaultEndDate
+                    });
+                    this.globalFilterDto = [
+                        {
+                            fieldName: 'startOrderDate',
+                            keyword: this.defaultStartDate.format('YYYY-MM-DD')
+                        },
+                        {
+                            fieldName: 'endOrderDate',
+                            keyword: this.defaultEndDate.format('YYYY-MM-DD')
+                        }
+                    ];
+                    this.cardHeaderConfig = {
+                        ...this.cardHeaderConfig,
+                        title: {
+                            label: `Payment Status (${this.defaultStartDate.format('DD MMM YYYY')} - ${this.defaultEndDate.format('DD MMM YYYY')})`
+                        },
+                    };  
                 } else {
                     this.applyFilter();
                 }
@@ -707,7 +725,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
 
-                this._initStatusPayment();
+                // this._initStatusPayment();
 
                 this._initTable();
 
@@ -752,7 +770,17 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageIndex + 1
+            skip: this.paginator.pageIndex + 1,
+            search: [
+                {
+                    fieldName: 'startOrderDate',
+                    keyword: this.defaultStartDate.format('YYYY-MM-DD') 
+                },
+                {
+                    fieldName: 'endOrderDate',
+                    keyword: this.defaultEndDate.format('YYYY-MM-DD')
+                }
+            ]
         };
 
         data['paginate'] = true;
@@ -826,59 +854,58 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.globalFilterDto) { 
             data['search'] = data['search'] ? [...data['search'], ...this.globalFilterDto] : [...this.globalFilterDto];
         }
-
+        console.log('data =>', data)
         this.store.dispatch(PaymentStatusActions.fetchPaymentStatusesRequest({ payload: data }));
     }
 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
 
-        this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         this._initTable();
     }
 
-    private _initStatusPayment(): void {
-        this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+    // private _initStatusPayment(): void {
+    //     this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         
-        combineLatest([
-            this.store.select(PaymentStatusSelectors.getTotalAllPayment),
-            this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
-            this.store.select(PaymentStatusSelectors.getTotalD7Payment),
-            this.store.select(PaymentStatusSelectors.getTotalD3Payment),
-            this.store.select(PaymentStatusSelectors.getTotalD0Payment),
-            this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
-            this.store.select(PaymentStatusSelectors.getTotalFailPayment),
-            this.store.select(PaymentStatusSelectors.getTotalOverduePayment),
-            this.store.select(PaymentStatusSelectors.getTotalWaitingForRefund),
-            this.store.select(PaymentStatusSelectors.getTotalRefunded)
-        ])
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(
-                ([
-                    allPayment,
-                    waitingPayment,
-                    d7Payment,
-                    d3Payment,
-                    d0Payment,
-                    paidPayment,
-                    failPayment,
-                    overduePayment,
-                    waitingRefundPayment,
-                    refundedPayment
-                ]) => {
-                    this.allPayment = + allPayment;
-                    this.waitingPayment = + waitingPayment;
-                    this.d7Payment = + d7Payment;
-                    this.d3Payment = + d3Payment;
-                    this.d0Payment = + d0Payment;
-                    this.paidPayment = + paidPayment;
-                    this.failPayment = + failPayment;
-                    this.overduePayment = + overduePayment;
-                    this.waitingRefundPayment = + waitingRefundPayment;
-                    this.refundedPayment = + refundedPayment;
-                }
-            );
-    }
+    //     combineLatest([
+    //         this.store.select(PaymentStatusSelectors.getTotalAllPayment),
+    //         this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
+    //         this.store.select(PaymentStatusSelectors.getTotalD7Payment),
+    //         this.store.select(PaymentStatusSelectors.getTotalD3Payment),
+    //         this.store.select(PaymentStatusSelectors.getTotalD0Payment),
+    //         this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
+    //         this.store.select(PaymentStatusSelectors.getTotalFailPayment),
+    //         this.store.select(PaymentStatusSelectors.getTotalOverduePayment),
+    //         this.store.select(PaymentStatusSelectors.getTotalWaitingForRefund),
+    //         this.store.select(PaymentStatusSelectors.getTotalRefunded)
+    //     ])
+    //         .pipe(takeUntil(this._unSubs$))
+    //         .subscribe(
+    //             ([
+    //                 allPayment,
+    //                 waitingPayment,
+    //                 d7Payment,
+    //                 d3Payment,
+    //                 d0Payment,
+    //                 paidPayment,
+    //                 failPayment,
+    //                 overduePayment,
+    //                 waitingRefundPayment,
+    //                 refundedPayment
+    //             ]) => {
+    //                 this.allPayment = + allPayment;
+    //                 this.waitingPayment = + waitingPayment;
+    //                 this.d7Payment = + d7Payment;
+    //                 this.d3Payment = + d3Payment;
+    //                 this.d0Payment = + d0Payment;
+    //                 this.paidPayment = + paidPayment;
+    //                 this.failPayment = + failPayment;
+    //                 this.overduePayment = + overduePayment;
+    //                 this.waitingRefundPayment = + waitingRefundPayment;
+    //                 this.refundedPayment = + refundedPayment;
+    //             }
+    //         );
+    // }
 
     private _updateStatus(id: string, properties: Partial<FuseNavigation>, key?: string): void {
         this.store.dispatch(
@@ -894,7 +921,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     private applyFilter(): void {
         let querySearchParams: IQuerySearchParams[] = [];
-        this.globalFilterDto = null;
+        this.globalFilterDto = [
+            {
+                fieldName: 'startOrderDate',
+                keyword: this.defaultStartDate.format('YYYY-MM-DD')
+            },
+            {
+                fieldName: 'endOrderDate',
+                keyword: this.defaultEndDate.format('YYYY-MM-DD')
+            }
+        ];
 
         const {
             startDate,
@@ -1075,6 +1111,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 ];
             }
         }
+
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            title: {
+                label: `Order Management (${moment(this.formFilter.get('startDate').value).format('DD MMM YYYY')} - ${moment(this.formFilter.get('endDate').value).format('DD MMM YYYY')})`
+            },
+        };
 
         this.globalFilterDto = querySearchParams;
     }

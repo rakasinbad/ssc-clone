@@ -709,9 +709,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            search: [
+                {
+                    fieldName: 'startOrderDate',
+                    keyword: this.defaultStartDate.format('YYYY-MM-DD') 
+                },
+                {
+                    fieldName: 'endOrderDate',
+                    keyword: this.defaultEndDate.format('YYYY-MM-DD')
+                }
+            ]
         };
-        data['startOrderDate'] = this.defaultStartDate.format('YYYY-MM-DD');
-        data['endOrderDate'] = this.defaultEndDate.format('YYYY-MM-DD');
 
         data['paginate'] = true;
         data['listEndpoint'] = true;
@@ -815,8 +823,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             orderSource
         } = this.form.value;
 
-        const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
-        const nEndDate = endDate && isMoment(endDate) ? endDate.format('YYYY-MM-DD') : null;
+        const nStartDate = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
+        const nEndDate = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
 
         const newOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
         const newPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];

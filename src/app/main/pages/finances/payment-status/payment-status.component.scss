@@ -1,6 +1,8 @@
 @import 'src/@fuse/scss/fuse';
 
 app-payment-status {
+    height: 90vh;
+
     #payment-status {
         min-height: 600px;
 
