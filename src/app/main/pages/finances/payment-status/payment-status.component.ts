@@ -854,7 +854,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.globalFilterDto) { 
             data['search'] = data['search'] ? [...data['search'], ...this.globalFilterDto] : [...this.globalFilterDto];
         }
-        console.log('data =>', data)
+        
         this.store.dispatch(PaymentStatusActions.fetchPaymentStatusesRequest({ payload: data }));
     }
 
