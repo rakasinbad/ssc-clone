@@ -1,0 +1,302 @@
+<div id="internal-employee" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/account/internal']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    *ngIf="employee$ | async"
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        [defaultImage]="sinbadProfileDefault"
+                        [useSrcset]="true"
+                        [lazyLoad]="(employee$ | async)?.imageUrl"
+                        [errorImage]="sinbadProfileDefault"
+                    />
+                </div>
+
+                <div
+                    *ngIf="pageType === 'new'"
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img src="assets/images/avatars/profile.jpg" />
+                </div>
+
+                <div
+                    *ngIf="
+                        (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                        pageType === 'edit'
+                    "
+                    class="mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <ngx-skeleton-loader
+                        appearance="circle"
+                        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"
+                    ></ngx-skeleton-loader>
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2" *ngIf="!(isLoading$ | async) && (employee$ | async)">
+                        {{ (employee$ | async)?.fullName }}
+                    </div>
+
+                    <div class="h2" *ngIf="!(isLoading$ | async) && !(employee$ | async)">
+                        {{
+                            form?.value?.fullName ? form?.value?.fullName : 'New User Management'
+                        }}
+                    </div>
+
+                    <ngx-skeleton-loader
+                        *ngIf="
+                            (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                            pageType === 'edit'
+                        "
+                        [theme]="{ width: '150px', height: '25px', margin: 0 }"
+                    ></ngx-skeleton-loader>
+
+                    <div class="subtitle secondary-text">
+                        <span *ngIf="!(isLoading$ | async)">
+                            Account Detail
+                        </span>
+                        <ngx-skeleton-loader
+                            *ngIf="
+                                (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                                pageType === 'edit'
+                            "
+                            [theme]="{ width: '70px', margin: 0 }"
+                        ></ngx-skeleton-loader>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <ngx-skeleton-loader
+                *ngIf="
+                    (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                    pageType === 'edit'
+                "
+                [theme]="{ width: '70px', height: '30px', margin: 0 }"
+            ></ngx-skeleton-loader>
+
+            <ng-container *ngIf="(employee$ | async) || pageType">
+                <button
+                    mat-raised-button
+                    type="button"
+                    class="accent-fg"
+                    (click)="onEdit(isEdit)"
+                    *ngIf="!isEdit && pageType === 'edit'"
+                >
+                    <span>Edit</span>
+                </button>
+
+                <button
+                    mat-raised-button
+                    type="submit"
+                    class="accent-fg"
+                    [disabled]="form.invalid || form.pristine"
+                    form="internal-form"
+                    *ngIf="isEdit || pageType === 'new'"
+                >
+                    <span>Save</span>
+                </button>
+            </ng-container>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card sinbad">
+            <!-- CONTENT -->
+            <div class="content px-24 py-8" fxLayout="column">
+                <span class="mat-title">
+                    {{ pageType === 'new' ? 'Create' : isEdit ? 'Edit' : 'Detail' }} User
+                </span>
+
+                <form
+                    id="internal-form"
+                    name="internalForm"
+                    class="internal w-100-p"
+                    [formGroup]="form"
+                    (ngSubmit)="onSubmit()"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('fullName').errors &&
+                                !form.get('fullName').untouched &&
+                                (form.get('fullName').dirty || form.get('fullName').touched)
+                            "
+                        >
+                            <b class="required">*</b> Nama
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input
+                                matInput
+                                name="fullName"
+                                formControlName="fullName"
+                                maxlength="30"
+                            />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('fullName').errors &&
+                                    (form.get('fullName').dirty || form.get('fullName').touched)
+                                "
+                            >
+                                {{ getErrorMessage('fullName') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('platform').errors &&
+                                !form.get('platform').untouched &&
+                                (form.get('platform').dirty || form.get('platform').touched)
+                            "
+                        >
+                            <span class="required">*</span>
+                            Platform
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select
+                                name="platform"
+                                formControlName="platform"
+                                placeholder="Choose Platform"
+                            >
+                                <mat-option
+                                    [value]="'Sinbad Seller Center'"
+                                >
+                                    Sinbad Seller Center
+                                </mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="
+                                    form.get('platform').errors &&
+                                    (form.get('platform').dirty || form.get('platform').touched)
+                                "
+                            >
+                                {{ getErrorMessage('platform') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('roles').errors &&
+                                !form.get('roles').untouched &&
+                                (form.get('roles').dirty || form.get('roles').touched)
+                            "
+                        >
+                            <b class="required">*</b> Role
+                        </label>
+
+                        <!-- <mat-form-field appearance="outline" fxFlex="30">
+                            <input matInput name="role" formControlName="role" />
+                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+                        </mat-form-field> -->
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select formControlName="roles" placeholder="Choose Role" multiple>
+                                <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
+                                    {{ role?.role }}
+                                </mat-option>
+                            </mat-select>
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('roles').errors &&
+                                    (form.get('roles').dirty || form.get('roles').touched)
+                                "
+                            >
+                                {{ getErrorMessage('roles') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12">
+                            <b class="required">*</b> Email
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input matInput name="email" formControlName="email" />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('email').errors &&
+                                    (form.get('email').dirty || form.get('email').touched)
+                                "
+                            >
+                                {{ getErrorMessage('email') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12"><b class="required">*</b> Phone Number</label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input
+                                matInput
+                                type="tel"
+                                name="phoneNumber"
+                                formControlName="phoneNumber"
+                            />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('phoneNumber').errors &&
+                                    (form.get('phoneNumber').dirty ||
+                                        form.get('phoneNumber').touched)
+                                "
+                            >
+                                {{ getErrorMessage('phoneNumber') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
