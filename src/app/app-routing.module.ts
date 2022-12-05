@@ -239,24 +239,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'settings',
-            //     loadChildren: () =>
-            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('settings'),
-            //     //     },
-            //     //     redirectTo: {
-            //     //         navigationCommands: ['/pages/errors/403'],
-            //     //         navigationExtras: {
-            //     //             replaceUrl: true,
-            //     //             skipLocationChange: true,
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'settings',
+                loadChildren: () =>
+                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('settings'),
+                //     },
+                //     redirectTo: {
+                //         navigationCommands: ['/pages/errors/403'],
+                //         navigationExtras: {
+                //             replaceUrl: true,
+                //             skipLocationChange: true,
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'errors',
             //     loadChildren: () =>
@@ -588,24 +588,24 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'settings',
-            //     loadChildren: () =>
-            //         import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
-            //     canLoad: [AuthGuard],
-            //     // data: {
-            //     //     permissions: {
-            //     //         only: getRoleByRouter('settings'),
-            //     //     },
-            //     //     redirectTo: {
-            //     //         navigationCommands: ['/pages/errors/403'],
-            //     //         navigationExtras: {
-            //     //             replaceUrl: true,
-            //     //             skipLocationChange: true,
-            //     //         },
-            //     //     },
-            //     // },
-            // },
+            {
+                path: 'settings',
+                loadChildren: () =>
+                    import('./main/pages/settings/settings.module').then((m) => m.SettingsModule),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('settings'),
+                //     },
+                //     redirectTo: {
+                //         navigationCommands: ['/pages/errors/403'],
+                //         navigationExtras: {
+                //             replaceUrl: true,
+                //             skipLocationChange: true,
+                //         },
+                //     },
+                // },
+            },
             {
                 path: 'errors',
                 loadChildren: () =>
