@@ -46,7 +46,6 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
-import { isMoment } from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { AuthSelectors } from '../core/auth/store/selectors';
@@ -708,17 +707,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
-            search: [
-                {
-                    fieldName: 'startOrderDate',
-                    keyword: this.defaultStartDate.format('YYYY-MM-DD') 
-                },
-                {
-                    fieldName: 'endOrderDate',
-                    keyword: this.defaultEndDate.format('YYYY-MM-DD')
-                }
-            ]
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
         };
 
         data['paginate'] = true;
@@ -823,8 +812,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             orderSource
         } = this.form.value;
 
-        const nStartDate = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
-        const nEndDate = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
+        const nStartDate = startDate 
+            ? moment.isMoment(startDate) 
+                ? startDate.format('YYYY-MM-DD')
+                : moment(startDate).format('YYYY-MM-DD') 
+            : null;
+        const nEndDate = endDate 
+            ? moment.isMoment(endDate) 
+                ? endDate.format('YYYY-MM-DD')
+                : moment(endDate).format('YYYY-MM-DD') 
+            : null;
 
         const newOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
         const newPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];
