@@ -949,8 +949,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             paymentStatus,
         } = this.formFilter.value;
 
-        const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
-        const nEndDate = endDate && isMoment(endDate) ? endDate.format('YYYY-MM-DD') : null;
+        const nStartDate = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
+        const nEndDate = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
         const nStartPaymentDueDate = startPaymentDueDate && isMoment(startPaymentDueDate) ? startPaymentDueDate.format('YYYY-MM-DD') : null;
         const nEndPaymentDueDate = endPaymentDueDate && isMoment(endPaymentDueDate) ? endPaymentDueDate.format('YYYY-MM-DD') : null;
         const nStartPaymentDate = startPaymentDate && isMoment(startPaymentDate) ? startPaymentDate.format('YYYY-MM-DD') : null;
