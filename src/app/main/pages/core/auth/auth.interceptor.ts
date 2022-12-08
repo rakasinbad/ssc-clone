@@ -47,8 +47,8 @@ export class AuthInterceptor implements HttpInterceptor {
                     }
                     if (req.url.includes('sinbad.web.id') || req.url.includes('sinbad.co.id')){
                         if (environment.isSingleSpa) {
-                            if (this._cookieService.check('ssc-token')) {
-                                const token = this._cookieService.get('ssc-token')
+                            if (this._cookieService.check(globalThis.SSC_TOKEN)) {
+                                const token = this._cookieService.get(globalThis.SSC_TOKEN)
                                 req = req.clone({
                                     headers: req.headers.set('Authorization', `Bearer ${token}`)
                                 });

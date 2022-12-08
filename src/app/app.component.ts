@@ -270,9 +270,9 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.idle.setTimeout(30);
                 } else {
                     if (environment.isSingleSpa) {
-                        if (this._cookieService.check('ssc-token')){
+                        if (this._cookieService.check(globalThis.SSC_TOKEN)){
                             const payload = {
-                                token: this._cookieService.get('ssc-token'),
+                                token: this._cookieService.get(globalThis.SSC_TOKEN),
                                 user: JSON.parse(localStorage.getItem('ssc-user'))
                             }
                             this.store.dispatch(AuthActions.authLoginSuccess({ payload }));

@@ -45,6 +45,6 @@ export class Error404Component implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.isAuth = this._cookieService.check('ssc-token');
+        this.isAuth = this._cookieService.check(globalThis.SSC_TOKEN);
     }
 }
