@@ -162,7 +162,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.order?.store?.supplierStores[0]?.name) }}
+                            {{ safeValue(row?.order?.store?.supplierStores[0]?.Name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -288,7 +288,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.statusPayment) }}
+                            {{ safeValue(formatPaymentStatus(row?.statusPayment)) }}
                         </p>
                     </mat-cell>
                 </ng-container>

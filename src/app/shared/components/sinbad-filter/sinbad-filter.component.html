@@ -52,7 +52,6 @@
                                 name="startDate"
                                 placeholder="Start Date"
                                 [max]="maxDate"
-                                [min]="minDate"
                             />
                             <mat-datepicker-toggle
                                 matSuffix
@@ -74,7 +73,7 @@
                                 name="endDate"
                                 placeholder="End Date"
                                 [max]="maxDate"
-                                [min]="form.get('startDate').value ? form.get('startDate').value : minDate"
+                                [min]="form.get('startDate').value ? form.get('startDate').value : null"
                             />
                             <mat-datepicker-toggle
                                 matSuffix
@@ -110,7 +109,6 @@
                                 autocomplete="off"
                                 name="startDate"
                                 placeholder="Start Date"
-                                [min]="minDate"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle
@@ -132,7 +130,7 @@
                                 autocomplete="off"
                                 name="endDate"
                                 placeholder="End Date"
-                                [min]="form.get('startDate').value ? form.get('startDate').value : minDate"
+                                [min]="form.get('startDate').value ? form.get('startDate').value : null"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle
@@ -169,7 +167,6 @@
                                 autocomplete="off"
                                 name="startPaymentDueDate"
                                 placeholder="Start Date"
-                                [min]="minDate"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle
@@ -191,7 +188,7 @@
                                 autocomplete="off"
                                 name="endPaymentDueDate"
                                 placeholder="End Date"
-                                [min]="form.get('startPaymentDueDate').value ? form.get('startPaymentDueDate').value : minDate"
+                                [min]="form.get('startPaymentDueDate').value ? form.get('startPaymentDueDate').value : null"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle
@@ -228,7 +225,6 @@
                                 autocomplete="off"
                                 name="startPaymentDate"
                                 placeholder="Start Date"
-                                [min]="minDate"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle
@@ -250,7 +246,7 @@
                                 autocomplete="off"
                                 name="endPaymentDate"
                                 placeholder="End Date"
-                                [min]="form.get('startPaymentDate').value ? form.get('startPaymentDate').value : minDate"
+                                [min]="form.get('startPaymentDate').value ? form.get('startPaymentDate').value : null"
                                 [max]="maxDate"
                             />
                             <mat-datepicker-toggle

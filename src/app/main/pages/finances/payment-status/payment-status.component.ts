@@ -335,6 +335,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.invoiceFetching$ = this.store.select(PaymentStatusSelectors.getInvoiceLoading);
         this._initPage();
+        this._handleOneMonthFilterDate();
     }
 
     ngAfterViewInit(): void {
@@ -1120,6 +1121,25 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         };
 
         this.globalFilterDto = querySearchParams;
+    }
+
+    /** filter date hanya bisa maksimum jangka 1 bulan */
+    _handleOneMonthFilterDate() {
+        this.formFilter.get('startDate').valueChanges
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (moment(this.formFilter.get('endDate').value).diff(moment(value), 'days') > 30) {
+                    this.formFilter.get('endDate').setValue(moment(value).add(30, 'days'))
+                }
+            });
+
+        this.formFilter.get('endDate').valueChanges
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (moment(value).diff(moment(this.formFilter.get('startDate').value), 'days') > 30) {
+                    this.formFilter.get('startDate').setValue(moment(value).subtract(30, 'days'))
+                }
+            });
     }
 
 }

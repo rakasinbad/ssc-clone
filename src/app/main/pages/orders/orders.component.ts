@@ -120,8 +120,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         by: {
             date: {
                 title: 'Order Date',
-                sources: null,
-                minDate:  this.defaultStartDate,
+                sources: null
             },
             basePrice: {
                 title: 'Order Value',
@@ -331,6 +330,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         this.filterSource();
 
         this._initPage();
+        this._handleOneMonthFilterDate();
     }
 
     ngAfterViewInit(): void {
@@ -1017,5 +1017,38 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 .map(warehouse => ({ id: warehouse.id, label: `${warehouse.code} - ${warehouse.name}` }));
             this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
         });
+    }
+
+    /** filter date hanya bisa maksimum jangka 1 bulan */
+    _handleOneMonthFilterDate() {
+        this.form.get('startDate').valueChanges
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (moment(this.form.get('endDate').value).diff(moment(value), 'days') > 30) {
+                    this.form.get('endDate').setValue(moment(value).add(30, 'days'))
+                }
+            });
+
+        this.form.get('endDate').valueChanges
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (moment(value).diff(moment(this.form.get('startDate').value), 'days') > 30) {
+                    this.form.get('startDate').setValue(moment(value).subtract(30, 'days'))
+                }
+            });
+    }
+
+    /** transform payment status (capitalize and remove underscore) */
+    formatPaymentStatus(item: any): any {
+        if (item) {
+            /** ubah dari waiting_for_payment -> Waiting For Payment */
+            const arr = item.split("_");
+            for (var i = 0; i < arr.length; i++) {
+                arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+
+            }
+            return arr.join(' ');
+        }
+        return '-'
     }
 }

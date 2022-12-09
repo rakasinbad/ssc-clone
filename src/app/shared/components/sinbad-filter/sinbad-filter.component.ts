@@ -63,7 +63,6 @@ export class SinbadFilterComponent implements OnInit {
     sourceOrderSource: any[] = [];
 
     maxDate = new Date();
-    minDate = null;
 
     config$: Observable<SinbadFilterConfig>;
 
@@ -148,10 +147,6 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['date'] !== 'undefined') {
                             this.filterDate = true;
-
-                            if (typeof config.by['date'].minDate !== 'undefined') {
-                                this.minDate = config.by['date'].minDate;
-                            }
                         }
 
                         if (typeof config.by['paymentOrderDate'] !== 'undefined') {

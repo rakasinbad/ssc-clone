@@ -9,7 +9,6 @@ export interface SinbadFilterBy {
         sources: any[];
         title?: string;
         numberLimitMax?: number;
-        minDate?: Date | moment.Moment;
     };
 }
 
