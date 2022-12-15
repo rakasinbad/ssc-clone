@@ -58,24 +58,24 @@ const routes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -96,73 +96,29 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
-            {
-                path: 'finances',
-                // children: [
-                //     {
-                //         path: '',
-                //         redirectTo: 'credit-limit-balance',
-                //         pathMatch: 'full'
-                //     },
-                //     {
-                //         path: 'credit-limit-balance',
-                //         loadChildren: () =>
-                //             import(
-                //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
-                //             ).then(m => m.CreditLimitBalanceModule),
-                //         canLoad: [AuthGuard]
-                //     }
-                // ],
-                loadChildren: () =>
-                    import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('finances'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'returns',
-                loadChildren: () =>
-                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
-                canLoad: [AuthGuard],
-            },
             // {
-            //     path: 'catalogues',
+            //     path: 'finances',
+            //     // children: [
+            //     //     {
+            //     //         path: '',
+            //     //         redirectTo: 'credit-limit-balance',
+            //     //         pathMatch: 'full'
+            //     //     },
+            //     //     {
+            //     //         path: 'credit-limit-balance',
+            //     //         loadChildren: () =>
+            //     //             import(
+            //     //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
+            //     //             ).then(m => m.CreditLimitBalanceModule),
+            //     //         canLoad: [AuthGuard]
+            //     //     }
+            //     // ],
             //     loadChildren: () =>
-            //         import('./main/pages/catalogues/catalogues.module').then(
-            //             (m) => m.CataloguesModule
-            //         ),
+            //         import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
             //     canLoad: [AuthGuard],
             //     // data: {
             //     //     permissions: {
-            //     //         only: getRoleByRouter('catalogues'),
+            //     //         only: getRoleByRouter('finances'),
             //     //         redirectTo: {
             //     //             navigationCommands: ['/pages/errors/403'],
             //     //             navigationExtras: {
@@ -173,6 +129,50 @@ const routes: Routes = [
             //     //     },
             //     // },
             // },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('orders'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
+            // {
+            //     path: 'returns',
+            //     loadChildren: () =>
+            //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+            //     canLoad: [AuthGuard],
+            // },
+            {
+                path: 'catalogues',
+                loadChildren: () =>
+                    import('./main/pages/catalogues/catalogues.module').then(
+                        (m) => m.CataloguesModule
+                    ),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('catalogues'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'in-store-inventories',
             //     loadChildren: () =>
@@ -407,24 +407,24 @@ const singleSpaRoutes: Routes = [
             //         ),
             //     canLoad: [AuthGuard],
             // },
-            {
-                path: 'account',
-                loadChildren: () =>
-                    import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('account'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
+            // {
+            //     path: 'account',
+            //     loadChildren: () =>
+            //         import('./main/pages/accounts/accounts.module').then((m) => m.AccountsModule),
+            //     canLoad: [AuthGuard],
+            //     // data: {
+            //     //     permissions: {
+            //     //         only: getRoleByRouter('account'),
+            //     //         redirectTo: {
+            //     //             navigationCommands: ['/pages/errors/403'],
+            //     //             navigationExtras: {
+            //     //                 replaceUrl: true,
+            //     //                 skipLocationChange: true,
+            //     //             },
+            //     //         },
+            //     //     },
+            //     // },
+            // },
             // {
             //     path: 'attendances',
             //     loadChildren: () =>
@@ -445,73 +445,47 @@ const singleSpaRoutes: Routes = [
             //     //     },
             //     // },
             // },
-            {
-                path: 'finances',
-                // children: [
-                //     {
-                //         path: '',
-                //         redirectTo: 'credit-limit-balance',
-                //         pathMatch: 'full'
-                //     },
-                //     {
-                //         path: 'credit-limit-balance',
-                //         loadChildren: () =>
-                //             import(
-                //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
-                //             ).then(m => m.CreditLimitBalanceModule),
-                //         canLoad: [AuthGuard]
-                //     }
-                // ],
-                loadChildren: () =>
-                    import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
-                canLoad: [AuthGuard],
-                data: {
-                    permissions: {
-                        only: getRoleByRouter('finances'),
-                        redirectTo: {
-                            navigationCommands: ['/pages/errors/403'],
-                            navigationExtras: {
-                                replaceUrl: true,
-                                skipLocationChange: true,
-                            },
-                        },
-                    },
-                },
-            },
-            {
-                path: 'orders',
-                loadChildren: () =>
-                    import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
-                canLoad: [AuthGuard],
-                // data: {
-                //     permissions: {
-                //         only: getRoleByRouter('orders'),
-                //         redirectTo: {
-                //             navigationCommands: ['/pages/errors/403'],
-                //             navigationExtras: {
-                //                 replaceUrl: true,
-                //                 skipLocationChange: true,
-                //             },
-                //         },
-                //     },
-                // },
-            },
-            {
-                path: 'returns',
-                loadChildren: () =>
-                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
-                canLoad: [AuthGuard],
-            },
             // {
-            //     path: 'catalogues',
+            //     path: 'finances',
+            //     // children: [
+            //     //     {
+            //     //         path: '',
+            //     //         redirectTo: 'credit-limit-balance',
+            //     //         pathMatch: 'full'
+            //     //     },
+            //     //     {
+            //     //         path: 'credit-limit-balance',
+            //     //         loadChildren: () =>
+            //     //             import(
+            //     //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
+            //     //             ).then(m => m.CreditLimitBalanceModule),
+            //     //         canLoad: [AuthGuard]
+            //     //     }
+            //     // ],
             //     loadChildren: () =>
-            //         import('./main/pages/catalogues/catalogues.module').then(
-            //             (m) => m.CataloguesModule
-            //         ),
+            //         import('./main/pages/finances/finances.module').then((m) => m.FinancesModule),
+            //     canLoad: [AuthGuard],
+            //     data: {
+            //         permissions: {
+            //             only: getRoleByRouter('finances'),
+            //             redirectTo: {
+            //                 navigationCommands: ['/pages/errors/403'],
+            //                 navigationExtras: {
+            //                     replaceUrl: true,
+            //                     skipLocationChange: true,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // },
+            // {
+            //     path: 'orders',
+            //     loadChildren: () =>
+            //         import('./main/pages/orders/orders.module').then((m) => m.OrdersModule),
             //     canLoad: [AuthGuard],
             //     // data: {
             //     //     permissions: {
-            //     //         only: getRoleByRouter('catalogues'),
+            //     //         only: getRoleByRouter('orders'),
             //     //         redirectTo: {
             //     //             navigationCommands: ['/pages/errors/403'],
             //     //             navigationExtras: {
@@ -522,6 +496,32 @@ const singleSpaRoutes: Routes = [
             //     //     },
             //     // },
             // },
+            // {
+            //     path: 'returns',
+            //     loadChildren: () =>
+            //         import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+            //     canLoad: [AuthGuard],
+            // },
+            {
+                path: 'catalogues',
+                loadChildren: () =>
+                    import('./main/pages/catalogues/catalogues.module').then(
+                        (m) => m.CataloguesModule
+                    ),
+                canLoad: [AuthGuard],
+                // data: {
+                //     permissions: {
+                //         only: getRoleByRouter('catalogues'),
+                //         redirectTo: {
+                //             navigationCommands: ['/pages/errors/403'],
+                //             navigationExtras: {
+                //                 replaceUrl: true,
+                //                 skipLocationChange: true,
+                //             },
+                //         },
+                //     },
+                // },
+            },
             // {
             //     path: 'in-store-inventories',
             //     loadChildren: () =>
