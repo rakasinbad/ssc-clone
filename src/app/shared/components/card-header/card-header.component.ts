@@ -65,7 +65,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
 
     // Input untuk konfigurasi judul header.
     // tslint:disable-next-line:no-input-rename
-    @Input('cardTitle') cardTitle = 'Card Title';
+    @Input('cardTitle') cardTitle = '';
 
     // Input untuk konfigurasi class Sinbad Card Header.
     // tslint:disable-next-line:no-input-rename
@@ -220,8 +220,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.title) {
                     // Memeriksa konfigurasi label untuk judul card.
                     this.cardTitle = this.config.title.label || 'Untitled';
-                } else {
-                    this.cardTitle = 'Untitled';
                 }
 
                 // Memeriksa konfigurasi "Search".
@@ -245,7 +243,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     if (this.config.search.useBorder) {
                         this.searchUseBorder = this.config.search.useBorder;
                     }
-
                 }
 
                 // Memeriksa konfigurasi "View by".

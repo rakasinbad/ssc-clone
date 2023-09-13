@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-// import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { Cluster } from 'app/shared/models/cluster.model';
 import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { GeoParameter, IErrorHandler } from 'app/shared/models/global.model';
@@ -44,7 +44,7 @@ interface ErrorState extends EntityState<IErrorHandler> {
 
 export interface State {
     // search: SearchState;
-    creditLimitGroups?: any;
+    creditLimitGroups?: CreditLimitGroup[];
     districts: DistrictState;
     urbans: UrbanState;
     hierarchies?: Hierarchy[];
@@ -107,28 +107,29 @@ const dropdownReducer = createReducer<State>(
             isLoading: true
         }
     })),
-    // on(
-    //     DropdownActions.fetchDropdownCreditLimitGroupFailure,
-    //     DropdownActions.fetchDropdownGeoParameterProvinceFailure,
-    //     DropdownActions.fetchDropdownGeoParameterCityFailure,
-    //     DropdownActions.fetchDropdownGeoParameterDistrictFailure,
-    //     DropdownActions.fetchDropdownGeoParameterUrbanFailure,
-    //     DropdownActions.fetchDropdownHierarchyFailure,
-    //     DropdownActions.fetchDropdownInvoiceGroupFailure,
-    //     DropdownActions.fetchDropdownProvinceFailure,
-    //     DropdownActions.fetchDropdownRoleFailure,
-    //     DropdownActions.fetchDropdownStoreClusterFailure,
-    //     DropdownActions.fetchDropdownStoreGroupFailure,
-    //     DropdownActions.fetchDropdownStoreSegmentFailure,
-    //     DropdownActions.fetchDropdownStoreTypeFailure,
-    //     DropdownActions.fetchDropdownVehicleAccessibilityFailure,
-    //     DropdownActions.fetchLocationFailure,
-    //     DropdownActions.fetchSearchAccountFailure,
-    //     (state, { payload }) => ({
-    //         ...state,
-    //         errors: adapterError.upsertOne(payload, state.errors)
-    //     })
-    // ),
+    on(
+        DropdownActions.fetchDropdownCreditLimitGroupFailure,
+        DropdownActions.fetchDropdownGeoParameterProvinceFailure,
+        DropdownActions.fetchDropdownGeoParameterCityFailure,
+        DropdownActions.fetchDropdownGeoParameterDistrictFailure,
+        DropdownActions.fetchDropdownGeoParameterUrbanFailure,
+        DropdownActions.fetchDropdownHierarchyFailure,
+        DropdownActions.fetchDropdownInvoiceGroupFailure,
+        DropdownActions.fetchDropdownInvoiceGroupWhSupFailure,
+        DropdownActions.fetchDropdownProvinceFailure,
+        DropdownActions.fetchDropdownRoleFailure,
+        DropdownActions.fetchDropdownStoreClusterFailure,
+        DropdownActions.fetchDropdownStoreGroupFailure,
+        DropdownActions.fetchDropdownStoreSegmentFailure,
+        DropdownActions.fetchDropdownStoreTypeFailure,
+        DropdownActions.fetchDropdownVehicleAccessibilityFailure,
+        DropdownActions.fetchLocationFailure,
+        DropdownActions.fetchSearchAccountFailure,
+        (state, { payload }) => ({
+            ...state,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(DropdownActions.fetchLocationSuccess, (state, { payload }) => ({
         ...state,
         location: payload
@@ -167,6 +168,11 @@ const dropdownReducer = createReducer<State>(
         ...state,
         invoiceGroups: payload,
         errors: adapterError.removeOne('fetchDropdownInvoiceGroupFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownInvoiceGroupWhSupSuccess, (state, { payload }) => ({
+        ...state,
+        invoiceGroups: payload,
+        errors: adapterError.removeOne('fetchDropdownInvoiceGroupWhSupFailure', state.errors)
     })),
     on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
         ...state,

@@ -9,10 +9,10 @@
 <mat-dialog-content class="mat-typography" fusePerfectScrollbar>
     <img
         *ngIf="data?.url"
-        [defaultImage]="'assets/images/avatars/profile.jpg'"
+        [defaultImage]="sinbadProfileDefault"
         [useSrcset]="true"
         [lazyLoad]="data?.url"
-        [errorImage]="'assets/images/avatars/profile.jpg'"
+        [errorImage]="sinbadProfileDefault"
     />
 
     <ngx-skeleton-loader

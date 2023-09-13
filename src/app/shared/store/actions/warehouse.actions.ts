@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-// import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
@@ -19,7 +19,7 @@ export const fetchWarehouseFailure = createAction(
 
 export const fetchWarehouseSuccess = createAction(
     '[Helper Sources - Warehouse API] Fetch Warehouse Success',
-    props<{ payload: any }>()
+    props<{ payload: Array<Warehouse>, total: number }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -263,14 +263,14 @@ const routes: Routes = [
             //         import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
             //     canLoad: [AuthGuard],
             // },
-            // {
-            //     path: 'logistics',
-            //     loadChildren: () =>
-            //         import('./main/pages/logistics/logistics.module').then(
-            //             (m) => m.LogisticsModule
-            //         ),
-            //     canLoad: [AuthGuard],
-            // },
+            {
+                path: 'logistics',
+                loadChildren: () =>
+                    import('./main/pages/logistics/logistics.module').then(
+                        (m) => m.LogisticsModule
+                    ),
+                canLoad: [AuthGuard],
+            },
             // {
             //     path: 'promos',
             //     loadChildren: () =>

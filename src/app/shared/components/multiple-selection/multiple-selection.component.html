@@ -68,7 +68,7 @@
                     <mat-list-option
                         value="__select-all__"
                         [checkboxPosition]="'before'"
-                        [selected]="mergedSelectedOptions.length === totalAvailableOptions"
+                        [selected]="mergedSelectedOptions.oldSize() === totalAvailableOptions"
                         *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 1 && enableSelectAll"
                     >
                         (Select All)
@@ -192,7 +192,7 @@
                     <mat-option
                         [disabled]="true"
                         style="text-align: center; font-style: italic; max-height: 30px;"
-                        *ngIf="totalInitialSelectedOptions > (mergedSelectedOptions.length + removedOptions.length)"
+                        *ngIf="totalInitialSelectedOptions > (mergedSelectedOptions.oldSize() + removedOptions.length)"
                     >
                         Loading ...
                     </mat-option>

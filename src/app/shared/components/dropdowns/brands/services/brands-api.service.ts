@@ -52,6 +52,8 @@ export class BrandsApiService {
 
         this._url = this.helper$.handleApiRouter(this._endpoint);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        }});
     }
 }

@@ -1,0 +1,49 @@
+@import 'src/@fuse/scss/fuse';
+
+#stock-management-detail {
+    .top-bg {
+        height: 144px;
+    }
+
+    .header {
+        height: 100px !important;
+        min-height: 100px !important;
+        max-height: 100px !important;
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .content {
+
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content {
+            flex: 1 1 auto;
+            max-width: 100%;
+        }
+
+        .tab-content {
+            .mat-headline {
+                font-size: 18px;
+                font-weight: 600;
+            }
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 44px;
+            opacity: 1;
+
+            &.mat-tab-label-active {
+                >.mat-tab-label-content {
+                    color: #f0444c;
+                }
+            }
+        }
+    }
+}

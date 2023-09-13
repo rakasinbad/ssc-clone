@@ -1,0 +1,22 @@
+<div class="sinbad-mat-content">
+    <mat-icon class="sinbad-mat-icon-warning">error</mat-icon>
+    <div>
+        <div class="sinbad-mat-title-close">
+            <h2 mat-dialog-title *ngIf="data?.title">
+                {{ data?.title | titlecase }}
+            </h2>
+            <button mat-icon-button mat-dialog-close (click)="onCancel()">
+                <mat-icon style="cursor: pointer;color: #ACB8C3;">close</mat-icon>
+            </button>
+        </div>
+        <mat-dialog-content class="mat-typography">
+            <p [innerHTML]="data?.message"></p>
+        </mat-dialog-content>
+    </div>
+</div>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close></button>
+    <button mat-button mat-button-base class="sinbad-mat-btn-accent" [mat-dialog-close]="data?.id" (click)="onCancel()"
+        cdkFocusInitial>OK</button>
+</mat-dialog-actions>

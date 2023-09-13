@@ -6,6 +6,7 @@ import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
 import { HelperService } from 'app/shared/helpers';
 import { Selection, SelectionList, SelectionState } from './models';
 import { MultipleSelectionService } from './services/multiple-selection.service';
+import { UniqueCollection } from 'app/shared/models/unique_collection.model';
 
 @Component({
     selector: 'sinbad-multiple-selection',
@@ -52,12 +53,14 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     @Input() totalInitialSelectedOptions: number = 0;
     // Untuk menyimpan daftar list yang dianggap sebagai nilai awal.
     @Input() initialSelectedOptions: Array<Selection> = [];
+    // Untuk menyimpan daftar option yang tersedia.
+    // uniqueAvailableOptions: UniqueCollection<Selection> = new UniqueCollection<Selection>();
     // Untuk menyimpan daftar list yang terpilih.
-    selectedOptions: Array<Selection> = [];
+    selectedOptions: UniqueCollection<Selection> = new UniqueCollection<Selection>();
     // Untuk menyimpan daftar list yang terhapus.
-    removedOptions: Array<Selection> = [];
+    removedOptions: UniqueCollection<Selection> = new UniqueCollection<Selection>();
     // Untuk menyimpan daftar list gabungan antara initial selected option dengan selected option.
-    mergedSelectedOptions: Array<Selection> = [];
+    mergedSelectedOptions: UniqueCollection<Selection> = new UniqueCollection<Selection>();
     // Untuk menyimpan status loading pada selected options.
     // tslint:disable-next-line: no-inferrable-types
     @Input() isSelectedOptionsLoading: boolean = false;
@@ -127,7 +130,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     }
 
     isAvailableAtSelection(value: Selection): boolean {
-        return !!(this.mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
+        return !!(this.mergedSelectedOptions.toArray().find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
     }
 
     onClearAll(): void {
@@ -206,31 +209,54 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['initialSelectedOptions']) {
             // Menggabungkan opsi yang tergabung antara initial selected options dengan selected options.
-            const initialOptions = changes['initialSelectedOptions'].currentValue.map(selected => String(selected.id + selected.group));
-            // Membuang opsi yang terpilih agar tidak terduplikasi dengan initial selected options.
-            this.selectedOptions = this.selectedOptions.filter(selected => !initialOptions.includes(String(selected.id + selected.group)));
+            const initialOptions = changes['initialSelectedOptions'].currentValue.map(
+                selected => String(selected.id + selected.group)
+            );
 
-            this.mergedSelectedOptions = changes['initialSelectedOptions'].currentValue.concat(
-                this.selectedOptions
-            ).filter(merged =>
-                this.removedOptions.length === 0
-                ? true
-                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
-            ).filter(merged =>
-                this.removedOptions.length === 0
-                ? true
-                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+            // const availableOptions =
+            //    changes['availableOptions'] &&
+            //    Array.isArray(changes['availableOptions'].currentValue) ? 
+            //        changes['availableOptions'].currentValue :
+            //        this.availableOptions || [];
+            
+            const removedOptions = this.removedOptions.toArray();
+            
+            // Membuang opsi yang terpilih agar tidak terduplikasi dengan initial selected options.
+            this.selectedOptions.clearAllAndAddItems(
+                this.selectedOptions.toArray().filter(
+                    selected => !initialOptions.includes(String(selected.id + selected.group))
+                )
+            );
+
+            this.mergedSelectedOptions.clearAllAndAddItems(
+                changes['initialSelectedOptions'].currentValue.concat(
+                    this.selectedOptions
+                ).filter(merged =>
+                    removedOptions.length === 0
+                    ? true
+                    : !removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+                ).filter(merged =>
+                    removedOptions.length === 0
+                    ? true
+                    : !removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+                )
             );
 
             // Menghitung kembali jumlah opsi yang terpilih.
             // this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
-            this.totalSelectedOptions = this.mergedSelectedOptions.length;
+            this.totalSelectedOptions = this.mergedSelectedOptions.size();
+
+            this.totalInitialSelectedOptions = initialOptions.length;
+
+            // this.uniqueAvailableOptions.clearAllAndAddItems(availableOptions);
+            // this.totalAvailableOptions = this.uniqueAvailableOptions.length;
+            
             // Mengirim emit event kembali untuk di-update hasil pilihannya.
             this.selectionListChanged.emit({
-                added: this.selectedOptions,
-                removed: this.removedOptions,
-                merged: this.mergedSelectedOptions,
-                isAllSelected: this.allSelected || this.mergedSelectedOptions.length === this.totalAvailableOptions,
+                added: Array.from(this.selectedOptions.toArray()),
+                removed: Array.from(this.removedOptions.toArray()),
+                merged: Array.from(this.mergedSelectedOptions.toArray()),
+                isAllSelected: this.allSelected || this.mergedSelectedOptions.oldSize() === this.totalAvailableOptions,
             });
 
             // Mendeteksi adanya perubahan.
@@ -293,7 +319,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     }
                 } else if (elementRef.nativeElement.id === this.selectedSelectionList.nativeElement.id) {
                     // Memastikan tidak meng-emit event load more kembali ketika sudah tidak ada yang bisa dimuat lagi.
-                    if (this.totalInitialSelectedOptions > (this.mergedSelectedOptions.length + this.removedOptions.length)) {
+                    if (this.totalInitialSelectedOptions > (this.mergedSelectedOptions.size() + this.removedOptions.size())) {
                         // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
                         elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop - 40;
     
@@ -334,30 +360,40 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         this.selectedOptionSub$.pipe(
             // debounceTime(200),
             tap(($event) => {
+                const mergedSelectedOptions = this.mergedSelectedOptions.toArray();
+                const removedOptions = this.removedOptions.toArray();
+                const selectedOptions = this.selectedOptions.toArray();
+
                 if ($event) {
                     // Mengambil nilai dari option yang dipilih.
                     const value = ($event.option.value as Selection);
+
                     // Mengambil status pemilihannya (unchecked atau checked).
                     const isSelected = $event.option.selected;
     
                     const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
 
-                    const isAtSelectedOptions = this.mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
+                    const isAtSelectedOptions = mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
 
                     if (isAtSelectedOptions && isSelected) {
                         return;
                     }
                     if (isAtInitialSelection) {
                         if (isSelected) {
-                            this.removedOptions = this.removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                            this.removedOptions.clearAllAndAddItems(
+                                removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group))
+                            );
                         } else {
-                            this.removedOptions.push(value);
+                            this.removedOptions.add(value);
                         }
                     } else {
                         if (isSelected) {
-                            this.selectedOptions.push(value);
+                            this.selectedOptions.add(value);
                         } else {
-                            this.selectedOptions = this.selectedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                            this.selectedOptions.filter(value);
+                            // this.selectedOptions.clearAllAndAddItems(
+                            //     selectedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group))
+                            // );
                         }
                     }
 
@@ -389,29 +425,37 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 // }
 
                 // Untuk menyimpan nilai selection yang terbaru (tidak tersedia di initial selection, namun ada di selected option).
-                const added: Array<Selection> = this.selectedOptions;
+                // const added: Array<Selection> = this.selectedOptions;
 
                 // Untuk menyimpan nilai selection yang terhapus dari initial selection.
                 // const removed: Array<Selection> = this.initialSelectedOptions.filter(selected =>
                                                     // this.removedOptions.find(remove => String(selected.id + selected.group) !== String(remove.id + remove.group)));
-                const removed: Array<Selection> = this.removedOptions;
+                // const removed: Array<Selection> = this.removedOptions;
 
                 // Untuk menyimpan initial selected options dengan selected options.
-                this.mergedSelectedOptions = this.initialSelectedOptions.concat(
-                                                this.selectedOptions
-                                            ).filter(merged =>
-                                                removed.length === 0
-                                                ? true
-                                                : !removed.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
-                                            );
+                this.mergedSelectedOptions.clearAllAndAddItems(
+                    this.initialSelectedOptions.concat(
+                        this.selectedOptions.toArray()
+                    ).filter(merged =>
+                        removedOptions.length === 0
+                        ? true
+                        : !removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+                    )
+                );
 
                 // Mengirim event selectionListChanged dengan membawa nilai option-option yang tambahan baru dan terhapus.
-                this.selectionListChanged.emit({ added, removed, merged: this.mergedSelectedOptions, isAllSelected: this.allSelected });
+                this.selectionListChanged.emit({ 
+                    added: Array.from(this.selectedOptions.toArray()),
+                    removed: Array.from(this.removedOptions.toArray()),
+                    merged: Array.from(this.mergedSelectedOptions.toArray()),
+                    isAllSelected: this.allSelected 
+                });
+
                 // Menetapkan jumlah selected options.
-                const addedLength = (this.selectedOptions.length);
-                const removedLength =  (removed.length);
+                // const addedLength = (this.selectedOptions.length);
+                // const removedLength =  (removed.length);
                 // this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
-                this.totalSelectedOptions = this.mergedSelectedOptions.length;
+                this.totalSelectedOptions = this.mergedSelectedOptions.size();
                 // Mendeteksi adanya perubahan.
                 this.cdRef.detectChanges();
             }),

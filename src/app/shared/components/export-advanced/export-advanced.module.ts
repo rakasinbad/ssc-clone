@@ -30,6 +30,7 @@ import {
 } from './export-dialog';
 import { ExportAdvancedStoreModule } from './store/export-advanced-store.module';
 import { FuseSharedModule } from '@fuse/shared.module';
+import { SingleSpaModule } from 'single-spa/single-spa.module';
 
 @NgModule({
     declarations: [
@@ -66,6 +67,7 @@ import { FuseSharedModule } from '@fuse/shared.module';
         TranslateModule.forChild({}),
 
         ExportAdvancedStoreModule,
+        SingleSpaModule
     ],
     exports: [ExportAdvancedComponent, ExportDialogComponent],
     entryComponents: [ExportDialogComponent]

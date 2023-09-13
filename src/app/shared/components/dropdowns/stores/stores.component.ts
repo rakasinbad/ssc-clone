@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
-import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of, Subscription } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
+import { MatAutocomplete, MatDialog } from '@angular/material';
+import { Observable, Subject, BehaviorSubject, of, Subscription } from 'rxjs';
+import { tap,  withLatestFrom, takeUntil, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { SupplierStore as Entity, SupplierStorePromo as EntityPromo } from './models';
 import { SupplierStoresApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -413,7 +412,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         if (event) {
             const eventIds = event.map(e => e.id);
             // const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
+            this.selectedEntity$.next([...new Set(eventIds)].map(eventId => this.cachedEntities[String(eventId)]));
         }
     }
 
@@ -538,82 +537,86 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (file) {
                     this._handlePage(file);
 
-                this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
+                    this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
 
-                this.subStore = this.dataSource$.subscribe((val) => {
-                    if (val != undefined) {
-                        //checking if data exclude length > 0
-                        if (val.totalExclude > 0) {
-                            this.toggleLoading(false);
-                            this.toggleSelectedLoading(false);
-                            //display pop up when found error
-                                const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
-                                    data: {
-                                        totalExclude: val.totalExclude,
-                                        linkExclude: val.linkExclude,
-                                    }, disableClose: true
-                                });
-                        
-                                dialogRef.afterClosed().subscribe(result => {
-                                    if (result == 'yes') { //if click button yes
-                                        let fileEntities = [];
-                                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                                            fileEntities = val.massData.filter(d => !!d)
-                                            .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));    
-                                        } else {
-                                            fileEntities = val.massData.filter(d => !!d)
-                                            .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
-                                        }
-
-                                        for (const entity of (fileEntities as Array<Entity>)) {
-                                            this.upsertEntity(entity);
-                                        }
-
-                                        for (let i= 0; i < fileEntities.length; i++) {
-                                            this.tempEntity.push(fileEntities[i]);
-                                            this.initialSelection.push(fileEntities[i]);
-                                        }
-                                        
-                                        this.entityFormValue.setValue(this.tempEntity);
-                                        if (this.entityFormValue.value.length != 0) {
-                                            this.onSelectedEntity(this.entityFormValue.value);
-                                        }
-                                        this.updateFormView();
-                                    } else { //if click button no
-                                        this.toggleLoading(false);
-                                        this.toggleSelectedLoading(false);
+                    this.subStore = this.dataSource$
+                        .pipe(takeUntil(this.subs$))
+                        .subscribe((val) => {
+                            if (val != undefined) {
+                                //checking if data exclude length > 0
+                                if (val.totalExclude > 0) {
+                                    this.toggleLoading(false);
+                                    this.toggleSelectedLoading(false);
+                                    //display pop up when found error
+                                        const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
+                                            data: {
+                                                totalExclude: val.totalExclude,
+                                                linkExclude: val.linkExclude,
+                                            }, disableClose: true
+                                        });
+                                
+                                        dialogRef.afterClosed().subscribe(result => {
+                                            if (result == 'yes') { //if click button yes
+                                                let fileEntities = [];
+                                                if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                                                    fileEntities = val.massData.filter(d => !!d)
+                                                    .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));    
+                                                } else {
+                                                    fileEntities = val.massData.filter(d => !!d)
+                                                    .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+                                                }
+    
+                                                for (const entity of (fileEntities as Array<Entity>)) {
+                                                    this.upsertEntity(entity);
+                                                }
+                                                
+                                                for (let i= 0; i < fileEntities.length; i++) {
+                                                    this.tempEntity.push(fileEntities[i]);
+                                                    this.initialSelection.push(fileEntities[i]);
+                                                }
+                                                
+                                                this.entityFormValue.setValue(this.tempEntity);
+                                                if (this.entityFormValue.value.length != 0) {
+                                                    this.onSelectedEntity(this.entityFormValue.value);
+                                                }
+                                                this.updateFormView();
+                                            } else { //if click button no
+                                                this.toggleLoading(false);
+                                                this.toggleSelectedLoading(false);
+                                            }
+                                        });
+                                } else { //checking if data exclude length == 0
+                                    this.toggleLoading(false);
+                                    this.toggleSelectedLoading(false);
+                                    let fileEntities = [];
+    
+                                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' ) {
+                                        fileEntities = val.massData.filter(d => !!d)
+                                        .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));
+                                    } else {
+                                        fileEntities = val.massData.filter(d => !!d)
+                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+                                    }   
+    
+                                    for (const entity of (fileEntities as Array<Entity>)) {
+                                        this.upsertEntity(entity);
                                     }
-                                  });
-                        } else { //checking if data exclude length == 0
-                            this.toggleLoading(false);
-                            this.toggleSelectedLoading(false);
-                            let fileEntities = [];
+                                    
+                                    for (let i= 0; i < fileEntities.length; i++) {
+                                        this.tempEntity.push(fileEntities[i]);
+                                        this.initialSelection.push(fileEntities[i]);
+                                    }   
+                                    
+                                    this.entityFormValue.setValue(this.tempEntity);
+                                    if (this.entityFormValue.value.length != 0) {
+                                        this.onSelectedEntity(this.entityFormValue.value);
+                                    }
+                                    this.updateFormView();
+                                }
 
-                            if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' ) {
-                                fileEntities = val.massData.filter(d => !!d)
-                                .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));
-                            } else {
-                                fileEntities = val.massData.filter(d => !!d)
-                                .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+                                this.subStore.unsubscribe();
                             }
-
-                            for (const entity of (fileEntities as Array<Entity>)) {
-                                this.upsertEntity(entity);
-                            }
-
-                            for (let i= 0; i < fileEntities.length; i++) {
-                                this.tempEntity.push(fileEntities[i]);
-                                this.initialSelection.push(fileEntities[i]);
-                            }
-                                        
-                            this.entityFormValue.setValue(this.tempEntity);
-                            if (this.entityFormValue.value.length != 0) {
-                                this.onSelectedEntity(this.entityFormValue.value);
-                            }
-                            this.updateFormView();
-                        }
-                    }
-                });
+                        });
                 }
     
             }

@@ -28,5 +28,7 @@ export const locale = {
         UPDATE_STORES: 'Update Stores',
         UPDATE: 'Update',
         UPDATE_MSS_TYPE: 'Update MSS Type',
+        UPDATE_CATALOGUE_TEMPLATE: 'Catalogue Bulk Update',
+
     },
 };

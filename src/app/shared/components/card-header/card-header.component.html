@@ -1,38 +1,29 @@
 <div [class]="config?.class || cardClass" fxLayout="column" fxLayoutGap="16px">
     <!-- TITLE & SEARCH SECTION -->
-    <div
-        style="margin-top: 19px"
-        fxLayout="row"
-        fxLayoutAlign="space-between stretch"
-        [class.mb-0]="
+    <div style="margin-top: 19px" fxLayout="row" fxLayoutAlign="space-between stretch" [class.mb-0]="
             !addPermissions &&
             !exportPermissions &&
             !importPermissions &&
             !filterListPermissions &&
             !groupByPermissions
-        "
-    >
+        ">
         <!-- "FIRST TOP LEFT" CONTENT -->
         <ng-content select="[first-top-left]"></ng-content>
         <!-- / "FIRST TOP LEFT" CONTENT -->
 
         <!-- TITLE -->
-        <p class="font-weight-600 m-0" style="font-size: 18px" fxFlexAlign="center">
-            {{ cardTitle }}
-        </p>
+        <ng-container *ngIf="cardTitle != ''">
+            <p class="font-weight-600 m-0" style="font-size: 18px" fxFlexAlign="center">
+                {{ cardTitle }}
+            </p>
+        </ng-container>
         <!-- / TITLE -->
 
         <!-- SEARCH -->
         <ng-container *ngIf="isSearchActive">
-            <sinbad-search-bar
-                #searchBar
-                class="w-416"
-                [useBorder]="searchUseBorder"
-                [threshold]="searchThreshold"
-                [placeholder]="searchPlaceholder"
-                [value]="searchValue"
-                (changed)="onSearchChanged($event)"
-            ></sinbad-search-bar>
+            <sinbad-search-bar #searchBar class="w-416" [useBorder]="searchUseBorder" [threshold]="searchThreshold"
+                [placeholder]="searchPlaceholder" [value]="searchValue"
+                (changed)="onSearchChanged($event)"></sinbad-search-bar>
         </ng-container>
         <!-- / SEARCH -->
 
@@ -45,12 +36,7 @@
     <!-- "VIEW BY" SECTION -->
     <ng-content select="[first-middle-left]"></ng-content>
 
-    <div
-        *ngIf="viewByList.length > 0"
-        fxLayout="row"
-        fxLayoutGap="16px"
-        fxLayoutAlign="start center"
-    >
+    <div *ngIf="viewByList.length > 0" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
         <!-- "FIRST MIDDLE LEFT" CONTENT -->
         <!-- / "FIRST MIDDLE LEFT" CONTENT -->
 
@@ -60,17 +46,11 @@
 
         <!-- "VIEW BY" LIST -->
         <mat-chip-list class="custom-chip-list" aria-label="View by selection">
-            <mat-chip
-                *ngFor="let viewBy of viewByList"
-                [ngClass]="
+            <mat-chip *ngFor="let viewBy of viewByList" [ngClass]="
                     viewBy.id === selectedViewById
                         ? selectedViewByClasses
                         : notSelectedViewByClasses
-                "
-                [class.fuse-white-bg]="true"
-                [disableRipple]="true"
-                (click)="onViewByChanged(viewBy)"
-            >
+                " [class.fuse-white-bg]="true" [disableRipple]="true" (click)="onViewByChanged(viewBy)">
                 {{ viewBy.label }}
             </mat-chip>
         </mat-chip-list>
@@ -91,48 +71,23 @@
             <!-- / "FIRST BOTTOM LEFT" CONTENT -->
 
             <!-- ADD BUTTON -->
-            <button
-                id='btn__add'
-                mat-flat-button
-                *ngIf="addPermissions"
-                [ngClass]="buttonClasses"
-                color="accent"
-                fxFlexAlign="center"
-                (click)="onAddClicked()"
-            >
+            <button id='btn__add' mat-flat-button *ngIf="addPermissions" [ngClass]="buttonClasses" color="accent"
+                fxFlexAlign="center" (click)="onAddClicked()">
                 <!-- <mat-icon>add</mat-icon> -->
                 {{ addTitle }}
             </button>
             <!-- / ADD BUTTON -->
 
             <!-- BATCH BUTTON -->
-            <button
-                mat-stroked-button
-                *ngIf="showBatchActions"
-                color="primary"
-                [ngClass]="buttonClasses"
-                class="grey-300-border"
-                fxFlexAlign="center"
-                [matMenuTriggerFor]="actionMenu"
-                aria-label="Action Menu"
-            >
+            <button mat-stroked-button *ngIf="showBatchActions" color="primary" [ngClass]="buttonClasses"
+                class="grey-300-border" fxFlexAlign="center" [matMenuTriggerFor]="actionMenu" aria-label="Action Menu">
                 <span>Action</span>
                 <mat-icon>arrow_drop_down</mat-icon>
             </button>
 
-            <mat-menu
-                #actionMenu="matMenu"
-                [class.mr-0]="!showBatchActions"
-                [fxHide]="showBatchActions"
-            >
-                <button
-                    type="button"
-                    mat-menu-item
-                    class="sinbad-mat-menu-item"
-                    *ngFor="let action of batchActions"
-                    [attr.aria-label]="action.label"
-                    (click)="onActionSelected(action)"
-                >
+            <mat-menu #actionMenu="matMenu" [class.mr-0]="!showBatchActions" [fxHide]="showBatchActions">
+                <button type="button" mat-menu-item class="sinbad-mat-menu-item" *ngFor="let action of batchActions"
+                    [attr.aria-label]="action.label" (click)="onActionSelected(action)">
                     <span>{{ action.label }}</span>
                 </button>
             </mat-menu>
@@ -152,26 +107,15 @@
             <ng-template [ngxPermissionsOnly]="exportPermissions">
                 <!-- EXPORT BUTTON -->
                 <ng-container *ngIf="!config?.export?.useAdvanced; else useSimpleExport">
-                    <sinbad-export-advanced
-                        *ngIf="exportPermissions"
-                        fxFlexAlign="center"
-                        [pageType]="config?.export?.pageType || ''"
-                        [btnConfig]="exportBtnConfig"
-                        [useMedeaGo]="config?.export?.useMedeaGo"
-                    ></sinbad-export-advanced>
+                    <sinbad-export-advanced *ngIf="exportPermissions" fxFlexAlign="center"
+                        [pageType]="config?.export?.pageType || ''" [btnConfig]="exportBtnConfig"
+                        [useMedeaGo]="config?.export?.useMedeaGo"></sinbad-export-advanced>
                 </ng-container>
 
                 <ng-template #useSimpleExport>
-                    <button
-                        id='btn__export'
-                        mat-stroked-button
-                        *ngIf="exportPermissions"
-                        color="primary"
-                        [ngClass]="buttonClasses"
-                        class="grey-300-border"
-                        fxFlexAlign="center"
-                        (click)="onExportClicked()"
-                    >
+                    <button id='btn__export' mat-stroked-button *ngIf="exportPermissions" color="primary"
+                        [ngClass]="buttonClasses" class="grey-300-border" fxFlexAlign="center"
+                        (click)="onExportClicked()">
                         {{ exportTitle }}
                     </button>
                 </ng-template>
@@ -181,25 +125,15 @@
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
                 <ng-container *ngIf="config?.import?.useAdvanced; else useSimpleImport">
-                    <sinbad-import-advanced
-                        *ngIf="importPermissions"
-                        fxFlexAlign="center"
+                    <sinbad-import-advanced *ngIf="importPermissions" fxFlexAlign="center"
                         [pageType]="config?.import?.pageType || ''"
-                        [btnConfig]="importBtnConfig"
-                    ></sinbad-import-advanced>
+                        [btnConfig]="importBtnConfig"></sinbad-import-advanced>
                 </ng-container>
 
                 <ng-template #useSimpleImport>
-                    <button
-                        id='btn__import'
-                        mat-stroked-button
-                        *ngIf="importPermissions"
-                        color="primary"
-                        [ngClass]="buttonClasses"
-                        class="grey-300-border"
-                        fxFlexAlign="center"
-                        (click)="onImportClicked()"
-                    >
+                    <button id='btn__import' mat-stroked-button *ngIf="importPermissions" color="primary"
+                        [ngClass]="buttonClasses" class="grey-300-border" fxFlexAlign="center"
+                        (click)="onImportClicked()">
                         {{ importTitle }}
                     </button>
                 </ng-template>
@@ -208,15 +142,8 @@
 
             <ng-template [ngxPermissionsOnly]="filterListPermissions">
                 <!-- "FILTER LIST" BUTTON -->
-                <button
-                    mat-flat-button
-                    color="primary"
-                    *ngIf="filterListPermissions"
-                    [ngClass]="buttonClasses"
-                    class="red-border"
-                    fxFlexAlign="center"
-                    (click)="onFilterListClicked()"
-                >
+                <button mat-flat-button color="primary" *ngIf="filterListPermissions" [ngClass]="buttonClasses"
+                    class="red-border" fxFlexAlign="center" (click)="onFilterListClicked()">
                     {{ filterListTitle }}
                 </button>
                 <!-- / "FILTER LIST" BUTTON -->
@@ -224,15 +151,8 @@
 
             <ng-template [ngxPermissionsOnly]="groupByPermissions">
                 <!-- "GROUP BY" BUTTON -->
-                <button
-                    mat-flat-button
-                    color="primary"
-                    *ngIf="groupByPermissions"
-                    [ngClass]="buttonClasses"
-                    class="red-border"
-                    fxFlexAlign="center"
-                    (click)="onGroupByClicked()"
-                >
+                <button mat-flat-button color="primary" *ngIf="groupByPermissions" [ngClass]="buttonClasses"
+                    class="red-border" fxFlexAlign="center" (click)="onGroupByClicked()">
                     {{ groupByTitle }}
                 </button>
                 <!-- / "GROUP BY" BUTTON -->

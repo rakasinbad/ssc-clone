@@ -59,7 +59,7 @@ export class ExportsEffects {
         // private router: Router,
         private helper$: HelperService,
         private matDialog: MatDialog
-    ) { }
+    ) {}
 
     prepareExport$ = createEffect(() =>
         this.actions$.pipe(
@@ -147,9 +147,9 @@ export class ExportsEffects {
                                             [
                                                 User,
                                                 IQueryParams &
-                                                ExportConfiguration & {
-                                                    formData: ExportFormData;
-                                                }
+                                                    ExportConfiguration & {
+                                                        formData: ExportFormData;
+                                                    }
                                             ],
                                             Observable<AnyAction>
                                         >(this.continueToStartExport),
@@ -166,9 +166,9 @@ export class ExportsEffects {
                                             [
                                                 User,
                                                 IQueryParams &
-                                                ExportConfiguration & {
-                                                    formData: ExportFormData;
-                                                }
+                                                    ExportConfiguration & {
+                                                        formData: ExportFormData;
+                                                    }
                                             ],
                                             Observable<AnyAction>
                                         >(this.continueToStartExport),
@@ -210,7 +210,7 @@ export class ExportsEffects {
                                 [
                                     User,
                                     IQueryParams &
-                                    ExportConfiguration & { formData: ExportFormData }
+                                        ExportConfiguration & { formData: ExportFormData }
                                 ],
                                 Observable<AnyAction>
                             >(this.processStartExportRequest),
@@ -225,7 +225,7 @@ export class ExportsEffects {
                                 [
                                     User,
                                     IQueryParams &
-                                    ExportConfiguration & { formData: ExportFormData }
+                                        ExportConfiguration & { formData: ExportFormData }
                                 ],
                                 Observable<AnyAction>
                             >(this.processStartExportRequest),
@@ -612,7 +612,7 @@ export class ExportsEffects {
                         })
                     );
                 } else {
-                    const newResponse = (response as unknown) as Array<Export>;
+                    const newResponse = response as unknown as Array<Export>;
 
                     return of(
                         ExportActions.fetchExportLogsSuccess({
@@ -641,7 +641,7 @@ export class ExportsEffects {
             // Kemudian, memunculkan dialog log export-nya.
             return of(
                 ExportActions.showExportHistory({
-                    payload: queryParams.page
+                    payload: queryParams.page,
                 })
             );
         } else {

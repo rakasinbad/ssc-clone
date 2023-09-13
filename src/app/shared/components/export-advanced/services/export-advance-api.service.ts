@@ -286,6 +286,8 @@ export class ExportAdvanceApiService {
         this._url = this.helperSvc.handleApiRouter(customUrl || this._returnStatusEndpoint);
         const newParams = this.helperSvc.handleParams(this._url, params);
 
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

@@ -25,8 +25,13 @@ export class UploadApiService {
         });
     }
 
-    uploadCatalogueFormData(endpoint: string, formData: FormData): Observable<any> {
-        this._urlCatalogue = this._$helper.handleApiRouter(this._endpointCatalogue);
+    uploadCatalogueFormData(endpoint: string, formData: FormData, type: string): Observable<any> {
+
+        if (type === 'update_catalogues') {
+            this._urlCatalogue = this._$helper.handleApiRouter(this._endpointCatalogue) + '?type=update';
+        } else {
+            this._urlCatalogue = this._$helper.handleApiRouter(this._endpointCatalogue);
+        }
 
         return this.http.post(`${this._urlCatalogue}`, formData, {
             reportProgress: true

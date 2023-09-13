@@ -552,7 +552,7 @@ export class FakturDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
+        if (changes['required'] && !changes['required'].isFirstChange()) {
             this.entityFormView.clearValidators();
 
             if (changes['required'].currentValue === true) {

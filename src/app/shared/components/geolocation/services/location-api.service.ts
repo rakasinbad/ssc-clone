@@ -86,6 +86,8 @@ export class LocationApiService {
         }
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

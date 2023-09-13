@@ -31,7 +31,11 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
 import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
-import { SearchByList, SearchByListBilling, SearchByListCollection } from '../models/search-by.model';
+import {
+    SearchByList,
+    SearchByListBilling,
+    SearchByListCollection,
+} from '../models/search-by.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -85,6 +89,7 @@ export class HelperService {
         'warehouses[]',
         'sources[]',
         'catalogueId',
+        'limit',
     ];
 
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
@@ -271,7 +276,7 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        }
+        },
     ];
 
     // tslint:disable-next-line:member-ordering
@@ -299,7 +304,7 @@ export class HelperService {
         {
             id: 'payment_failed',
             label: 'Payment Failed',
-        }
+        },
     ];
 
     // tslint:disable-next-line:member-ordering
@@ -319,7 +324,7 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        }
+        },
     ];
 
     private static _paymentTypes: Array<{ id: string; label: string }> = [
@@ -334,7 +339,7 @@ export class HelperService {
         {
             id: EPaymentType.COD,
             label: 'Bayar di Tempat',
-        }
+        },
     ];
 
     private static _paymentTypesV2: Array<{ id: number; label: string }> = [
@@ -349,7 +354,7 @@ export class HelperService {
         {
             id: EPaymentTypeV2.COD,
             label: 'Bayar di Tempat',
-        }
+        },
     ];
 
     private static _payLaterTypes: Array<{ id: string; label: string }> = [
@@ -360,7 +365,7 @@ export class HelperService {
         {
             id: EPayLaterType.SUPPLIER_KUR_CLICK_ACC,
             label: 'Supplier with KUR KlickACC',
-        }
+        },
     ];
 
     private static _payLaterTypesV2: Array<{ id: number; label: string }> = [
@@ -371,7 +376,7 @@ export class HelperService {
         {
             id: EPayLaterTypeV2.SUPPLIER_KUR_CLICK_ACC,
             label: 'Supplier with KUR KlickACC',
-        }
+        },
     ];
 
     private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [
@@ -763,10 +768,12 @@ export class HelperService {
 
     private static _host = environment.host;
     private static _urlMedeaGo = '/medeago/api/v1/ssc';
-    private static _mockHostCollection = 'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io';
+    private static _mockHostCollection =
+        'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io';
 
     // tslint:disable-next-line: max-line-length
-    private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    private static readonly _regexIp =
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
     private _attendanceTypes: Array<{ value: string; text: string }> = [
         {
@@ -938,34 +945,34 @@ export class HelperService {
         }
 
         // Read local storage to get sessionId.
-        this.storage
-            .get<string>('session', { type: 'string' })
-            .pipe(take(1))
-            .subscribe(() => {
-                // Membuat tag time untuk LogRocket.
-                const tagTime: string = moment().format('YYYYMMDDHHmmSSSSS');
+        // this.storage
+        //     .get<string>('session', { type: 'string' })
+        //     .pipe(take(1))
+        //     .subscribe(() => {
+        //         // Membuat tag time untuk LogRocket.
+        //         const tagTime: string = moment().format('YYYYMMDDHHmmSSSSS');
 
-                // Show error notification based on errId.
-                if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-                    this._$notice.open(
-                        `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message}<br/>Session: ${tagTime}`,
-                        'error',
-                        noticeSetting
-                    );
-                } else {
-                    this._$notice.open(
-                        `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>
-                            Error code: ${errId}<br/>
-                            Reason: ${message}<br/>
-                            Session: ${tagTime}
-                        `,
-                        'error',
-                        noticeSetting
-                    );
-                }
+        //         // Show error notification based on errId.
+        //         if (!errId.startsWith('ERR_UNRECOGNIZED')) {
+        //             this._$notice.open(
+        //                 `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message}<br/>Session: ${tagTime}`,
+        //                 'error',
+        //                 noticeSetting
+        //             );
+        //         } else {
+        //             this._$notice.open(
+        //                 `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>
+        //                     Error code: ${errId}<br/>
+        //                     Reason: ${message}<br/>
+        //                     Session: ${tagTime}
+        //                 `,
+        //                 'error',
+        //                 noticeSetting
+        //             );
+        //         }
 
-                this.reportError(message, requestId, tagTime);
-            });
+        //         this.reportError(message, requestId, tagTime);
+        //     });
     };
 
     reportError(message: string, requestId: string, sessionId: string): void {
@@ -1081,9 +1088,11 @@ export class HelperService {
                             if (search.fieldName.includes('[]')) {
                                 newParams = newParams.append(search.fieldName, `${search.keyword}`);
                             } else {
-                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                                newParams = newParams.set(
+                                    `${search.fieldName}`,
+                                    `${search.keyword}`
+                                );
                             }
-
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,
@@ -1139,10 +1148,10 @@ export class HelperService {
 
     /**
      * This function is remove dollar in request params:
-     * 
+     *
      * 1. Change params `$limit` to `limit`
      * 2. Change params `$skip` to `skip`
-     * 
+     *
      * @param url string
      * @param params IQueryParams
      * @param args any
@@ -1205,9 +1214,11 @@ export class HelperService {
                             if (search.fieldName.includes('[]')) {
                                 newParams = newParams.append(search.fieldName, `${search.keyword}`);
                             } else {
-                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                                newParams = newParams.set(
+                                    `${search.fieldName}`,
+                                    `${search.keyword}`
+                                );
                             }
-
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,
@@ -1444,7 +1455,7 @@ export class HelperService {
     paymentStatus(): { id: string; label: string }[] {
         return HelperService._paymentStatuses;
     }
-    
+
     paymentStatusV2(): { id: string; label: string }[] {
         return HelperService._paymentStatusesV2;
     }
@@ -1535,7 +1546,7 @@ export class HelperService {
     searchByListBilling(): { id: SearchByListBilling; label: string }[] {
         return HelperService._searchByListBilling;
     }
-    
+
     stockType(): { id: boolean; label: string }[] {
         return [
             {
@@ -1702,4 +1713,61 @@ export class HelperService {
     //         this._$notice.open(`Something wrong with our web while requesting export logs. Please contact Sinbad Team.`, 'error', noticeSetting);
     //     }
     // }
+
+    /**
+     * ==========================
+     * VALIDATE INPUT KTP
+     * https://sinbadkp.atlassian.net/wiki/spaces/SW/pages/733872236/Add+Validation+on+KTP+Address
+     * ==========================
+     */
+    validateKTP(idNumber): Observable<{ [key: string]: { [key: string]: string } }> {
+        if (idNumber && idNumber.length === 16) {
+            // B1 B2 Date 00-31 OR 41-71
+            const birthDateString = `${idNumber[6]}${idNumber[7]}`;
+            const birthDateNum = parseInt(birthDateString, 10);
+            // B3 B$ Month 1-12
+            const birthMonthString = `${idNumber[8]}${idNumber[9]}`;
+            const birthMonthNum = parseInt(birthMonthString, 10);
+
+            if (
+                birthDateNum > 71 ||
+                birthMonthNum > 12 ||
+                (birthDateNum >= 32 && birthDateNum <= 40)
+            ) {
+                return of({
+                    error: {
+                        message: 'Mohon cek & ubah NIK sesuai KTP Anda',
+                    },
+                });
+            }
+
+            const url = this.handleApiRouter(`/user-stores/ktp-validation/${idNumber}`);
+            const checkIdNumber = this.http.get<any>(url);
+
+            return checkIdNumber.pipe(
+                take(1),
+                map((data) => {
+                    if (data.valid) {
+                        return null;
+                    }
+                }),
+                catchError((err) => {
+                    if (err && err.error && err.error.message) {
+                        return of({
+                            error: {
+                                message: err.error.message,
+                            },
+                        });
+                    }
+                    return of({
+                        internalError: {
+                            message: "There's an internal error. Please try again later.",
+                        },
+                    });
+                })
+            );
+        }
+
+        return of(null);
+    }
 }

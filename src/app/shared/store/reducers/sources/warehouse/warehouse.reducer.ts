@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-// import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { WarehouseActions } from 'app/shared/store/actions';
 
 // Keyname for reducer
@@ -12,7 +12,7 @@ const featureKey = 'warehouses';
  * @interface State
  * @extends {EntityState<Warehouse>}
  */
-interface State extends EntityState<any> {
+interface State extends EntityState<Warehouse> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
@@ -20,7 +20,7 @@ interface State extends EntityState<any> {
 }
 
 // Adapter for warehouses state
-const adapter = createEntityAdapter<any>({ selectId: row => row.id });
+const adapter = createEntityAdapter<Warehouse>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -40,11 +40,12 @@ const reducer = createReducer<State>(
         ...state,
         isLoading: false
     })),
-    on(WarehouseActions.fetchWarehouseSuccess, (state, { payload }) => {
-        return adapter.addAll(payload, {
+    on(WarehouseActions.fetchWarehouseSuccess, (state, { payload, total }) => {
+        return adapter.upsertMany(payload, {
             ...state,
             isLoading: false,
-            selectedId: null
+            selectedId: null,
+            total
         });
     }),
     on(WarehouseActions.clearWarehouseState, state => {

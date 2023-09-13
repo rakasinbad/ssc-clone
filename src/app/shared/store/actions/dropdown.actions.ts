@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-// import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { Cluster } from 'app/shared/models/cluster.model';
 import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { GeoParameter, IErrorHandler } from 'app/shared/models/global.model';
@@ -104,7 +104,7 @@ export const fetchDropdownCreditLimitGroupFailure = createAction(
 
 export const fetchDropdownCreditLimitGroupSuccess = createAction(
     '[Helper Dropdown] Fetch Credit Limit Group Success',
-    props<{ payload: any }>()
+    props<{ payload: CreditLimitGroup[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -235,6 +235,25 @@ export const fetchDropdownInvoiceGroupFailure = createAction(
 
 export const fetchDropdownInvoiceGroupSuccess = createAction(
     '[Helper Dropdown] Fetch Invoice Group Success',
+    props<{ payload: InvoiceGroup[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Invoice Group with warehouseId and supplierId
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownInvoiceGroupWhSupRequest = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Request Warehouse Supplier',
+    props<{ warehouseId: string }>()
+);
+
+export const fetchDropdownInvoiceGroupWhSupFailure = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Failure Warehouse Supplier',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownInvoiceGroupWhSupSuccess = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Success Warehouse Supplier',
     props<{ payload: InvoiceGroup[] }>()
 );
 
@@ -383,7 +402,7 @@ export const fetchSearchAccountFailure = createAction(
 
 export const fetchSearchAccountSuccess = createAction(
     '[Helper Search] Fetch Account Success',
-    props<{ payload: any }>()
+    props<{ payload: Account[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

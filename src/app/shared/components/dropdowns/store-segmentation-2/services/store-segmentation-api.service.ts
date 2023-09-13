@@ -73,7 +73,9 @@ export class StoreSegmentationApiService {
         }
 
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     findSegmentPromo<T>(params: IQueryParams): Observable<T> {

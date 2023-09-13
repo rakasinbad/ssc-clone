@@ -34,7 +34,7 @@ export class ExtendPromoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: any,
     private formBuilder: FormBuilder,
     private matDialog: MatDialogRef<ExtendPromoComponent>,
-    private store: Store<any>,
+    // private store: Store<fromFlexiCombos.FeatureState>,
     private _$errorMessage: ErrorMessageService
   ) {
     this.promoId = this.data.id

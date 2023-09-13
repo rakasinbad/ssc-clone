@@ -53,6 +53,8 @@ export class ClusterApiService {
     findAll<T>(params: IQueryParams): Observable<T> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

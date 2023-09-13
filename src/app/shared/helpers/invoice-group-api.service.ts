@@ -25,6 +25,8 @@ export class InvoiceGroupApiService {
      * @memberof InvoiceGroupApiService
      */
     private _url: string;
+    private _urlInvoiceStore: string;
+
 
     /**
      *
@@ -33,7 +35,7 @@ export class InvoiceGroupApiService {
      * @memberof InvoiceGroupApiService
      */
     private readonly _endpoint = '/invoice-groups';
-
+    private readonly _endpointInvoice = '/invoice-groups-warehouse'
     /**
      * Creates an instance of InvoiceGroupApiService.
      * @param {HttpClient} http
@@ -42,6 +44,7 @@ export class InvoiceGroupApiService {
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
+        this._urlInvoiceStore = this._$helper.handleApiRouter(this._endpointInvoice);
     }
 
     /**
@@ -68,6 +71,32 @@ export class InvoiceGroupApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<Array<InvoiceGroup> | PaginateResponse<InvoiceGroup>>(this._url, {
+            params: newParams
+        });
+    }
+
+     /**
+     *
+     *
+     * @param {IQueryParams} params
+     * @param {string} [supplierId]
+     * @returns {(Observable<Array<InvoiceGroup> | PaginateResponse<InvoiceGroup>>)}
+     * @memberof InvoiceGroupApiService
+     */
+     findByWhSupplier(
+        params,
+        supplierId?: string
+    ): Observable<Array<InvoiceGroup> | PaginateResponse<InvoiceGroup>> {
+        let newParams = {};
+        if (params.warehouseId) {
+            newParams = {
+                warehouseId: Number(params.warehouseId),
+                supplierId: supplierId,
+                paginate: false
+            }
+        }
+
+        return this.http.get<Array<InvoiceGroup> | PaginateResponse<InvoiceGroup>>(this._urlInvoiceStore, {
             params: newParams
         });
     }

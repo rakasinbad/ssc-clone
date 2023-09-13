@@ -4,6 +4,7 @@ import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
+import { SingleSpaModule } from 'single-spa/single-spa.module';
 
 import { SearchBarModule } from '../search-bar/search-bar.module';
 import { ImportAdvancedComponent } from './import-advanced.component';
@@ -35,7 +36,9 @@ import { ImportAdvancedStoreModule } from './store/import-advanced-store.module'
         RxReactiveDynamicFormsModule,
         TranslateModule.forChild({}),
 
-        ImportAdvancedStoreModule
+        ImportAdvancedStoreModule,
+
+        SingleSpaModule
     ],
     exports: [ImportAdvancedComponent, ImportDialogComponent],
     entryComponents: [ImportDialogComponent]

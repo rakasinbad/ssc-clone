@@ -1,0 +1,120 @@
+<div class="history-content" fxLayout="column">
+    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+    <mat-table
+        class="stock-management-detail-history-table sinbad-table"
+        [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+        #table
+        [dataSource]="dataSource$ | async"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
+    >
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef>
+                Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ (row?.createdAt | date: 'dd/MM/yyyy') || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU ID Column -->
+        <ng-container matColumnDef="sku-id">
+            <mat-header-cell *matHeaderCellDef>
+                SKU ID
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row?.warehouseCatalogue?.catalogue?.externalId || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU Name Column -->
+        <ng-container matColumnDef="sku-name">
+            <mat-header-cell *matHeaderCellDef>
+                SKU Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row?.warehouseCatalogue?.catalogue?.name || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Value Add Column -->
+        <ng-container matColumnDef="value-add">
+            <mat-header-cell *matHeaderCellDef>
+                Value Add
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row?.addition }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Value Subtraction Column -->
+        <ng-container matColumnDef="value-subtraction">
+            <mat-header-cell *matHeaderCellDef>
+                Value Subtraction
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row?.subtraction }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Reason Column -->
+        <ng-container matColumnDef="reason">
+            <mat-header-cell *matHeaderCellDef>
+                Reason
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row?.warehouseCatalogueReason?.reason || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- No Record Column -->
+        <ng-container matColumnDef="no-record">
+            <mat-footer-cell *matFooterCellDef colspan="6">
+                No records found
+            </mat-footer-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="stock-management-detail-history"
+        ></mat-row>
+        <mat-footer-row
+            *matFooterRowDef="['no-record']"
+            [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+        ></mat-footer-row>
+    </mat-table>
+
+    <div
+        class="loader-content"
+        *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+    >
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+
+    <mat-paginator
+        [disabled]="
+            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+        "
+        [length]="totalDataSource$ | async"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>

@@ -27,8 +27,10 @@ import { DeleteCatalogueSegmentationsComponent } from './modals/delete-catalogue
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
+import { WarningModalComponent } from './modals/warning-modal/warning-modal.component';
 import { PricePipe, ReplacePipe, SafePipe } from './pipes';
 import { SingleSpaModule } from 'single-spa/single-spa.module';
+import { MatIconModule } from '@angular/material';
 
 @NgModule({
     declarations: [
@@ -57,6 +59,7 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
         ChangeConfirmationComponent,
         DeleteConfirmationComponent,
         DeleteCatalogueSegmentationsComponent,
+        WarningModalComponent,
 
         FilterAdvancedFormComponent,
         ShowImageComponent,
@@ -77,6 +80,7 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
 
         // Fuse Theme
         FuseSharedModule,
+        MatIconModule,
         // ExportsModule,
         // CardHeaderModule,
         // SharedComponentsModule,
@@ -123,6 +127,7 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
         DeleteCatalogueSegmentationsComponent,
         ChangeConfirmationComponent,
         ShowImageComponent,
+        WarningModalComponent,
 
         // single spa
         SingleSpaModule
@@ -141,6 +146,8 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
         FilterAdvancedFormComponent,
         ShowImageComponent,
         // SearchBarComponent,
+
+        WarningModalComponent
     ],
 })
 export class SharedModule {}

@@ -123,16 +123,29 @@ export class GeolocationEffects {
             // Hanya mengambil payload-nya saja dari action.
             map((action) => action.payload),
             // Mengambil city yang terpilih dari state.
-            withLatestFrom(this.locationStore.select(GeolocationSelectors.getSelectedCity)),
-            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, selectedCity]: [IQueryParams, string]) => {
-                return of([queryParams, selectedCity] as [IQueryParams, string]).pipe(
-                    switchMap<[IQueryParams, string], Observable<AnyAction>>(
-                        this.processDistrictsRequest
-                    ),
-                    catchError((err) => this.sendErrorToState(err, 'fetchDistrictsFailure'))
-                );
-            })
+            withLatestFrom(
+                this.locationStore.select(GeolocationSelectors.getSelectedCity),
+                this.locationStore.select(GeolocationSelectors.getSelectedProvince),
+            ),
+            switchMap(
+                ([queryParams, selectedCity, selectedProvince]: [
+                    IQueryParams,
+                    string,
+                    string
+                ]) => {
+                    // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+                    return of([queryParams, selectedCity, selectedProvince] as [
+                        IQueryParams,
+                        string,
+                        string
+                    ]).pipe(
+                        switchMap<[IQueryParams, string, string], Observable<AnyAction>>(
+                            this.processDistrictsRequest
+                        ),
+                        catchError((err) => this.sendErrorToState(err, 'fetchDistrictsFailure'))
+                    );
+                }
+            )
         )
     );
 
@@ -326,14 +339,21 @@ export class GeolocationEffects {
         );
     };
 
-    processDistrictsRequest = ([queryParams, selectedCity]: [
+    
+    processDistrictsRequest = ([queryParams, selectedCity, selectedProvince]: [
         IQueryParams,
+        string,
         string
     ]): Observable<AnyAction> => {
         if (!selectedCity) {
             throw new ErrorHandler({
                 id: 'ERR_CITY_NOT_SELECTED',
                 errors: 'City not selected to find districts.',
+            });
+        } else if (!selectedProvince) {
+            throw new ErrorHandler({
+                id: 'ERR_PROVINCE_NOT_SELECTED',
+                errors: 'Province not selected to find districts.',
             });
         }
 
@@ -342,6 +362,7 @@ export class GeolocationEffects {
         };
         newQuery['locationType'] = 'district';
         newQuery['city'] = selectedCity;
+        newQuery['provinceId'] = selectedProvince;
 
         return this.locationApi$.findLocation<Array<{ district: string }>>(newQuery).pipe(
             catchOffline(),

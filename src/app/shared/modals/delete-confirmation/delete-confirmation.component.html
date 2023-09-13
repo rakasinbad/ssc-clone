@@ -8,5 +8,5 @@
 
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button [mat-dialog-close]="data?.id" cdkFocusInitial>Yes, confirm.</button>
+    <button mat-button [mat-dialog-close]="data?.id" (click)="onCancel()" cdkFocusInitial>Yes, confirm.</button>
 </mat-dialog-actions>

@@ -137,8 +137,8 @@ export class ImportAdvancedEffects {
                     formData.append('page', page);
                     if (fileType) formData.append('fileType', fileType);
 
-                    if (type === 'create_catalogues') {
-                        return this._$uploadApi.uploadCatalogueFormData(endpoint, formData).pipe(
+                    if (type === 'create_catalogues' || type === 'update_catalogues') {
+                        return this._$uploadApi.uploadCatalogueFormData(endpoint, formData, type).pipe(
                             map(resp => {
                                 const message = "Import produk berhasil, Anda dapat melihat hasilnya di Tab Import History";
                                 this._$notice.open(message, 'success', {

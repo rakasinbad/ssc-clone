@@ -13,7 +13,7 @@ import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms'
 import { MatSlideToggleChange } from '@angular/material';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-// import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
+import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
 import { WarehousesApiService as EntitiesApiService } from 'app/shared/components/dropdowns/single-warehouse/services';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { IPaginatedResponse } from 'app/shared/models/global.model';
@@ -253,7 +253,7 @@ export class FilterComponent implements OnInit, OnDestroy {
                     newQuery['supplierId'] = supplierId;
                     this.form.addControl('warehouse', this.formBuilder.control(''));
                     this.entityApi$
-                        .find<IPaginatedResponse<any>>(newQuery, { version: '2' })
+                        .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
                         .subscribe((data) => {
                             HelperService.debug('[ExportFilterComponent] warehouse', { data });
                             this.dataWarehouse = data.data;

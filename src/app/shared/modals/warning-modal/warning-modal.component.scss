@@ -1,0 +1,36 @@
+.sinbad-mat-btn-accent{
+    background-color: #f0444c !important;
+    color: white !important;
+    margin-bottom: 8px !important; 
+}
+
+.sinbad-mat-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 32px;
+}
+
+.sinbad-mat-title-close {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sinbad-mat-icon-warning {
+    color: #FCC149;
+    height: 44px;
+    width: 44px;
+    font-size: 44px;
+    margin-right: 12px;
+}
+
+.mat-dialog-title {
+    margin: 0 0 0px !important;
+}
+
+mat-dialog-content p {
+    margin: 0 0 0px !important;
+    color: #677A8E !important;
+}

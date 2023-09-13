@@ -65,7 +65,7 @@ export const importAdvancedReducer = createReducer(
     initialState,
     on(
         ImportMassUpload.importMassRequest,
-        state => ({
+        state => adapter.removeAll({
             ...state,
             isLoading: true  
         })
@@ -79,7 +79,7 @@ export const importAdvancedReducer = createReducer(
         })
     ),
     on(ImportMassUpload.importMassSuccess, (state, { payload }) =>
-    adapter.addOne(payload, { ...state, isLoading: false })
+    adapter.upsertOne(payload, { ...state, isLoading: false })
 ),
     on(ImportMassUpload.clearState, () => initialState)
 );

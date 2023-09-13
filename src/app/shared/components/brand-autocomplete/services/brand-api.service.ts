@@ -35,6 +35,8 @@ export class BrandApiService {
 
         
 
-        return this.http.get<T>(this.url, { params: newParams });
+        return this.http.get<T>(this.url, { params: newParams, headers: {
+            "X-Replica": "true",
+        }});
     }
 }

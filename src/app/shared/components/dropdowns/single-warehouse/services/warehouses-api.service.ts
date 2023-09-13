@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-// import { Store } from 'app/main/pages/accounts/merchants/models';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 import { HelperService } from 'app/shared/helpers';
 import { IPaginatedResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -39,7 +39,8 @@ export class WarehousesApiService {
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
         const newHeaders = this.helper$.handleHeaders(headers);
-
-        return this.http.get<T>(this._url, { params: newParams, headers: newHeaders });
+        newHeaders.set('X-Replica', 'true');
+        
+        return this.http.get<T>(this._url, { params: newParams, headers: newHeaders});
     }
 }

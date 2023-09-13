@@ -4,6 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 import { TStoreSegmentation } from '../models';
+import { StoreSegmentationType } from 'app/main/pages/catalogues/models';
 import { map } from 'rxjs/operators';
 import { TNullable } from 'app/shared/models/global.model';
 
@@ -28,7 +29,7 @@ export class StoreSegmentationTypesApiService {
         private helper$: HelperService,
     ) {}
 
-    resolve(id: number, segmentation: TStoreSegmentation): Observable<{ data: TNullable<Array<any>>, text: TNullable<string> }> {
+    resolve(id: number, segmentation: TStoreSegmentation): Observable<{ data: TNullable<Array<StoreSegmentationType>>, text: TNullable<string> }> {
         switch (segmentation) {
             case 'type': {
                 this._url = this.helper$.handleApiRouter(this._typeEndpoint);
@@ -57,10 +58,12 @@ export class StoreSegmentationTypesApiService {
 
         const newParams = this.helper$.handleParams(this._url, args);
 
-        return this.http.get<Array<any>>(this._url, { params: newParams }).pipe(
-            map((values: Array<any>) => {
+        return this.http.get<Array<StoreSegmentationType>>(this._url, { params: newParams,headers: {
+            "X-Replica": "true",
+        } }).pipe(
+            map((values: Array<StoreSegmentationType>) => {
                 // Menyimpan nama type-nya, dari child menuju parent.
-                const types: Array<any> = [];
+                const types: Array<StoreSegmentationType> = [];
                 // Mendapatkan data type berdasarkan ID nya.
                 let type = values.find(value => +value.id === +id);
 
@@ -142,6 +145,8 @@ export class StoreSegmentationTypesApiService {
         }
 
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

@@ -22,13 +22,18 @@ export class ProvinceApiService {
         const newParams = this._$helper.handleParams(this._url, params);
 
         return this.http.get<Array<IProvince> | PaginateResponse<IProvince>>(this._url, {
-            params: newParams
+            params: newParams, 
+            headers: {
+                "X-Replica": "true",
+            }
         });
     }
 
     findAllDropdown(params: IQueryParams): Observable<IProvince[]> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<IProvince[]>(this._url, { params: newParams });
+        return this.http.get<IProvince[]>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

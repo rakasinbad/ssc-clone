@@ -236,7 +236,11 @@
 </div>
 
 <div *ngIf="pageType === 'invoices'" class="label-info mb-16">
-    <mat-icon class="label-info__icon s-16" svgIcon="sinbad-info-2"></mat-icon>
+    <!-- <mat-icon class="label-info__icon s-16" svgIcon="sinbad-info-2"></mat-icon> -->
+    <img 
+        [src]="'icons/sinbad/info-2.svg' | assetUrl" 
+        class="label-info__icon s-16"
+    />
     <p class="label-info__text">The selectable period is 30 days and download invoice maximum 1 year ago.</p>
 </div>
 

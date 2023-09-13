@@ -53,6 +53,13 @@ export class WarehouseApiService {
     findAll<T>(params: IQueryParams): Observable<T> {
         const newArg = [];
 
+        if (params['id']) {
+            newArg.push({
+                key: 'id',
+                value: params['id']
+            });
+        }
+
         if (params['supplierId']) {
             newArg.push({
                 key: 'supplierId',
@@ -69,6 +76,8 @@ export class WarehouseApiService {
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 }
