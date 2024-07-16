@@ -9,12 +9,14 @@ import * as TemperatureActions from './temperature.actions';
 import * as UiActions from './ui.actions';
 import * as WarehouseActions from './warehouse.actions';
 import * as WarehouseValueActions from './warehouse-value.actions';
+import * as RegionActions from './region.actions';
 
 type FailureActions =
     | StockManagementReasonActions.FailureActions
     | TemperatureActions.FailureActions
     | WarehouseActions.FailureActions
-    | WarehouseValueActions.FailureActions;
+    | WarehouseValueActions.FailureActions
+    | RegionActions.FailureActions;
 
 export {
     DropdownActions,
@@ -28,5 +30,6 @@ export {
     TemperatureActions,
     UiActions,
     WarehouseActions,
-    WarehouseValueActions
+    WarehouseValueActions,
+    RegionActions,
 };

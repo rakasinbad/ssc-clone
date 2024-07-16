@@ -12,53 +12,56 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { fromImportAdvanced } from '../reducers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQueryParamsHistoryList } from 'app/shared/models/query.model';
 
 @Injectable()
 export class ImportHistoryEffects {
     importHistoryRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ImportHistroyActions.importHistoryRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            
+
             switchMap(([{ params, page }, userSupplier]) => {
                 const supplierId = userSupplier.supplierId;
-                const newQuery: IQueryParams = {
+                const newQuery: IQueryParamsHistoryList = {
                     ...params,
                 };
                 // Memasukkan ID supplier ke dalam parameter.
                 newQuery['supplierId'] = supplierId;
-                return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(newQuery, page).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        const newResp = {
-                            total: resp.total,
-                            data:
-                                resp && resp.data && resp.data.length > 0
-                                    ? resp.data.map(row => new ImportLog(row))
-                                    : []
-                        };
+                return this._$importLogApi
+                    .findAll<PaginateResponse<IImportLog>>(newQuery, page)
+                    .pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            const newResp = {
+                                total: resp.total,
+                                data:
+                                    resp && resp.data && resp.data.length > 0
+                                        ? resp.data.map((row) => new ImportLog(row))
+                                        : [],
+                            };
 
-                        return ImportHistroyActions.importHistorySuccess({
-                            payload: newResp
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            ImportHistroyActions.importHistoryFailure({
-                                payload: new ErrorHandler({ id: '', errors: err })
-                            })
+                            return ImportHistroyActions.importHistorySuccess({
+                                payload: newResp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                ImportHistroyActions.importHistoryFailure({
+                                    payload: new ErrorHandler({ id: '', errors: err }),
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );
 
     constructor(
-        private actions$: Actions, private _$importLogApi: ImportLogApiService,
+        private actions$: Actions,
+        private _$importLogApi: ImportLogApiService,
         private storage: StorageMap,
-        private store: Store<fromImportAdvanced.FeatureState>,
-        ) {}
+        private store: Store<fromImportAdvanced.FeatureState>
+    ) {}
 }

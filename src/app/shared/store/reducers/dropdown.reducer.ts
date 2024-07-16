@@ -13,6 +13,9 @@ import { StoreType } from 'app/shared/models/store-type.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
 import { DropdownActions } from '../actions';
+import { Region } from 'app/shared/models/region.model';
+import { Branch } from 'app/shared/models/branch.model';
+import { SalesRep } from 'app/main/pages/sales-forces/sales-reps/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
@@ -49,6 +52,8 @@ export interface State {
     urbans: UrbanState;
     hierarchies?: Hierarchy[];
     invoiceGroups?: InvoiceGroup[];
+    regions?: Region[];
+    branchs?: Branch[];
     roles?: Role[];
     provinces?: Province[];
     storeClusters?: Cluster[];
@@ -58,6 +63,7 @@ export interface State {
     geoParameters: GeoParameterState;
     vehicleAccessibilities?: VehicleAccessibility[];
     location: Urban;
+    salesRep?: SalesRep[];
     errors: ErrorState;
 }
 // const adapterAccount = createEntityAdapter<Account>();
@@ -115,6 +121,8 @@ const dropdownReducer = createReducer<State>(
         DropdownActions.fetchDropdownGeoParameterUrbanFailure,
         DropdownActions.fetchDropdownHierarchyFailure,
         DropdownActions.fetchDropdownInvoiceGroupFailure,
+        DropdownActions.fetchDropdownRegionFailure,
+        DropdownActions.fetchDropdownBranchFailure,
         DropdownActions.fetchDropdownInvoiceGroupWhSupFailure,
         DropdownActions.fetchDropdownProvinceFailure,
         DropdownActions.fetchDropdownRoleFailure,
@@ -169,10 +177,34 @@ const dropdownReducer = createReducer<State>(
         invoiceGroups: payload,
         errors: adapterError.removeOne('fetchDropdownInvoiceGroupFailure', state.errors)
     })),
+    on(DropdownActions.fetchDropdownSalesRepSuccess, (state, { payload }) => ({
+        ...state,
+        salesRep: payload,
+        errors: adapterError.removeOne('fetchDropdownSalesRepFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownRegionSuccess, (state, { payload }) => {
+        return ({
+            ...state,
+            regions: payload,
+            errors: adapterError.removeOne('fetchDropdownRegionFailure', state.errors)
+        })
+    }),
+    on(DropdownActions.fetchDropdownBranchSuccess, (state, { payload }) => {
+        return ({
+            ...state,
+            branchs: payload,
+            errors: adapterError.removeOne('fetchDropdownBranchFailure', state.errors)
+        })
+    }),
     on(DropdownActions.fetchDropdownInvoiceGroupWhSupSuccess, (state, { payload }) => ({
         ...state,
         invoiceGroups: payload,
         errors: adapterError.removeOne('fetchDropdownInvoiceGroupWhSupFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownSalesRepSuccess, (state, { payload }) => ({
+        ...state,
+        salesRep: payload,
+        errors: adapterError.removeOne('fetchDropdownSalesRepFailure', state.errors)
     })),
     on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
         ...state,
@@ -240,6 +272,10 @@ const dropdownReducer = createReducer<State>(
     on(DropdownActions.resetInvoiceGroupState, state => ({
         ...state,
         invoiceGroups: undefined
+    })),
+    on(DropdownActions.resetSalesRepState, state => ({
+        ...state,
+        salesRep: undefined
     })),
     on(DropdownActions.resetProvinceState, state => ({
         ...state,

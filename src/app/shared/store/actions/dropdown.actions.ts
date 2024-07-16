@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
+import { Region } from 'app/shared/models/region.model';
+import { Branch, IQueryParamsBranch } from 'app/shared/models/branch.model';
 import { Cluster } from 'app/shared/models/cluster.model';
 import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { GeoParameter, IErrorHandler } from 'app/shared/models/global.model';
@@ -11,6 +13,7 @@ import { StoreGroup } from 'app/shared/models/store-group.model';
 import { StoreSegment } from 'app/shared/models/store-segment.model';
 import { StoreType } from 'app/shared/models/store-type.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
+import { SalesRep } from 'app/main/pages/sales-forces/sales-reps/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
@@ -225,7 +228,8 @@ export const fetchDropdownHierarchySuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchDropdownInvoiceGroupRequest = createAction(
-    '[Helper Dropdown] Fetch Invoice Group Request'
+    '[Helper Dropdown] Fetch Invoice Group Request',
+    (payload: IQueryParams = {}) => ({ payload })
 );
 
 export const fetchDropdownInvoiceGroupFailure = createAction(
@@ -236,6 +240,25 @@ export const fetchDropdownInvoiceGroupFailure = createAction(
 export const fetchDropdownInvoiceGroupSuccess = createAction(
     '[Helper Dropdown] Fetch Invoice Group Success',
     props<{ payload: InvoiceGroup[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Sales Rep
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownSalesRepRequest = createAction(
+    '[Helper Dropdown] Fetch Sales Rep Request',
+    (payload: any = {}) => ({ payload })
+);
+
+export const fetchDropdownSalesRepFailure = createAction(
+    '[Helper Dropdown] Fetch Sales Rep Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownSalesRepSuccess = createAction(
+    '[Helper Dropdown] Fetch Sales Rep Success',
+    props<{ payload: any }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -402,7 +425,45 @@ export const fetchSearchAccountFailure = createAction(
 
 export const fetchSearchAccountSuccess = createAction(
     '[Helper Search] Fetch Account Success',
-    props<{ payload: Account[] }>()
+    props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Region
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownRegionRequest = createAction(
+    '[Helper Dropdown] Fetch Region Request',
+    (payload: IQueryParams = {}) => ({ payload })
+);
+
+export const fetchDropdownRegionFailure = createAction(
+    '[Helper Dropdown] Fetch Region Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownRegionSuccess = createAction(
+    '[Helper Dropdown] Fetch Region Success',
+    props<{ payload: Region[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Branch
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownBranchRequest = createAction(
+    '[Helper Dropdown] Fetch Branch Request',
+    (payload: IQueryParamsBranch) => ({ payload })
+);
+
+export const fetchDropdownBranchFailure = createAction(
+    '[Helper Dropdown] Fetch Branch Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownBranchSuccess = createAction(
+    '[Helper Dropdown] Fetch Branch Success',
+    props<{ payload: Branch[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -411,6 +472,8 @@ export const fetchSearchAccountSuccess = createAction(
 
 export const resetInvoiceGroupState = createAction('[Helper Dropdown] Reset Invoice Group State');
 
+export const resetSalesRepState = createAction('[Helper Dropdown] Reset Sales Rep State');
+
 export const resetProvinceState = createAction('[Helper Dropdown] Reset Province State');
 
 export const resetGeoparamsState = createAction('[Helper Dropdown] Reset Geoparams State');
@@ -418,3 +481,7 @@ export const resetGeoparamsState = createAction('[Helper Dropdown] Reset Geopara
 export const resetDistrictsState = createAction('[Helper Dropdown] Reset Districts State');
 
 export const resetUrbansState = createAction('[Helper Dropdown] Reset Urbans State');
+
+export const resetRegionState = createAction('[Helper Dropdown] Reset Region State');
+
+export const resetBranchState = createAction('[Helper Dropdown] Reset Branch State');

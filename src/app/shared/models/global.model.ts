@@ -1,6 +1,6 @@
 enum Status {
     active,
-    inactive
+    inactive,
 }
 
 type StatusString = keyof typeof Status;
@@ -11,21 +11,21 @@ enum StatusOrderDemo {
     received,
     newOrder,
     completed,
-    toBeShipped
+    toBeShipped,
 }
 
 type StatusOrderDemoString = keyof typeof StatusOrderDemo;
 
 enum Source {
     cache,
-    fetch
+    fetch,
 }
 
 type SourceString = keyof typeof Source;
 
 enum Sort {
     asc,
-    desc
+    desc,
 }
 
 type SortString = keyof typeof Sort;
@@ -34,7 +34,7 @@ enum LogMode {
     group,
     groupCollapsed,
     table,
-    default
+    default,
 }
 
 type LogModeString = keyof typeof LogMode;
@@ -43,7 +43,7 @@ enum LogType {
     log,
     info,
     warn,
-    error
+    error,
 }
 
 type LogTypeString = keyof typeof LogType;
@@ -52,7 +52,7 @@ enum StatusError {
     error,
     success,
     warning,
-    info
+    info,
 }
 
 type StatusErrorString = keyof typeof StatusError;
@@ -97,6 +97,16 @@ export interface IPaginateResponse<T> {
     data: Array<T>;
 }
 
+export interface MetaV2 {
+    page: number;
+    perPage: number;
+    total: number;
+}
+export interface IPaginateResponseV2<T> {
+    meta: MetaV2;
+    data: Array<T>;
+}
+
 export class PaginateResponse<T> implements IPaginateResponse<T> {
     constructor(
         public total: number,
@@ -104,6 +114,10 @@ export class PaginateResponse<T> implements IPaginateResponse<T> {
         public skip: number,
         public data: Array<T>
     ) {}
+}
+
+export class PaginateResponseV2<T> implements IPaginateResponseV2<T> {
+    constructor(public meta: MetaV2, public data: Array<T>) {}
 }
 
 export interface IErrorHandler {
@@ -169,7 +183,7 @@ export interface IFooterActionConfig {
 
 export enum EStatus {
     ACTIVE = 'active',
-    INACTIVE = 'inactive'
+    INACTIVE = 'inactive',
 }
 
 export enum EStatusOrder {
@@ -177,7 +191,7 @@ export enum EStatusOrder {
     PACKING = 'packing',
     SHIPPING = 'shipping',
     DELIVERED = 'delivered',
-    DONE = 'done'
+    DONE = 'done',
 }
 
 export enum EStatusPayment {
@@ -185,7 +199,7 @@ export enum EStatusPayment {
     NOT_PAID = 'not_paid',
     UNPAID = 'unpaid',
     PAID = 'paid',
-    OVERDUE = 'overdue'
+    OVERDUE = 'overdue',
 }
 
 export type FilterUrban = 'city' | 'district' | 'urban';
@@ -194,7 +208,7 @@ export enum GeoParameterType {
     PROVINCE = 'province',
     CITY = 'city',
     DISTRICT = 'district',
-    URBAN = 'urban'
+    URBAN = 'urban',
 }
 
 interface IGeoParameter {
@@ -219,5 +233,5 @@ export enum LifecyclePlatform {
     AfterContentChecked = 'ngAfterContentChecked',
     AfterViewInit = 'ngAfterViewInit',
     AfterViewChecked = 'ngAfterViewChecked',
-    OnDestroy = 'ngOnDestroy'
+    OnDestroy = 'ngOnDestroy',
 }

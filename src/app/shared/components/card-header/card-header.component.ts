@@ -341,6 +341,8 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     if (this.config.filter.permissions) {
                         this.filterListPermissions = this.config.filter.permissions;
                     }
+                } else {
+                    this.filterListPermissions = null;
                 }
 
                 // Memeriksa konfigurasi tombol "Group By".

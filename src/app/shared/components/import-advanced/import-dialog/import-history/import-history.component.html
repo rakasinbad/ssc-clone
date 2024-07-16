@@ -6,26 +6,49 @@
         </div>
     </div> -->
 
-    <div class="header-wrapper mb-16" fxLayout="row" fxLayoutAlign="start center">
-        <button id="btn__refresh" type="button" mat-flat-button class="sinbad-orange mr-16" (click)="onRefresh()">
-            Refresh
-        </button>
+    <div class="header-wrapper mb-16" fxLayout="row">
+        <div>
+            <div class="header-mode-wrapper" fxLayout="row" fxLayoutAlign="start center" fxFlex="100"
+                *ngIf="isShowImportMode">
+                <span class="mr-16 text-bold">Import Mode</span>
+                <mat-form-field class="p-0 m-0  w-240 import-mode-pb-0" appearance="outline">
+                    <ng-container *ngIf="modes$ | async as modes; else noModes">
+                        <mat-select name="mode" formControlName="mode" (selectionChange)="onChangeMode($event)"
+                            placeholder="Choose Import Mode">
+                            <mat-option value="all" id="selec_mode-all">
+                                All
+                            </mat-option>
+                            <mat-option [id]="'select__mode-' + row.id" *ngFor="let row of modes" [value]="row?.id">
+                                {{ row.label | translate }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
 
-        <sinbad-search-bar
-            useBorder="true"
-            placeholder="Search"
-            (changed)="onSearch($event)"
-        ></sinbad-search-bar>
+
+                    <ng-template #noModes>
+                        <mat-select name="mode" formControlName="mode" (selectionChange)="onChangeMode($event)"
+                            placeholder="Choose Import Mode">
+                            <mat-option value="all" id="selec_mode-all">
+                                All
+                            </mat-option>
+                        </mat-select>
+                    </ng-template>
+                </mat-form-field>
+
+            </div>
+        </div>
+        <div class="header-search-wrapper" fxLayout="row" fxLayoutAlign="start center">
+            <button id="btn__refresh" type="button" mat-flat-button class="sinbad-orange mr-16" (click)="onRefresh()">
+                Refresh
+            </button>
+
+            <sinbad-search-bar useBorder="true" placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
+        </div>
+
     </div>
 
-    <table
-        id="import-history"
-        mat-table
-        [dataSource]="dataSource$ | async"
-        matSort
-        [@animateStagger]="{ value: '50' }"
-        class="simple"
-    >
+    <table id="import-history" mat-table [dataSource]="dataSource$ | async" matSort [@animateStagger]="{ value: '50' }"
+        class="simple">
         <!-- User Column -->
         <ng-container matColumnDef="user">
             <th id="thead__user" mat-header-cell *matHeaderCellDef>
@@ -109,30 +132,15 @@
                     >
                     </mat-icon> -->
 
-                    <img 
-                        [src]="'icons/sinbad/check-active.svg' | assetUrl" 
-                        *ngIf="row?.status === 'done'"
-                        class="active-icon s-16"
-                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
-                    />
-                    <img 
-                        [src]="'icons/sinbad/pending.svg' | assetUrl" 
-                        *ngIf="row?.status === 'pending'"
-                        class="active-icon s-16"
-                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
-                    />
-                    <img 
-                        [src]="'icons/sinbad/on_process.svg' | assetUrl" 
-                        *ngIf="row?.status === 'on_process' || row?.status === 'validating'"
-                        class="active-icon s-16"
-                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
-                    />
-                    <img 
-                        [src]="'icons/sinbad/cross-red.svg' | assetUrl" 
-                        *ngIf="row?.status === 'error'"
-                        class="active-icon s-16"
-                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
-                    />
+                    <img [src]="'icons/sinbad/check-active.svg' | assetUrl" *ngIf="row?.status === 'done'"
+                        class="active-icon s-16" [matTooltip]="convertStatus('progress', row?.status) | titlecase" />
+                    <img [src]="'icons/sinbad/pending.svg' | assetUrl" *ngIf="row?.status === 'pending'"
+                        class="active-icon s-16" [matTooltip]="convertStatus('progress', row?.status) | titlecase" />
+                    <img [src]="'icons/sinbad/on_process.svg' | assetUrl"
+                        *ngIf="row?.status === 'on_process' || row?.status === 'validating'" class="active-icon s-16"
+                        [matTooltip]="convertStatus('progress', row?.status) | titlecase" />
+                    <img [src]="'icons/sinbad/cross-red.svg' | assetUrl" *ngIf="row?.status === 'error'"
+                        class="active-icon s-16" [matTooltip]="convertStatus('progress', row?.status) | titlecase" />
                 </ng-container>
 
                 <ng-container *ngIf="!row?.status">
@@ -145,12 +153,8 @@
         <ng-container matColumnDef="progress">
             <th mat-header-cell *matHeaderCellDef>Progress</th>
             <td [id]="'row__progress-' + i" mat-cell *matCellDef="let row; let i = index">
-                <a
-                    [id]="'btn__download-error-report_' + i"
-                    href="javascript:;"
-                    *ngIf="row?.status === 'error'"
-                    (click)="onDownload(row?.url)"
-                >
+                <a [id]="'btn__download-error-report_' + i" href="javascript:;" *ngIf="row?.status === 'error'"
+                    (click)="onDownload(row?.url)">
                     <ng-container *ngIf="row?.page === 'catalogues'; else otherPage">
                         Download Failed Data
                     </ng-container>
@@ -182,14 +186,9 @@
         <mat-spinner color="accent" diameter="50"></mat-spinner>
     </div>
 
-    <mat-paginator
-        [fxHide]="
+    <mat-paginator [fxHide]="
             ((isLoading$ | async) && !(totalDataSource$ | async)) ||
             (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-        "
-        [length]="totalDataSource$ | async"
-        [pageSize]="defaultPageSize"
-        [pageSizeOptions]="defaultPageOpts"
-        showFirstLastButtons
-    ></mat-paginator>
+        " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons></mat-paginator>
 </div>

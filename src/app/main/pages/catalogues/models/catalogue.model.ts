@@ -1,6 +1,7 @@
 import { Brand } from 'app/shared/models/brand.model';
 import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { max } from 'lodash';
 import { SubBrand } from './sub-brand.model';
 
 /*
@@ -194,6 +195,10 @@ export interface ICatalogue extends ITimestamp {
     isMaximum?: boolean;
     isPromo?: boolean;
     platformVisibility: TPlatformVisibility;
+
+    retailBuyingPriceAfterTax?: number;
+    pricingInputWithTaxFlag?: boolean;
+    bulkPrices?: Array<ConditionBulkDto>;
 
 }
 
@@ -637,6 +642,10 @@ export class Catalogue implements ICatalogue {
     isPromo?: boolean;
     platformVisibility: TPlatformVisibility;
 
+    retailBuyingPriceAfterTax?: number;
+    pricingInputWithTaxFlag?: boolean;
+    bulkPrices?: Array<ConditionBulkDto>;
+
     constructor(data: ICatalogue) {
         const {
             id,
@@ -698,7 +707,10 @@ export class Catalogue implements ICatalogue {
             isExclusive,
             isMaximum,
             isPromo,
-            platformVisibility
+            platformVisibility,
+            retailBuyingPriceAfterTax,
+            pricingInputWithTaxFlag,
+            bulkPrices
         } = data;
 
         this.id = id;
@@ -756,6 +768,10 @@ export class Catalogue implements ICatalogue {
         this.isMaximum = isMaximum;
         this.isPromo = isPromo;
         this.platformVisibility = platformVisibility;
+        this.retailBuyingPriceAfterTax = retailBuyingPriceAfterTax;
+        this.pricingInputWithTaxFlag = pricingInputWithTaxFlag;
+        this.bulkPrices = bulkPrices ? bulkPrices : [];
+
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88 88b  d88   dPYb   dP   `" 88__   `Ybo."
@@ -936,5 +952,33 @@ export class Catalogue implements ICatalogue {
         return Catalogue.hasDiscountPrice(catalogue)
             ? catalogue.discountedRetailBuyingPrice
             : catalogue.retailBuyingPrice;
+    }
+
+}
+// export class CatalogueTax extends Timestamp {
+
+export class ConditionBulkDto {
+    readonly id?: string;
+    level?: number;
+    minQty?: number;
+    maxQty?: number
+    price?: number;
+   
+
+    constructor(data: ConditionBulkDto) {
+        const {
+            id,
+            level,
+            minQty,
+            maxQty,
+            price
+        } = data;
+
+        this.id = id;
+        this.level = level;
+        this.minQty = minQty;
+        this.maxQty = maxQty;
+        this.price = price;
+     
     }
 }

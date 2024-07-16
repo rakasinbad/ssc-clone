@@ -6,6 +6,7 @@ import * as fromTeams from './sources/team';
 import * as fromTemperatures from './sources/temperature';
 import * as fromWarehouses from './sources/warehouse';
 import * as fromWarehouseValues from './sources/warehouse-value';
+import * as fromRegion from './sources/region';
 
 // Keyname for core reducer
 const featureKey = 'sources';
@@ -22,6 +23,7 @@ interface State {
     [fromTemperatures.featureKey]: fromTemperatures.State;
     [fromWarehouses.featureKey]: fromWarehouses.State;
     [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
+    [fromRegion.featureKey]: fromRegion.State;
 }
 
 /**
@@ -49,6 +51,7 @@ function reducers(state: State | undefined, action: Action): State {
         [fromTemperatures.featureKey]: fromTemperatures.reducers,
         [fromWarehouses.featureKey]: fromWarehouses.reducers,
         [fromWarehouseValues.featureKey]: fromWarehouseValues.reducers,
+        [fromRegion.featureKey]: fromRegion.reducers,
     })(state, action);
 }
 

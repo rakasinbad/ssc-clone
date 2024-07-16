@@ -1,6 +1,6 @@
 <ng-container *ngIf="type === 'single'">
     <div class="custom-field" fxLayout="row">
-        <mat-form-field appearance="outline" fxFlex>
+        <mat-form-field appearance="outline" fxFlex [class.mat-form-field-invalid]="error">
             <input
                 #autocompleteTrigger
                 matInput
@@ -29,6 +29,10 @@
 
             <mat-hint [align]="hintAlign" *ngIf="hintValue">
                 {{ hintValue }}
+            </mat-hint>
+
+            <mat-hint class="mat-error" *ngIf="error">
+                {{ errorMessage }}
             </mat-hint>
 
             <!-- SECTION SPINNER LOADING -->

@@ -6,21 +6,27 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSelectChange, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQueryParamsHistoryList } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { ImportLog } from '../../models';
-import { ImportHistroyActions } from '../../store/actions';
+import { IConfigImportAdvanced, IConfigMode, IConfigTemplate, ImportLog } from '../../models';
+import { ImportAdvancedActions, ImportHistroyActions } from '../../store/actions';
 import { fromImportAdvanced } from '../../store/reducers';
 import { ImportAdvancedSelectors } from '../../store/selectors';
+import { FF_MUTE } from '@angular/cdk/keycodes';
+import { flatMap } from 'lodash';
+import { TranslateService } from '@ngx-translate/core';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
 
 @Component({
     selector: 'app-import-history',
@@ -28,7 +34,7 @@ import { ImportAdvancedSelectors } from '../../store/selectors';
     styleUrls: ['./import-history.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
@@ -41,12 +47,16 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
         'action',
         'processed',
         'status',
-        'progress'
+        'progress',
     ];
 
     dataSource$: Observable<Array<ImportLog>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+
+    config$: Observable<IConfigImportAdvanced>;
+    modes$: Observable<Array<IConfigMode>>;
+    isLoadingConfig$: Observable<boolean>;
 
     @Input() pageType: string;
 
@@ -56,9 +66,19 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    searchValue: string;
+    importMode: string;
+    isShowImportMode: boolean;
+
     private _unSubs$: Subject<void> = new Subject<void>();
 
-    constructor(private store: Store<fromImportAdvanced.FeatureState>) {}
+    constructor(
+        private store: Store<fromImportAdvanced.FeatureState>,
+        public translate: TranslateService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+    ) {
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -130,7 +150,13 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onSearch(searchValue: string): void {
-        this._initTable(searchValue);
+        this.searchValue = searchValue;
+        this._initTable(this.searchValue, this.importMode);
+    }
+
+    onChangeMode(event: MatSelectChange): void {
+        this.importMode = event.value;
+        this._initTable(this.searchValue, this.importMode);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -150,7 +176,7 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                     merge(this.sort.sortChange, this.paginator.page)
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe(() => {
-                            this._initTable();
+                            this._initTable(this.searchValue, this.importMode);
                         });
                 }
                 break;
@@ -169,7 +195,7 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 this.dataSource$ = this.store.select(ImportAdvancedSelectors.selectAllImportLogs);
@@ -179,16 +205,29 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
 
                 this.isLoading$ = this.store.select(ImportAdvancedSelectors.getIsLoading);
 
-                this._initTable();
+                this._importModeCheck(this.pageType);
+
+                this._initTable(this.searchValue, this.importMode);
+
+                this.store.dispatch(ImportAdvancedActions.resetImportConfig());
+
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfigRequest({
+                        payload: this.pageType.toLowerCase(),
+                    })
+                );
+
+                this.modes$ = this.store.select(ImportAdvancedSelectors.getMode);
+                this.isLoadingConfig$ = this.store.select(ImportAdvancedSelectors.getIsLoading);
                 break;
         }
     }
 
-    private _initTable(keyword?: string): void {
+    private _initTable(keyword?: string, importMode?: string): void {
         if (this.paginator) {
-            const data: IQueryParams = {
+            const data: IQueryParamsHistoryList = {
                 limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -201,16 +240,24 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
             if (keyword) {
                 data['search'] = [
                     {
-                        fieldName: 'keyword',
-                        keyword: keyword
-                    }
+                        fieldName: 'action',
+                        keyword: keyword,
+                    },
+                    {
+                        fieldName: 'fileName',
+                        keyword: keyword,
+                    },
                 ];
+            }
+
+            if (importMode) {
+                data.action = importMode == 'all' ? null : importMode;
             }
 
             if (this.pageType && typeof this.pageType === 'string') {
                 this.store.dispatch(
                     ImportHistroyActions.importHistoryRequest({
-                        payload: { params: data, page: this.pageType }
+                        payload: { params: data, page: this.pageType },
                     })
                 );
             }
@@ -219,6 +266,18 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
-        this._initTable();
+
+        this._initTable(this.searchValue, this.importMode);
+    }
+
+    private _importModeCheck(pageType?: string) {
+        switch (pageType) {
+            case 'orders':
+                this.isShowImportMode = true;
+                break;
+            default:
+                this.isShowImportMode = false;
+                break;
+        }
     }
 }

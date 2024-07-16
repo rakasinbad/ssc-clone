@@ -54,6 +54,12 @@ export class SinbadAutocompleteComponent implements OnChanges, OnInit {
     @Input()
     type: SinbadAutocompleteType = 'single';
 
+    @Input()
+    error: boolean;
+
+    @Input()
+    errorMessage: string;
+
     @Output()
     closed: EventEmitter<void> = new EventEmitter();
 

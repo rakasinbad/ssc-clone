@@ -9,7 +9,7 @@ import { catchOffline, Network } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, LogService, NoticeService } from 'app/shared/helpers';
-import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { DeleteConfirmationComponent, WarningModalComponent } from 'app/shared/modals';
 import { AnyAction } from 'app/shared/models/actions.model';
 import { ErrorHandler, IPaginatedResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -25,12 +25,15 @@ import {
     switchMap,
     tap,
     withLatestFrom,
+    take,
 } from 'rxjs/operators';
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CataloguesService } from '../../services';
 import { CatalogueActions, FailureActionNames } from '../actions';
 import { fromCatalogue } from '../reducers';
+import { CataloguePriceSettingsService } from '../../services';
+import { CatalogueSelectors } from '../selectors';
 
 @Injectable()
 export class CatalogueEffects {
@@ -183,11 +186,16 @@ export class CatalogueEffects {
 
     patchCatalogueFailure$ = createEffect(
         () =>
-            this.actions$.pipe(
-                ofType(CatalogueActions.patchCatalogueFailure),
-                map((action) => action.payload),
-                tap((payload) => this.helper$.showErrorNotification(payload))
-            ),
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCatalogueFailure),
+            map((action) => action.payload),
+            tap((resp) => {
+                this._$notice.open(resp.errors.error.message, 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+            })
+        ),
         { dispatch: false }
     );
 
@@ -503,6 +511,47 @@ export class CatalogueEffects {
                         of(
                             CatalogueActions.fetchTotalCatalogueStatusFailure({
                                 payload: { id: 'fetchTotalCatalogueStatusFailure', errors: err },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchPricingSettingsStatuses = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchPricingSettingsRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                /** NO SUPPLIER ID! */
+                if (!supplierId) {
+                    return of(
+                        CatalogueActions.fetchPricingSettingsFailure({
+                            payload: {
+                                id: 'fetchPricingSettingsFailure',
+                                errors: 'Not authenticated',
+                            },
+                        })
+                    );
+                }
+
+                const params: IQueryParams = {};
+                params['supplierId'] = supplierId;
+
+                return this._$catalogueBulkPriceSettingsApi.getPriceSetting(params).pipe(
+                    map(({ code, name }) => {
+                        return CatalogueActions.fetchPricingSettingsSuccess({
+                            payload: {
+                                code,
+                                name,
+                            },
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            CatalogueActions.fetchPricingSettingsFailure({
+                                payload: { id: 'fetchPricingSettingsFailure', errors: err },
                             })
                         )
                     )
@@ -1144,10 +1193,17 @@ export class CatalogueEffects {
                 tap((response) => {
                     console.log('GAGAL', response);
 
-                    this._$notice.open('Status produk gagal diubah menjadi aktif', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
+                    const message = response.errors.error.message
+
+                    const dialogRef = this.matDialog.open(WarningModalComponent, {
+                        data: {
+                            title: 'Cannot activate SKU',
+                            message
+                        },
+                        disableClose: true,
                     });
+
+                    return dialogRef.afterClosed();
                 })
             ),
         { dispatch: false }
@@ -1204,12 +1260,36 @@ export class CatalogueEffects {
                 ofType(CatalogueActions.addNewCatalogueSuccess),
                 map((action) => action.payload),
                 tap((response) => {
-                    console.log('SUKSES', response);
-                    this._$notice.open('Berhasil menambah produk baru', 'success', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
-                    this.router.navigate(['pages', 'catalogues']);
+                    this.store
+                        .select(CatalogueSelectors.getBulkPricingStatus)
+                        .pipe(take(1))
+                        .subscribe((payload) => {
+                            if (payload.code === 'group_pricing') {
+                                this.router
+                                    .navigate(
+                                        [`/pages/catalogues/add/${response.id}/group_price`],
+                                        {
+                                            replaceUrl: true,
+                                        }
+                                    )
+                                    .finally(() => {
+                                        this._$notice.open(
+                                            'Berhasil menambah produk baru',
+                                            'success',
+                                            {
+                                                verticalPosition: 'bottom',
+                                                horizontalPosition: 'right',
+                                            }
+                                        );
+                                    });
+                            } else {
+                                this._$notice.open('Berhasil menambah produk baru', 'success', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right',
+                                });
+                                this.router.navigate(['pages', 'catalogues']);
+                            }
+                        });
                 })
             ),
         { dispatch: false }
@@ -1363,6 +1443,7 @@ export class CatalogueEffects {
         protected network: Network,
         private _$log: LogService,
         private _$catalogueApi: CataloguesService,
+        private _$catalogueBulkPriceSettingsApi: CataloguePriceSettingsService,
         private helper$: HelperService,
         private _$notice: NoticeService
     ) {}

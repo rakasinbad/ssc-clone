@@ -498,6 +498,22 @@ export const removeCatalogueFailure = createAction(
     props<{ payload: IErrorHandler }>()
 );
 
+//bulk price settings
+export const fetchPricingSettingsRequest = createAction(
+    '[Catalogues API] Fetch Pricing Settings Request'
+);
+
+export const fetchPricingSettingsFailure = createAction(
+    '[Catalogues API] Fetch Pricing Settings Request Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchPricingSettingsSuccess = createAction(
+    '[Catalogues API] Fetch Pricing Settings Request Success',
+    props<{ payload: { code: string; name: string } }>()
+);
+
+
 /**
  * RESET
  */

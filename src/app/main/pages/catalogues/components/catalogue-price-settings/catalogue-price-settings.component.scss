@@ -147,6 +147,165 @@ catalogue-price-settings {
             right: 0;
         }
     }
+    .catalogue-price-settings-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: sinbad-color('black', '5') !important;
+
+        // No record table
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+
+            &:hover {
+                background-color: white;
+            }
+            // For horizontal scroll
+            max-width: 105vw;
+        }
+
+        &.edit {
+            .mat-header-row,
+            .mat-row {
+                // For horizontal scroll
+                max-width: 105vw;
+            }
+        }
+
+        .mat-header-cell,
+        .mat-cell {
+            padding: 0 16px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            background-color: #f3f5f7;
+        }
+
+        .catalogue-price-settings-list__item {
+            position: relative;
+
+            // If row can be click
+            // cursor: pointer;
+            // min-height: unset;
+        }
+
+        mat-header-cell:first-of-type,
+        mat-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-right: 0;
+        }
+
+        // .mat-header-cell:nth-last-of-type(2),
+        // .mat-cell:nth-last-of-type(2) {
+        //     padding-right: 0;
+        // }
+
+        mat-header-cell:last-of-type,
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-left: 0;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mat-column-price-exclude-tax,
+        .mat-column-price-include-tax,
+        .mat-column-min-qty {
+            flex: 0 0 148px;
+            // background-color:  #F3F5F7;
+            color: #0b1a28;
+        }
+
+        .mat-column-level {
+            flex: 0 0 120px;
+            // background-color:  #F3F5F7;
+            color: #0b1a28;
+        }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .mat-form-field-wrapper {
+            padding-bottom: 0 !important;
+        }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 25px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+}
+
+.box-info {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    box-shadow: inset 0px -1px 0px rgba(218, 224, 231, 0.5);
+    .label {
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 18px;
+        color: #677a8e;
+        margin-bottom: 0;
+    }
+    .description {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #0b1a28;
+    }
+    .custom-field {
+        // margin-bottom: 0.5%;
+        .mat-form-field {
+            &.mat-form-field-type-mat-select {
+                .mat-form-field-wrapper {
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
+.box-type {
+    background: #f3f5f7;
+    min-height: 43px;
+    height: 43px;
+    border: 1px solid #dae0e7;
+    box-sizing: border-box;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    color: #acb8c3;
+    margin-top: 0.25em;
+    padding: 0px 0.75em;
 }
 
 #adjust-price-form {
@@ -259,4 +418,118 @@ catalogue-price-settings {
 
 .mat-menu-panel {
     min-height: 52px;
+}
+
+.btnBulkPrice {
+    &-active {
+        border: 1px solid #f0444c;
+        color: #f0444c;
+        width: 129px;
+        border-radius: 4px;
+        text-align: center;
+        background-color: white;
+        height: 44px;
+        margin-top: 10px;
+        padding: 3px 0;
+    }
+    &-disabled {
+        border: 1px solid #fbc9cc;
+        color: #fbc9cc;
+        width: 129px;
+        border-radius: 4px;
+        text-align: center;
+        background-color: white;
+        height: 44px;
+        margin-top: 10px;
+        padding: 3px 0;
+    }
+    &-active-box {
+        border: 1px solid #f0444c;
+        color: #f0444c;
+        width: 129px;
+        border-radius: 4px;
+        text-align: center;
+        background-color: white;
+        height: 44px;
+        padding: 3px 0;
+    }
+}
+
+.levelmore {
+    color: #acb8c3;
+    background: transparent;
+    border: 1px solid #dae0e7;
+    width: 50px;
+    height: 44px;
+    padding: 7px 0;
+    border-radius: 4px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.bulkTax {
+    display: inline-grid;
+    color: #acb8c3;
+    background: transparent;
+    border: 1px solid #dae0e7;
+    width: 141px;
+    // height: 44px;
+    padding: 7px;
+    border-radius: 4px;
+    margin: 0 8px;
+    word-break: break-all;
+}
+
+.box-bulk-price {
+    background: #f3f5f7;
+    border-radius: 4px;
+    padding: 1em;
+    height: fit-content;
+    margin-top: 10px;
+
+    .mat-form-field {
+        .mat-form-field-wrapper {
+            margin: 0;
+        }
+    }
+}
+
+.minQtyBulk,
+.priceBulk {
+    width: 20%;
+    margin-right: 5px;
+    margin-left: 5px;
+    height: 44px;
+    background-color: white;
+    color: black;
+    border: 1px solid lightgray;
+    padding-left: 10px;
+    border-radius: 4px;
+}
+
+.priceBulk {
+    background-color: white;
+    // border: 1px solid #dae0e7;
+    border-radius: 4px;
+    width: 141px;
+    height: 44px;
+    padding: 10px;
+    input:invalid {
+        border-color: red;
+    }
+    input:required:valid {
+        border-color: green;
+    }
+}
+
+.priceBulk.disabled {
+    color: rgba(0, 0, 0, 0.38) !important;
+    caret-color: #353a48 !important;
+    border: 1px solid lightgrey;
+}
+
+.btn-delete-bulk {
+    float: right;
+    justify-content: end;
+    display: inline-flex;
 }

@@ -61,8 +61,19 @@ export interface IQueryParamsVoucherStore {
     keyword?: string;
     search?: IQuerySearchParams[];
 }
- 
+
 export interface IArgs {
     key: string;
     value: string | number;
+}
+
+export interface IQueryParamsHistoryList {
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    paginate?: boolean;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
+    action?: string;
 }

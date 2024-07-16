@@ -29,6 +29,10 @@ export const locale = {
         UPDATE: 'Update',
         UPDATE_MSS_TYPE: 'Update MSS Type',
         UPDATE_CATALOGUE_TEMPLATE: 'Catalogue Bulk Update',
-
+        BULK_IMPORT_SND: 'Bulk Import SND',
+        BULK_IMPORT_SSC: 'Bulk Import SSC',
+        BULK_IMPORT: 'Bulk Import',
+        SND_ORDER: 'SND Order',
+        SSC_ORDER: 'SSC Order',
     },
 };

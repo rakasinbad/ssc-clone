@@ -87,7 +87,7 @@
                         {{ getFormError(form.get('productInfo.name')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()" style="white-space: pre-wrap;">
                     {{ form.get('productInfo.name').value }}
                 </span>
             </div>

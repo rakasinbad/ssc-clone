@@ -45,3 +45,4 @@ export * from './form.model';
 export * from './logic-relation.model';
 export * from './selling-group.model';
 export * from './specified-target.model';
+export * from './region.model';

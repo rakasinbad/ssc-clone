@@ -9,7 +9,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
@@ -34,6 +34,7 @@ import {
     CatalogueMssSettingsSelectors,
 } from '../../store/selectors';
 import { assetUrl } from 'single-spa/asset-url';
+import { MatTabChangeEvent } from '@angular/material';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -49,6 +50,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     navigationSub$: Subject<void> = new Subject<void>();
 
     isLoading$: Observable<boolean>;
+
+    bulkPriceSettingStatus: string = 'group_pricing';
 
     // tslint:disable-next-line: no-inferrable-types
     section: string = 'sku-information';
@@ -71,7 +74,12 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     // Assets
     sinbadNoPhoto = assetUrl('images/catalogue/no_photo.png');
 
+    tabIndex: number = 0;
+
+    mssSettingTabLabel: string = 'MSS Settings';
+
     constructor(
+        private route: ActivatedRoute,
         private cdRef: ChangeDetectorRef,
         private location: Location,
         private router: Router,
@@ -151,6 +159,14 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             })
         );
 
+        //data bulk price setting
+        this.store
+            .select(CatalogueSelectors.getCataloguePriceBulkSettings)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((payload) => {
+                this.bulkPriceSettingStatus = payload.code;
+            });
+
         this.store.dispatch(FormActions.resetFormStatus());
         this.store.dispatch(FormActions.setFormStatusInvalid());
         this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
@@ -228,8 +244,13 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'price-settings': {
-                const { retailBuyingPrice, catalogueTaxId, discountedRetailBuyingPrice } =
-                    $event as Catalogue;
+                const {
+                    retailBuyingPrice,
+                    catalogueTaxId,
+                    discountedRetailBuyingPrice,
+                    bulkPrices,
+                    pricingInputWithTaxFlag,
+                } = $event as Catalogue;
 
                 this.formValue = {};
 
@@ -243,6 +264,14 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                 if (typeof discountedRetailBuyingPrice !== 'undefined') {
                     this.formValue = { ...this.formValue, discountedRetailBuyingPrice };
+                }
+
+                if (typeof bulkPrices !== undefined) {
+                    this.formValue = { ...this.formValue, bulkPrices };
+                }
+
+                if (typeof pricingInputWithTaxFlag !== undefined) {
+                    this.formValue = { ...this.formValue, pricingInputWithTaxFlag };
                 }
 
                 break;
@@ -302,7 +331,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     status,
                     isBonus,
                     isExclusive,
-                    platformVisibility
+                    platformVisibility,
                 };
 
                 break;
@@ -320,8 +349,10 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
-    onSelectedTab(index: number): void {
-        switch (index) {
+    onSelectedTab(tabChangeEvent: MatTabChangeEvent): void {
+        const isGroupPricing = this.bulkPriceSettingStatus === 'group_pricing';
+
+        switch (tabChangeEvent.index) {
             case 0:
                 this.section = 'sku-information';
                 break;
@@ -329,20 +360,71 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 this.section = 'price-settings';
                 break;
             case 2:
-                this.section = 'media-settings';
+                if (isGroupPricing) {
+                    this.section = 'group-price';
+                    this.router.navigateByUrl(
+                        `/catalogues/v2/${this.route.snapshot.params.id}/detail?tab=group-price`,
+                        { replaceUrl: true }
+                    );
+                } else {
+                    this.section = 'media-settings';
+                }
                 break;
             case 3:
-                this.section = 'weight-and-dimension';
+                if (isGroupPricing) {
+                    this.section = 'media-settings';
+                } else {
+                    this.section = 'weight-and-dimension';
+                }
                 break;
             case 4:
-                this.section = 'amount-settings';
+                if (isGroupPricing) {
+                    this.section = 'weight-and-dimension';
+                } else {
+                    this.section = 'amount-settings';
+                    this.router.navigateByUrl(
+                        `/catalogues/v2/${this.route.snapshot.params.id}/detail?tab=amount-settings`,
+                        { replaceUrl: true }
+                    );
+                }
                 break;
             case 5:
-                this.section = 'visibility';
+                if (isGroupPricing) {
+                    this.section = 'amount-settings';
+                    this.router.navigateByUrl(
+                        `/catalogues/v2/${this.route.snapshot.params.id}/detail?tab=amount-settings`,
+                        { replaceUrl: true }
+                    );
+                } else {
+                    this.section = 'visibility';
+                }
                 break;
             case 6:
-                this.section = 'mss-settings';
+                if (isGroupPricing) {
+                    this.section = 'visibility';
+                } else {
+                    this.section = 'mss-settings';
+                }
+
+                if (tabChangeEvent.tab.textLabel === this.mssSettingTabLabel)
+                    this.section = 'mss-settings';
                 break;
+            case 7:
+                if (isGroupPricing) {
+                    this.section = 'mss-settings';
+                }
+                break;
+        }
+
+        if (this.section !== 'group-price' && this.section !== 'amount-settings') {
+            this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: {
+                    tab: this.section,
+                },
+                replaceUrl: true,
+                queryParamsHandling: 'merge', // remove to replace all query params by provided
+            });
         }
     }
 
@@ -390,10 +472,77 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 // this.cdRef.markForCheck();
                 // this.router.navigate([`/pages/catalogues/edit/${this.section}/${catalogueId}`]);
             });
+
+        this.store.dispatch(CatalogueActions.fetchPricingSettingsRequest());
+
+        //data bulk price setting
+        this.store
+            .select(CatalogueSelectors.getCataloguePriceBulkSettings)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((payload) => {
+                this.bulkPriceSettingStatus =
+                    payload.code && payload.code.length
+                        ? payload.code
+                        : this.bulkPriceSettingStatus;
+            });
+
+        this.selectedCatalogue$.subscribe((item) => {
+            localStorage.setItem('ssc-product-detail', JSON.stringify(item));
+        });
     }
 
     ngAfterViewInit(): void {
         // Memeriksa status refresh untuk keperluan memuat ulang data yang telah di-edit.
+        let tab: string = this.route.snapshot.queryParamMap.get('tab');
+        const isGroupPricing = this.bulkPriceSettingStatus === 'group_pricing';
+
+        if (tab) {
+            this.section = tab;
+            switch (this.section) {
+                case 'sku-information':
+                    this.tabIndex = 0;
+                    break;
+                case 'price-settings':
+                    this.tabIndex = 1;
+                    break;
+                case 'media-settings':
+                    if (isGroupPricing) {
+                        this.tabIndex = 3;
+                    } else {
+                        this.tabIndex = 2;
+                    }
+                    break;
+                case 'weight-and-dimension':
+                    if (isGroupPricing) {
+                        this.tabIndex = 4;
+                    } else {
+                        this.tabIndex = 3;
+                    }
+                    break;
+                case 'amount-settings':
+                    if (isGroupPricing) {
+                        this.tabIndex = 5;
+                    } else {
+                        this.tabIndex = 4;
+                    }
+                    break;
+                case 'visibility':
+                    if (isGroupPricing) {
+                        this.tabIndex = 6;
+                    } else {
+                        this.tabIndex = 5;
+                    }
+                    break;
+                case 'mss-settings':
+                    if (isGroupPricing) {
+                        this.tabIndex = 7;
+                    } else {
+                        this.tabIndex = 6;
+                    }
+                    break;
+            }
+        }
+
         this.store
             .select(CatalogueSelectors.getRefreshStatus)
             .pipe(withLatestFrom(this.selectedCatalogue$), takeUntil(this.subs$))
@@ -535,8 +684,12 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                         }
 
                         case 'price-settings': {
-                            let { retailBuyingPrice, discountedRetailBuyingPrice } = this
-                                .formValue as Partial<Catalogue>;
+                            let {
+                                retailBuyingPrice,
+                                discountedRetailBuyingPrice,
+                                bulkPrices,
+                                pricingInputWithTaxFlag,
+                            } = this.formValue as Partial<Catalogue>;
 
                             const sanitize = (value: string): number =>
                                 Number(value.replace(/\./g, '').replace(/,/g, '.'));
@@ -544,9 +697,21 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                             retailBuyingPrice = sanitize(String(retailBuyingPrice));
 
                             discountedRetailBuyingPrice =
-                                (String(discountedRetailBuyingPrice).length > 0 && String(discountedRetailBuyingPrice) !== 'null')
+                                String(discountedRetailBuyingPrice).length > 0 &&
+                                String(discountedRetailBuyingPrice) !== 'null'
                                     ? sanitize(String(discountedRetailBuyingPrice))
                                     : null;
+
+                            const editBulkpricing = bulkPrices;
+                            if (editBulkpricing && editBulkpricing.length > 0) {
+                                for (var i = 0; i < editBulkpricing.length; i++) {
+                                    editBulkpricing[i].level = i + 1;
+                                    editBulkpricing[i].minQty = Number(editBulkpricing[i].minQty);
+                                    editBulkpricing[i].price = Number(editBulkpricing[i].price);
+                                }
+                            }
+
+                            bulkPrices = editBulkpricing;
 
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
@@ -557,6 +722,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                                             ...this.formValue,
                                             retailBuyingPrice,
                                             discountedRetailBuyingPrice,
+                                            bulkPrices,
+                                            pricingInputWithTaxFlag,
                                         } as Catalogue,
                                         source: 'form',
                                         section: this.section,

@@ -184,6 +184,7 @@ export class CatalogueSkuInformationComponent
 
     private checkRoute(): void {
         this.route.url.pipe(take(1)).subscribe((urls) => {
+
             if (urls.filter((url) => url.path === 'edit').length > 0) {
                 this.formMode = 'edit';
                 this.prepareEditCatalogue();
@@ -273,6 +274,8 @@ export class CatalogueSkuInformationComponent
 
                         return;
                     }
+
+
                 }
 
                 // Get sub brand
@@ -369,7 +372,28 @@ export class CatalogueSkuInformationComponent
                     !catalogue.lastCatalogueCategoryId
                 ) {
                     /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
+                    if (
+                        catalogue.firstCatalogueCategoryId && 
+                        typeof catalogue.firstCatalogueCategory === 'object' &&
+                        catalogue.firstCatalogueCategory
+                    ) {
+                        const firstLevelCategory = catalogue.firstCatalogueCategory;
+
+                        this.store.dispatch(
+                            CatalogueActions.setSelectedCategories({
+                                payload: [
+                                    {
+                                        id: firstLevelCategory.id,
+                                        name: firstLevelCategory.category,
+                                        parent: null,
+                                        hasChildren: false,
+                                    },
+                                ],
+                            })
+                        );
+                    } else {
                     this.store.dispatch(CatalogueActions.resetSelectedCategories());
+                    }  
                 } else if (categories.length > 0) {
                     /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
                     const newCategories = [];
@@ -733,6 +757,7 @@ export class CatalogueSkuInformationComponent
     }
 
     ngOnInit(): void {
+        
         /** Menyiapkan form. */
         this.form = this.fb.group({
             productInfo: this.fb.group({
@@ -847,7 +872,7 @@ export class CatalogueSkuInformationComponent
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
             this.trigger$.next('');
-
+            
             setTimeout(() => {
                 this.updateFormView();
             });

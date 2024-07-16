@@ -181,7 +181,7 @@ export class CatalogueAmountSettingsComponent
             .subscribe(([_, catalogue, userSupplier, units]) => {
                 if (!catalogue) {
                     // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                    if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                    if ((catalogue && (catalogue.brand as any).supplierId !== userSupplier.supplierId)) {
                         this.store.dispatch(
                             CatalogueActions.spliceCatalogue({
                                 payload: catalogue.id,
@@ -213,7 +213,7 @@ export class CatalogueAmountSettingsComponent
                 if (units.length !== 0) {
                     //get initial value unit
                     /** mencari largest uom  */
-                    if (catalogue.largeUomId) {
+                    if (catalogue && catalogue.largeUomId) {
                         const selectedLargeUnit = units.filter(
                             (unit) => unit.id === catalogue.largeUomId
                         );
@@ -235,15 +235,15 @@ export class CatalogueAmountSettingsComponent
                         this.cdRef.markForCheck();
                     } else {
                         this.uomNames$.next({
-                            smallName: catalogue.catalogueUnit.unit,
-                            smallId: catalogue.catalogueUnit.id,
+                            smallName: catalogue && catalogue.catalogueUnit.unit ? catalogue.catalogueUnit.unit : null,
+                            smallId: catalogue && catalogue.catalogueUnit.id ? catalogue.catalogueUnit.id : null,
                             largeName: '',
                             largeId: null,
                         });
                         this.form.patchValue({
                             productCount: {
                                 uomLargeUnit: null,
-                                uomSmallUnit: catalogue.catalogueUnit.id,
+                                uomSmallUnit: catalogue && catalogue.catalogueUnit.id ? catalogue.catalogueUnit.id : null,
                             },
                         });
 
@@ -342,24 +342,27 @@ export class CatalogueAmountSettingsComponent
                     this.catalogueLargeUnits = units;
                 }
 
-                /** Penetapan nilai pada form saat pertama render view sebelum edit. */
-                this.form.patchValue(
-                    {
-                        productCount: {
-                            minQtyValue: catalogue.minQty,
-                            isMaximum: !catalogue.isMaximum,
-                            amountIncrease: catalogue.multipleQty,
-                            isEnableLargeUnit: catalogue.enableLargeUom,
-                            consistOfQtyLargeUnit: catalogue.packagedQty,
-                            maxQtyValue: catalogue.maxQty,
-                            // minQtyType: ,
-                            // multipleQty: this.uomNames$.value.smallId,
-                            // multipleQtyType: this.uomNames$.value.smallName,
+                if (catalogue) {
+                    /** Penetapan nilai pada form saat pertama render view sebelum edit. */
+                    this.form.patchValue(
+                        {
+                            productCount: {
+                                minQtyValue: catalogue.minQty,
+                                isMaximum: !catalogue.isMaximum,
+                                amountIncrease: catalogue.multipleQty,
+                                isEnableLargeUnit: catalogue.enableLargeUom,
+                                consistOfQtyLargeUnit: catalogue.packagedQty,
+                                maxQtyValue: catalogue.maxQty,
+                                // minQtyType: ,
+                                // multipleQty: this.uomNames$.value.smallId,
+                                // multipleQtyType: this.uomNames$.value.smallName,
+                            },
                         },
-                    },
-                    { onlySelf: false }
-                );
-                if (catalogue.enableLargeUom) {
+                        { onlySelf: false }
+                    );
+                }
+                
+                if (catalogue && catalogue.enableLargeUom) {
                     this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
                     this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
                     this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
@@ -382,16 +385,16 @@ export class CatalogueAmountSettingsComponent
                     ]);
                 }
 
-                if (catalogue.isMaximum) {
+                if (catalogue && catalogue.isMaximum) {
                     this.form.get('productCount.maxQtyValue').clearValidators();
                     this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
                 }
                 //init kebalikan isMaximum
-                if (!catalogue.isMaximum) {
+                if ( catalogue && !catalogue.isMaximum) {
                     this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
                 }
                 //init kebalikan isMaximum
-                if (catalogue.isMaximum) {
+                if (catalogue && catalogue.isMaximum) {
                     const minQty = this.form.get('productCount.minQtyValue').value;
 
                     this.form.get('productCount.maxQtyValue').setValidators([

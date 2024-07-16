@@ -10,3 +10,4 @@ export * from './sub-brand-api.service';
 export * from './catalogue-mss-settings-api.service';
 export * from './catalogue-mss-settings-facade.service';
 export * from './catalogue-mss-settings.service';
+export * from './catalogue-price-settings.service';

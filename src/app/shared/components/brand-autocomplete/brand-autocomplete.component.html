@@ -1,6 +1,8 @@
 <sinbad-autocomplete
     [control]="form"
     [loading]="loading$ | async"
+    [error]="error"
+    [errorMessage]="errorMessage"
     [placeholder]="placeholder"
     [sources]="collections$ | async"
     (closed)="onClosedAutocompete()"

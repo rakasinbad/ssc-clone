@@ -161,6 +161,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
     isRequestingExport$: Observable<boolean>;
 
+    totalDataAllStatus: number;
+    totalDataActive: number;
+    totalDataBonus: number;
+    totalDataRegular: number;
+    totalDataInactive: number;
+    totalDataExclusive: number;
+
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef<HTMLElement>;
 
@@ -201,6 +208,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.statusCatalogue = statusCatalogue;
 
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
+        this.store.dispatch(CatalogueActions.fetchPricingSettingsRequest());
+
     }
 
     private updatePrivileges(): void {
@@ -453,98 +462,15 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     totalExclusive,
                 } = payload;
 
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'all-type',
-                            properties: { title: `All (${totalAllStatus})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
+                this.totalDataAllStatus =+ totalAllStatus;
+                this.totalDataActive =+ totalActive;
+                this.totalDataBonus =+ totalBonus;
+                this.totalDataRegular =+ totalRegular;
+                this.totalDataInactive =+ totalInactive;
+                this.totalDataExclusive =+ totalExclusive;
 
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'live',
-                            properties: { title: `Active (${totalActive})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
-
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'bonus',
-                            properties: { title: `Bonus (${totalBonus})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
-
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'regular',
-                            properties: { title: `Regular (${totalRegular})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
-
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'inactive',
-                            properties: { title: `Inactive (${totalInactive})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
-
-                this.store.dispatch(
-                    UiActions.updateItemNavigation({
-                        payload: {
-                            id: 'exclusive',
-                            properties: { title: `Exclusive (${totalExclusive})` },
-                            key: 'customNavigation',
-                        },
-                    })
-                );
             });
 
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe((index) => {
-                // if (index === 'all-type') {
-                //     this.findCatalogueMode = 'all';
-                // } else if (index === 'live') {
-                //     this.findCatalogueMode = 'live';
-                // } else if (index === 'bonus') {
-                //     this.findCatalogueMode = 'bonus';
-                // } else if (index === 'regular') {
-                //     this.findCatalogueMode = 'regular';
-                // } else if (index === 'inactive') {
-                //     this.findCatalogueMode = 'inactive';
-                // } else if (index === 'exclusive') {
-                //     this.findCatalogueMode = 'exclusive';
-                // }
-
-                switch (index) {
-                    case 'all-type':
-                        this.findCatalogueMode = 'all';
-                        break;
-
-                    default:
-                        this.findCatalogueMode = index as TFindCatalogueMode;
-                        break;
-                }
-
-                this.updatePrivileges();
-                this.initTable();
-            });
     }
 
     onClickFilter(): void {
@@ -604,12 +530,45 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/pages/catalogues/add']);
     }
 
+    onSelectedTab(index: number): void {
+        switch (index) {
+            case 0:
+                this.findCatalogueMode = 'all';
+                break;
+
+            case 1:
+                this.findCatalogueMode = 'live';
+                break;
+
+            case 2:
+                this.findCatalogueMode = 'bonus';
+                break;
+
+            case 3:
+                this.findCatalogueMode = 'regular';
+                break;
+
+            case 4:
+                this.findCatalogueMode = 'inactive';
+                break;
+
+            case 5:
+                this.findCatalogueMode = 'exclusive';
+                break;
+
+            default:
+                this.findCatalogueMode = 'all';
+                break;
+        }
+        this.updatePrivileges();
+        this.initTable();
+    }
+
     viewProduct(id: string): void {
         this.store.dispatch(
-            CatalogueActions.setSelectedCatalogue({
-                payload: id,
-            })
-        );
+            CatalogueActions.resetSelectedCatalogue()
+        )
+        
         this.router.navigate(['/pages/catalogues/view', id]);
     }
 
@@ -731,6 +690,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initTable(): void {
+        localStorage.removeItem('ssc-product-detail')
         if (this.paginator) {
             // const { pageIndex, limit } = this.route.snapshot.queryParams;
 

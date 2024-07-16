@@ -44,3 +44,4 @@ export * from './warehouse-catalogue-api.service';
 export * from './warehouse-confirmation-api.service';
 export * from './warehouse-coverage-api.service';
 export * from './warehouse-value-api.service';
+export * from './region-api.service';

@@ -2,7 +2,24 @@
 
 app-import-history {
     .header-wrapper {
-        align-self: flex-end;
+        // align-self: flex-end;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .header-mode-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .header-search-wrapper {
+        justify-content: end;
+        display: flex;
+        align-items: center;
+    }
+
+    .import-mode-pb-0 > .mat-form-field-wrapper {
+        padding-bottom: 0 !important;
     }
 
     // .search-wrapper {

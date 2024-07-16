@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import {
+    CalculateGrossPricePipe,
+    CatalogueTypePipe,
     ConvertArrayToStringPipe,
     ErrorMessagePipe,
     FilterLogicRelationPipe,
@@ -7,6 +9,8 @@ import {
     HasFormModePipe,
     HighlightPipe,
     InvoiceGroupNamePipe,
+    OrderLogPipe,
+    OrderStatusPipe,
     SegmentationViewPipe,
     TaxPipe,
     VisibilityTypePipe,
@@ -24,6 +28,10 @@ import {
         SegmentationViewPipe,
         TaxPipe,
         VisibilityTypePipe,
+        CalculateGrossPricePipe,
+        CatalogueTypePipe,
+        OrderStatusPipe,
+        OrderLogPipe,
     ],
     exports: [
         ConvertArrayToStringPipe,
@@ -36,6 +44,10 @@ import {
         SegmentationViewPipe,
         TaxPipe,
         VisibilityTypePipe,
+        CalculateGrossPricePipe,
+        CatalogueTypePipe,
+        OrderStatusPipe,
+        OrderLogPipe,
     ],
 })
 export class PipeSharedModule {}

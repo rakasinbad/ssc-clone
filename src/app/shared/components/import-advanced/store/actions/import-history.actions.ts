@@ -1,12 +1,12 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQueryParamsHistoryList } from 'app/shared/models/query.model';
 
 import { ImportLog } from '../../models';
 
 export const importHistoryRequest = createAction(
     '[Import] Import History Request',
-    props<{ payload: { params: IQueryParams; page: string } }>()
+    props<{ payload: { params: IQueryParamsHistoryList; page: string } }>()
 );
 
 export const importHistoryFailure = createAction(

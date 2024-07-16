@@ -176,6 +176,17 @@ export const getHierarchyDropdownState = createSelector(getDropdownState, state 
 export const getInvoiceGroupDropdownState = createSelector(getDropdownState, state => {
     return state.invoiceGroups && state.invoiceGroups.length > 0 ? state.invoiceGroups : [];
 });
+// -----------------------------------------------------------------------------------------------------
+// Region State
+// -----------------------------------------------------------------------------------------------------
+
+export const getRegionDropdownState = createSelector(getDropdownState, state => {
+    return state.regions && state.regions.length > 0 ? state.regions : [];
+});
+
+export const getBranchDropdownState = createSelector(getDropdownState, state => {
+    return state.branchs && state.branchs.length > 0 ? state.branchs : [];
+});
 
 // -----------------------------------------------------------------------------------------------------
 // Roles State
@@ -333,6 +344,14 @@ export const getVehicleAccessibilityDropdownState = createSelector(getDropdownSt
         ? sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
         : state.vehicleAccessibilities
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Sales Rep State
+// -----------------------------------------------------------------------------------------------------
+
+export const getSalesRepDropdownState = createSelector(getDropdownState, state => {
+    return state.salesRep && state.salesRep.length > 0 ? state.salesRep : [];
+});
 
 // -----------------------------------------------------------------------------------------------------
 // Errors State

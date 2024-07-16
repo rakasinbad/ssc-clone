@@ -6,7 +6,7 @@ import { catchOffline, Network } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
-// import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
+import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
 import {
     ClusterApiService,
     DistrictApiService,
@@ -20,12 +20,12 @@ import {
     StoreSegmentApiService,
     StoreTypeApiService,
     UrbanApiService,
-    VehicleAccessibilityApiService
+    VehicleAccessibilityApiService,
 } from 'app/shared/helpers';
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import { Cluster } from 'app/shared/models/cluster.model';
 import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
-import { PaginateResponse } from 'app/shared/models/global.model';
+import { PaginateResponse, PaginateResponseV2 } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { District, IDistrict, Province, Urban } from 'app/shared/models/location.model';
 import { Role } from 'app/shared/models/role.model';
@@ -43,10 +43,16 @@ import {
     map,
     retry,
     switchMap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { DropdownActions } from '../actions';
+import { RegionApiService } from 'app/shared/helpers/region-api.service';
+import { Region } from 'app/shared/models/region.model';
+import { BranchApiService } from 'app/shared/helpers/branch-api.service';
+import { Branch } from 'app/shared/models/branch.model';
+// import { SalesRepsApiService } from 'app/main/pages/sales-forces/associations/services';
+import { SalesRep } from 'app/main/pages/sales-forces/sales-reps/models';
 
 /**
  *
@@ -65,26 +71,26 @@ export class DropdownEffects {
     fetchLocationRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchLocationRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$locationSearchApi.findLocation<PaginateResponse<Urban>>(payload).pipe(
-                    map(resp => {
+                    map((resp) => {
                         const newResp =
                             resp && resp.data && resp.data.length > 0
-                                ? resp.data.map(r => new Urban(r))[0]
+                                ? resp.data.map((r) => new Urban(r))[0]
                                 : null;
 
                         return DropdownActions.fetchLocationSuccess({
-                            payload: newResp
+                            payload: newResp,
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchLocationFailure({
                                 payload: {
                                     id: 'fetchLocationFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -94,38 +100,39 @@ export class DropdownEffects {
     );
 
     searchDistrictRequest$ = createEffect(
-        () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
-            this.actions$.pipe(
-                ofType(DropdownActions.searchDistrictRequest),
-                debounceTime(debounce, scheduler),
-                map(action => action.payload),
-                map(params => DropdownActions.fetchDistrictRequest({ payload: params }))
-            )
+        () =>
+            ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
+                this.actions$.pipe(
+                    ofType(DropdownActions.searchDistrictRequest),
+                    debounceTime(debounce, scheduler),
+                    map((action) => action.payload),
+                    map((params) => DropdownActions.fetchDistrictRequest({ payload: params }))
+                )
     );
 
     fetchDistrictRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDistrictRequest),
-            map(action => action.payload),
-            switchMap(params => {
+            map((action) => action.payload),
+            switchMap((params) => {
                 return this._$districtApi.findAll<PaginateResponse<IDistrict>>(params).pipe(
-                    map(resp => {
+                    map((resp) => {
                         const newResp = {
                             data:
                                 resp && resp.data && resp.data.length > 0
-                                    ? resp.data.map(row => new District(row))
+                                    ? resp.data.map((row) => new District(row))
                                     : [],
-                            total: resp.total
+                            total: resp.total,
                         };
 
                         return DropdownActions.fetchDistrictSuccess({
-                            payload: newResp
+                            payload: newResp,
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDistrictFailure({
-                                payload: { id: 'fetchDistrictFailure', errors: err }
+                                payload: { id: 'fetchDistrictFailure', errors: err },
                             })
                         )
                     )
@@ -135,36 +142,37 @@ export class DropdownEffects {
     );
 
     fetchScrollDistrictRequest$ = createEffect(
-        () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
-            this.actions$.pipe(
-                ofType(DropdownActions.fetchScrollDistrictRequest),
-                debounceTime(debounce, scheduler),
-                map(action => action.payload),
-                switchMap(params => {
-                    return this._$districtApi.findAll<PaginateResponse<IDistrict>>(params).pipe(
-                        map(resp => {
-                            const newResp = {
-                                data:
-                                    resp && resp.data && resp.data.length > 0
-                                        ? resp.data.map(row => new District(row))
-                                        : [],
-                                total: resp.total
-                            };
+        () =>
+            ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
+                this.actions$.pipe(
+                    ofType(DropdownActions.fetchScrollDistrictRequest),
+                    debounceTime(debounce, scheduler),
+                    map((action) => action.payload),
+                    switchMap((params) => {
+                        return this._$districtApi.findAll<PaginateResponse<IDistrict>>(params).pipe(
+                            map((resp) => {
+                                const newResp = {
+                                    data:
+                                        resp && resp.data && resp.data.length > 0
+                                            ? resp.data.map((row) => new District(row))
+                                            : [],
+                                    total: resp.total,
+                                };
 
-                            return DropdownActions.fetchScrollDistrictSuccess({
-                                payload: newResp
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                DropdownActions.fetchScrollDistrictFailure({
-                                    payload: { id: 'fetchScrollDistrictFailure', errors: err }
-                                })
+                                return DropdownActions.fetchScrollDistrictSuccess({
+                                    payload: newResp,
+                                });
+                            }),
+                            catchError((err) =>
+                                of(
+                                    DropdownActions.fetchScrollDistrictFailure({
+                                        payload: { id: 'fetchScrollDistrictFailure', errors: err },
+                                    })
+                                )
                             )
-                        )
-                    );
-                })
-            )
+                        );
+                    })
+                )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -176,52 +184,52 @@ export class DropdownEffects {
      * [REQUEST] Credit Limit Group
      * @memberof DropdownEffects
      */
-    // fetchDropdownCreditLimitGroupRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(DropdownActions.fetchDropdownCreditLimitGroupRequest),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([_, { supplierId }]) => {
-    //             if (!supplierId) {
-    //                 return of(
-    //                     DropdownActions.fetchDropdownCreditLimitGroupFailure({
-    //                         payload: {
-    //                             id: 'fetchDropdownCreditLimitGroupFailure',
-    //                             errors: 'Not Found!'
-    //                         }
-    //                     })
-    //                 );
-    //             }
+    fetchDropdownCreditLimitGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownCreditLimitGroupRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                            payload: {
+                                id: 'fetchDropdownCreditLimitGroupFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
 
-    //             return this._$creditLimitGroupApi
-    //                 .findAll<Array<CreditLimitGroup>>({ paginate: false }, supplierId)
-    //                 .pipe(
-    //                     catchOffline(),
-    //                     retry(3),
-    //                     map(resp => {
-    //                         const sources = resp.map(row => {
-    //                             const newCreditLimitGroup = new CreditLimitGroup(row);
+                return this._$creditLimitGroupApi
+                    .findAll<Array<CreditLimitGroup>>({ paginate: false }, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map((resp) => {
+                            const sources = resp.map((row) => {
+                                const newCreditLimitGroup = new CreditLimitGroup(row);
 
-    //                             return newCreditLimitGroup;
-    //                         });
+                                return newCreditLimitGroup;
+                            });
 
-    //                         return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
-    //                             payload: sortBy(sources, ['name'], ['asc'])
-    //                         });
-    //                     }),
-    //                     catchError(err =>
-    //                         of(
-    //                             DropdownActions.fetchDropdownCreditLimitGroupFailure({
-    //                                 payload: {
-    //                                     id: 'fetchDropdownCreditLimitGroupFailure',
-    //                                     errors: err
-    //                                 }
-    //                             })
-    //                         )
-    //                     )
-    //                 );
-    //         })
-    //     )
-    // );
+                            return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
+                                payload: sortBy(sources, ['name'], ['asc']),
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                                    payload: {
+                                        id: 'fetchDropdownCreditLimitGroupFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Geo Parameter]
@@ -235,29 +243,29 @@ export class DropdownEffects {
     fetchDropdownGeoParameterProvinceRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownGeoParameterProvinceRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ id, type }) => {
                 return this._$provinceApi.findAll({ paginate: false }).pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
-                        const sources = (resp as Array<Province>).map(row => {
+                    map((resp) => {
+                        const sources = (resp as Array<Province>).map((row) => {
                             const newProvince = new Province(row);
 
                             return newProvince.name;
                         });
 
                         return DropdownActions.fetchDropdownGeoParameterProvinceSuccess({
-                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                            payload: { id, type, source: sortBy(sources).filter((v) => !!v) },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownGeoParameterProvinceFailure({
                                 payload: {
                                     id: 'fetchDropdownGeoParameterProvinceFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -274,27 +282,27 @@ export class DropdownEffects {
     fetchDropdownGeoParameterCityRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownGeoParameterCityRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'city').pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
+                    map((resp) => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.city;
                         });
 
                         return DropdownActions.fetchDropdownGeoParameterCitySuccess({
-                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                            payload: { id, type, source: sortBy(sources).filter((v) => !!v) },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownGeoParameterCityFailure({
                                 payload: {
                                     id: 'fetchDropdownGeoParameterCityFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -311,27 +319,27 @@ export class DropdownEffects {
     fetchDropdownGeoParameterDistrictRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownGeoParameterDistrictRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'district').pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
+                    map((resp) => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.district;
                         });
 
                         return DropdownActions.fetchDropdownGeoParameterDistrictSuccess({
-                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                            payload: { id, type, source: sortBy(sources).filter((v) => !!v) },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownGeoParameterDistrictFailure({
                                 payload: {
                                     id: 'fetchDropdownGeoParameterDistrictFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -348,27 +356,27 @@ export class DropdownEffects {
     fetchDropdownGeoParameterUrbanRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownGeoParameterUrbanRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'urban').pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
+                    map((resp) => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.urban;
                         });
 
                         return DropdownActions.fetchDropdownGeoParameterUrbanSuccess({
-                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                            payload: { id, type, source: sortBy(sources).filter((v) => !!v) },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownGeoParameterUrbanFailure({
                                 payload: {
                                     id: 'fetchDropdownGeoParameterUrbanFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -394,14 +402,14 @@ export class DropdownEffects {
 
                 return of(supplierId);
             }),
-            switchMap(data => {
+            switchMap((data) => {
                 if (!data) {
                     return of(
                         DropdownActions.fetchDropdownHierarchyFailure({
                             payload: {
                                 id: 'fetchDropdownHierarchyFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
@@ -419,18 +427,20 @@ export class DropdownEffects {
                     .pipe(
                         catchOffline(),
                         retry(3),
-                        map(resp => {
+                        map((resp) => {
                             const newResp =
-                                resp && resp.length > 0 ? resp.map(row => new Hierarchy(row)) : [];
+                                resp && resp.length > 0
+                                    ? resp.map((row) => new Hierarchy(row))
+                                    : [];
 
                             return DropdownActions.fetchDropdownHierarchySuccess({
-                                payload: newResp
+                                payload: newResp,
                             });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 DropdownActions.fetchDropdownHierarchyFailure({
-                                    payload: { id: 'fetchDropdownHierarchyFailure', errors: err }
+                                    payload: { id: 'fetchDropdownHierarchyFailure', errors: err },
                                 })
                             )
                         )
@@ -451,39 +461,44 @@ export class DropdownEffects {
     fetchDropdownInvoiceGroupRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownInvoiceGroupRequest),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([_, userSupplier]) => {
+            switchMap(([payload, userSupplier]) => {
                 if (!userSupplier || !userSupplier.supplierId) {
                     return of(
                         DropdownActions.fetchDropdownInvoiceGroupFailure({
                             payload: {
                                 id: 'fetchDropdownInvoiceGroupFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
 
                 const { supplierId } = userSupplier;
+                let search = [];
+                if (payload.search) {
+                    search = payload.search;
+                }
 
-                return this._$invoiceGroupApi.findAll({ paginate: false }, supplierId).pipe(
+                return this._$invoiceGroupApi.findAll({ paginate: false, search }, supplierId).pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
-                        const sources = (resp as Array<InvoiceGroup>).map(row => {
+                    map((resp) => {
+                        const sources = (resp as Array<InvoiceGroup>).map((row) => {
                             const newInvoiceGroup = new InvoiceGroup(row);
 
                             return newInvoiceGroup;
                         });
 
                         return DropdownActions.fetchDropdownInvoiceGroupSuccess({
-                            payload: sortBy(sources, ['name'], ['asc'])
+                            payload: sortBy(sources, ['name'], ['asc']),
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownInvoiceGroupFailure({
-                                payload: { id: 'fetchDropdownInvoiceGroupFailure', errors: err }
+                                payload: { id: 'fetchDropdownInvoiceGroupFailure', errors: err },
                             })
                         )
                     )
@@ -511,8 +526,8 @@ export class DropdownEffects {
                         DropdownActions.fetchDropdownInvoiceGroupWhSupFailure({
                             payload: {
                                 id: 'fetchDropdownInvoiceGroupWhSupFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
@@ -522,21 +537,21 @@ export class DropdownEffects {
                 return this._$invoiceGroupApi.findByWhSupplier(params, supplierId).pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
-                        const sources = (resp as Array<InvoiceGroup>).map(row => {
+                    map((resp) => {
+                        const sources = (resp as Array<InvoiceGroup>).map((row) => {
                             const newInvoiceGroup = new InvoiceGroup(row);
 
                             return newInvoiceGroup;
                         });
 
                         return DropdownActions.fetchDropdownInvoiceGroupSuccess({
-                            payload: sortBy(sources, ['name'], ['asc'])
+                            payload: sortBy(sources, ['name'], ['asc']),
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownInvoiceGroupFailure({
-                                payload: { id: 'fetchDropdownInvoiceGroupFailure', errors: err }
+                                payload: { id: 'fetchDropdownInvoiceGroupFailure', errors: err },
                             })
                         )
                     )
@@ -544,7 +559,7 @@ export class DropdownEffects {
             })
         )
     );
-    
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Role]
     // -----------------------------------------------------------------------------------------------------
@@ -569,8 +584,8 @@ export class DropdownEffects {
                     this._$log.generateGroup('[REQUEST FETCH DROPDOWN ROLE] ONLINE', {
                         online: {
                             type: 'log',
-                            value: this._isOnline
-                        }
+                            value: this._isOnline,
+                        },
                     });
                 }
 
@@ -580,19 +595,19 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         // map(resp => (!resp['data'] ? (resp as Role[]) : null)),
-                        map(resp => {
+                        map((resp) => {
                             const newResp =
-                                resp && resp.length > 0 ? resp.map(row => new Role(row)) : [];
+                                resp && resp.length > 0 ? resp.map((row) => new Role(row)) : [];
 
                             return DropdownActions.fetchDropdownRoleSuccess({ payload: newResp });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 DropdownActions.fetchDropdownRoleFailure({
                                     payload: {
                                         id: 'fetchDropdownRoleFailure',
-                                        errors: err
-                                    }
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
@@ -657,18 +672,18 @@ export class DropdownEffects {
                 return this._$provinceApi.findAllDropdown({ paginate: false }).pipe(
                     catchOffline(),
                     retry(3),
-                    map(resp => {
+                    map((resp) => {
                         const newResp =
-                            resp && resp.length > 0 ? resp.map(row => new Province(row)) : [];
+                            resp && resp.length > 0 ? resp.map((row) => new Province(row)) : [];
 
                         return DropdownActions.fetchDropdownProvinceSuccess({
-                            payload: newResp
+                            payload: newResp,
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             DropdownActions.fetchDropdownProvinceFailure({
-                                payload: { id: 'fetchDropdownProvinceFailure', errors: err }
+                                payload: { id: 'fetchDropdownProvinceFailure', errors: err },
                             })
                         )
                     )
@@ -690,27 +705,25 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownStoreClusterRequest),
             switchMap(() => {
-                return this._$clusterApi
-                    .findAll<Cluster[]>({ paginate: false })
-                    .pipe(
-                        catchOffline(),
-                        retry(3),
-                        map(resp => {
-                            const newResp =
-                                resp && resp.length > 0 ? resp.map(row => new Cluster(row)) : [];
+                return this._$clusterApi.findAll<Cluster[]>({ paginate: false }).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        const newResp =
+                            resp && resp.length > 0 ? resp.map((row) => new Cluster(row)) : [];
 
-                            return DropdownActions.fetchDropdownStoreClusterSuccess({
-                                payload: newResp
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                DropdownActions.fetchDropdownStoreClusterFailure({
-                                    payload: { id: 'fetchDropdownStoreClusterFailure', errors: err }
-                                })
-                            )
+                        return DropdownActions.fetchDropdownStoreClusterSuccess({
+                            payload: newResp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            DropdownActions.fetchDropdownStoreClusterFailure({
+                                payload: { id: 'fetchDropdownStoreClusterFailure', errors: err },
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );
@@ -728,40 +741,38 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownStoreGroupRequest),
             switchMap(() => {
-                return this._$storeGroupApi
-                    .findAll<StoreGroup[]>({ paginate: false })
-                    .pipe(
-                        catchOffline(),
-                        retry(3),
-                        map(resp => {
-                            const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          return new StoreGroup(
-                                              row.id,
-                                              row.name,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-                                      })
-                                    : [];
+                return this._$storeGroupApi.findAll<StoreGroup[]>({ paginate: false }).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        const newResp =
+                            resp && resp.length > 0
+                                ? resp.map((row) => {
+                                      return new StoreGroup(
+                                          row.id,
+                                          row.name,
+                                          row.createdAt,
+                                          row.updatedAt,
+                                          row.deletedAt
+                                      );
+                                  })
+                                : [];
 
-                            return DropdownActions.fetchDropdownStoreGroupSuccess({
-                                payload: newResp
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                DropdownActions.fetchDropdownStoreGroupFailure({
-                                    payload: {
-                                        id: 'fetchDropdownStoreGroupFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
+                        return DropdownActions.fetchDropdownStoreGroupSuccess({
+                            payload: newResp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            DropdownActions.fetchDropdownStoreGroupFailure({
+                                payload: {
+                                    id: 'fetchDropdownStoreGroupFailure',
+                                    errors: err,
+                                },
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );
@@ -779,40 +790,38 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownStoreSegmentRequest),
             switchMap(() => {
-                return this._$storeSegmentApi
-                    .findAll<StoreSegment[]>({ paginate: false })
-                    .pipe(
-                        catchOffline(),
-                        retry(3),
-                        map(resp => {
-                            const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          return new StoreSegment(
-                                              row.id,
-                                              row.name,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-                                      })
-                                    : [];
+                return this._$storeSegmentApi.findAll<StoreSegment[]>({ paginate: false }).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        const newResp =
+                            resp && resp.length > 0
+                                ? resp.map((row) => {
+                                      return new StoreSegment(
+                                          row.id,
+                                          row.name,
+                                          row.createdAt,
+                                          row.updatedAt,
+                                          row.deletedAt
+                                      );
+                                  })
+                                : [];
 
-                            return DropdownActions.fetchDropdownStoreSegmentSuccess({
-                                payload: newResp
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                DropdownActions.fetchDropdownStoreSegmentFailure({
-                                    payload: {
-                                        id: 'fetchDropdownStoreSegmentFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
+                        return DropdownActions.fetchDropdownStoreSegmentSuccess({
+                            payload: newResp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            DropdownActions.fetchDropdownStoreSegmentFailure({
+                                payload: {
+                                    id: 'fetchDropdownStoreSegmentFailure',
+                                    errors: err,
+                                },
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );
@@ -830,40 +839,38 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownStoreTypeRequest),
             switchMap(() => {
-                return this._$storeTypeApi
-                    .findAll<StoreType[]>({ paginate: false })
-                    .pipe(
-                        catchOffline(),
-                        retry(3),
-                        map(resp => {
-                            const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          return new StoreType(
-                                              row.id,
-                                              row.name,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-                                      })
-                                    : [];
+                return this._$storeTypeApi.findAll<StoreType[]>({ paginate: false }).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        const newResp =
+                            resp && resp.length > 0
+                                ? resp.map((row) => {
+                                      return new StoreType(
+                                          row.id,
+                                          row.name,
+                                          row.createdAt,
+                                          row.updatedAt,
+                                          row.deletedAt
+                                      );
+                                  })
+                                : [];
 
-                            return DropdownActions.fetchDropdownStoreTypeSuccess({
-                                payload: newResp
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                DropdownActions.fetchDropdownStoreTypeFailure({
-                                    payload: {
-                                        id: 'fetchDropdownStoreTypeFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
+                        return DropdownActions.fetchDropdownStoreTypeSuccess({
+                            payload: newResp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            DropdownActions.fetchDropdownStoreTypeFailure({
+                                payload: {
+                                    id: 'fetchDropdownStoreTypeFailure',
+                                    errors: err,
+                                },
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );
@@ -886,10 +893,10 @@ export class DropdownEffects {
                     .pipe(
                         catchOffline(),
                         retry(3),
-                        map(resp => {
+                        map((resp) => {
                             const newResp =
                                 resp && resp.length > 0
-                                    ? resp.map(row => {
+                                    ? resp.map((row) => {
                                           return new VehicleAccessibility(
                                               row.id,
                                               row.name,
@@ -901,16 +908,16 @@ export class DropdownEffects {
                                     : [];
 
                             return DropdownActions.fetchDropdownVehicleAccessibilitySuccess({
-                                payload: newResp
+                                payload: newResp,
                             });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 DropdownActions.fetchDropdownVehicleAccessibilityFailure({
                                     payload: {
                                         id: 'fetchDropdownVehicleAccessibilityFailure',
-                                        errors: err
-                                    }
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
@@ -1028,6 +1035,117 @@ export class DropdownEffects {
     //     )
     // );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Region]
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Region
+     * @memberof DropdownEffects
+     */
+    fetchDropdownRegionRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownRegionRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, userSupplier]) => {
+                if (!userSupplier || !userSupplier.supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownInvoiceGroupFailure({
+                            payload: {
+                                id: 'fetchDropdownInvoiceGroupFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
+
+                const { supplierId } = userSupplier;
+                let search = [];
+                if (payload.search) {
+                    search = payload.search;
+                }
+
+                return this._$regionApi.findAll({ paginate: false, search }, supplierId).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        const sources = (resp as PaginateResponseV2<Region>).data.map((row) => {
+                            const newRegion = new Region(row);
+
+                            return newRegion;
+                        });
+                        return DropdownActions.fetchDropdownRegionSuccess({
+                            payload: sortBy(sources, ['name'], ['asc']),
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            DropdownActions.fetchDropdownRegionFailure({
+                                payload: { id: 'fetchDropdownRegionFailure', errors: err },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST] Branch
+     * @memberof DropdownEffects
+     */
+    fetchDropdownBranchRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownBranchRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, userSupplier]) => {
+                if (!userSupplier || !userSupplier.supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownBranchFailure({
+                            payload: {
+                                id: 'fetchDropdownBranchFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
+
+                let search = [];
+                if (payload.search) {
+                    search = payload.search;
+                }
+
+                return this._$branchApi
+                    .findAll({ paginate: false, search }, payload.regionIds)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map((resp) => {
+                            const sources = (resp as PaginateResponse<Branch>).data.map((row) => {
+                                const newBranch = new Branch(row);
+
+                                return newBranch;
+                            });
+                            return DropdownActions.fetchDropdownBranchSuccess({
+                                payload: sortBy(sources, ['name'], ['asc']),
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                DropdownActions.fetchDropdownBranchFailure({
+                                    payload: { id: 'fetchDropdownBranchFailure', errors: err },
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
     constructor(
         private actions$: Actions,
         private store: Store<fromRoot.State>,
@@ -1036,10 +1154,12 @@ export class DropdownEffects {
         private _$log: LogService,
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
-        // private _$creditLimitGroupApi: CreditLimitGroupApiService,
+        private _$creditLimitGroupApi: CreditLimitGroupApiService,
         private _$districtApi: DistrictApiService,
         private _$hierarchyApi: HierarchyApiService,
         private _$invoiceGroupApi: InvoiceGroupApiService,
+        private _$regionApi: RegionApiService,
+        private _$branchApi: BranchApiService,
         private _$locationSearchApi: LocationSearchApiService,
         private _$provinceApi: ProvinceApiService,
         private _$roleApi: RoleApiService,

@@ -4,7 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-// import { CreditLimitGroup, CreditLimitGroupForm } from '../models';
+import { CreditLimitGroup, CreditLimitGroupForm } from '../models';
 
 /**
  *
@@ -74,8 +74,8 @@ export class CreditLimitGroupApiService {
      * @returns {Observable<CreditLimitGroup>}
      * @memberof CreditLimitGroupApiService
      */
-    findById(id: string): Observable<any> {
-        return this.http.get<any>(`${this._url}/${id}`);
+    findById(id: string): Observable<CreditLimitGroup> {
+        return this.http.get<CreditLimitGroup>(`${this._url}/${id}`);
     }
 
     /**
@@ -86,8 +86,8 @@ export class CreditLimitGroupApiService {
      * @returns {Observable<CreditLimitGroup>}
      * @memberof CreditLimitGroupApiService
      */
-    create<T>(body: T): Observable<any> {
-        return this.http.post<any>(this._url, body);
+    create<T>(body: T): Observable<CreditLimitGroup> {
+        return this.http.post<CreditLimitGroup>(this._url, body);
     }
 
     /**
@@ -98,8 +98,8 @@ export class CreditLimitGroupApiService {
      * @returns {Observable<CreditLimitGroup>}
      * @memberof CreditLimitGroupApiService
      */
-    patch(body: Partial<any>, id: string): Observable<any> {
-        return this.http.patch<any>(`${this._url}/${id}`, body);
+    patch(body: Partial<CreditLimitGroupForm>, id: string): Observable<CreditLimitGroup> {
+        return this.http.patch<CreditLimitGroup>(`${this._url}/${id}`, body);
     }
 
     /**
@@ -109,7 +109,7 @@ export class CreditLimitGroupApiService {
      * @returns {Observable<CreditLimitGroup>}
      * @memberof CreditLimitGroupApiService
      */
-    delete(id: string): Observable<any> {
-        return this.http.delete<any>(`${this._url}/${id}`);
+    delete(id: string): Observable<CreditLimitGroup> {
+        return this.http.delete<CreditLimitGroup>(`${this._url}/${id}`);
     }
 }

@@ -32,11 +32,14 @@ import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-det
 import { CatalogueMssSettingsComponent } from './components/catalogue-mss-settings/catalogue-mss-settings.component';
 import {
     CalculateAfterTaxPipe,
+    CalculateTaxBulkPipe,
     ChannelPriceSettingPipe,
     ClusterPriceSettingPipe,
     GroupPriceSettingPipe,
     TypePriceSettingPipe,
     WarehousePriceSettingPipe,
+    CalculateBeforeTaxPipe,
+    FormatPricePipe
 } from './pipes';
 import {
     BrandFacadeService,
@@ -45,6 +48,7 @@ import {
 } from './services';
 import { CatalogueNgrxModule } from './store';
 import { SingleSpaModule } from 'single-spa/single-spa.module';
+import { BrandAutocompleteModule } from 'app/shared/components/brand-autocomplete';
 
 @NgModule({
     declarations: [
@@ -65,12 +69,16 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
         CatalogueSkuInformationComponent,
         CatalogueWeightAndDimensionComponent,
         CalculateAfterTaxPipe,
+        CalculateTaxBulkPipe,
+        CalculateBeforeTaxPipe,
         ChannelPriceSettingPipe,
         ClusterPriceSettingPipe,
         GroupPriceSettingPipe,
         TypePriceSettingPipe,
         WarehousePriceSettingPipe,
-        CatalogueMssSettingsComponent
+        CatalogueMssSettingsComponent,
+        CalculateBeforeTaxPipe,
+        FormatPricePipe
     ],
     imports: [
         CataloguesRoutingModule,
@@ -96,7 +104,8 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
             debug: environment.staging ? 'warn' : environment.production ? false : 'log',
         }),
         CatalogueNgrxModule,
-        SingleSpaModule
+        SingleSpaModule,
+        BrandAutocompleteModule
     ],
     entryComponents: [
         CatalogueAmountSettingsComponent,
@@ -108,6 +117,7 @@ import { SingleSpaModule } from 'single-spa/single-spa.module';
         CataloguesSelectCategoryComponent,
         CatalogueWeightAndDimensionComponent,
     ],
-    providers: [BrandFacadeService, CatalogueFacadeService, CataloguePriceSegmentationApiService],
+    providers: [BrandFacadeService, CatalogueFacadeService, CataloguePriceSegmentationApiService, CalculateAfterTaxPipe, CalculateBeforeTaxPipe, 
+        CalculateTaxBulkPipe, FormatPricePipe],
 })
 export class CataloguesModule {}

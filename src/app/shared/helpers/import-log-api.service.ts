@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams } from '../models/query.model';
+import { IQueryParams, IQueryParamsHistoryList } from '../models/query.model';
 import { HelperService } from './helper.service';
 
 /**
@@ -12,7 +12,7 @@ import { HelperService } from './helper.service';
  * @class ImportLogApiService
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ImportLogApiService {
     /**
@@ -51,13 +51,13 @@ export class ImportLogApiService {
      * @returns {Observable<T>}
      * @memberof ImportLogApiService
      */
-    findAll<T>(params: IQueryParams, page: string): Observable<T> {
+    findAll<T>(params: IQueryParamsHistoryList, page: string): Observable<T> {
         const newArg = page
             ? [
                   {
                       key: 'page',
-                      value: page
-                  }
+                      value: page,
+                  },
               ]
             : [];
         if (page === 'payments') {
@@ -68,6 +68,13 @@ export class ImportLogApiService {
                 });
             }
         }
+        if (params.action) {
+            newArg.push({
+                key: 'action',
+                value: params.action,
+            });
+        }
+
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });

@@ -4,12 +4,12 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-// import {
-//     CreditLimitGroup,
-//     CreditLimitStore,
-//     CreditLimitStoreOptions,
-//     ICreditLimitStoreResponse
-// } from '../models';
+import {
+    CreditLimitGroup,
+    CreditLimitStore,
+    CreditLimitStoreOptions,
+    ICreditLimitStoreResponse
+} from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -48,7 +48,7 @@ export class CreditLimitBalanceApiService {
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {}
 
-    findAllGroup(params: IQueryParams, brandId?: string): Observable<any[]> {
+    findAllGroup(params: IQueryParams, brandId?: string): Observable<CreditLimitGroup[]> {
         const newArg = brandId
             ? [
                   {
@@ -61,10 +61,10 @@ export class CreditLimitBalanceApiService {
         this._url = this._$helper.handleApiRouter(this._endpointGroup);
         const newParams = this._$helper.handleParams(this._url, params, newArg);
 
-        return this.http.get<any[]>(this._url, { params: newParams });
+        return this.http.get<CreditLimitGroup[]>(this._url, { params: newParams });
     }
 
-    findAllStore(params: IQueryParams, brandId?: string): Observable<any> {
+    findAllStore(params: IQueryParams, brandId?: string): Observable<ICreditLimitStoreResponse> {
         const newArg = brandId
             ? [
                   {
@@ -86,16 +86,16 @@ export class CreditLimitBalanceApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, newArg);
 
-        return this.http.get<any>(this._url, { params: newParams });
+        return this.http.get<ICreditLimitStoreResponse>(this._url, { params: newParams });
     }
 
-    findStoreById(id: string): Observable<any> {
+    findStoreById(id: string): Observable<CreditLimitStore> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.get<any>(`${this._url}/${id}`);
+        return this.http.get<CreditLimitStore>(`${this._url}/${id}`);
     }
 
-    updatePatch(body: any, id: string): Observable<any> {
+    updatePatch(body: CreditLimitStoreOptions, id: string): Observable<CreditLimitStore> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.patch<any>(`${this._url}/${id}`, body);
+        return this.http.patch<CreditLimitStore>(`${this._url}/${id}`, body);
     }
 }

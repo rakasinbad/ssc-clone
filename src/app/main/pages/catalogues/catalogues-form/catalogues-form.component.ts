@@ -1,4 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { formatCurrency, getCurrencySymbol } from '@angular/common';
 import {
     AfterViewInit,
     ChangeDetectorRef,
@@ -6,6 +7,8 @@ import {
     OnDestroy,
     OnInit,
     ViewEncapsulation,
+    Inject,
+    LOCALE_ID,
 } from '@angular/core';
 import {
     AbstractControl,
@@ -71,6 +74,7 @@ import {
     StoreSegmentationCluster,
     StoreSegmentationGroup,
     SubBrandProps,
+    ConditionBulkDto,
 } from '../models';
 import {
     BrandFacadeService,
@@ -82,9 +86,18 @@ import {
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
-import { CatalogueTax } from './../models/classes/catalogue-tax.class';
-import { SubBrand } from './../models/sub-brand.model';
+import { CatalogueTax } from '../models/classes/catalogue-tax.class';
+import { SubBrand } from '../models/sub-brand.model';
 import { assetUrl } from 'single-spa/asset-url';
+import {
+    CalculateAfterTaxPipe,
+    CalculateBeforeTaxPipe,
+    CalculateTaxBulkPipe,
+    FormatPricePipe,
+} from '../pipes';
+import { Console } from 'console';
+import { split } from 'lodash';
+import { SinbadAutocompleteSource } from 'app/shared/components/sinbad-autocomplete/models';
 
 type IFormMode = 'add' | 'view' | 'edit';
 interface IUomType {
@@ -124,7 +137,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         },
         action: {
             save: {
-                label: 'Save',
+                label: 'Next',
                 active: true,
             },
             draft: {
@@ -163,6 +176,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     isLoading$: Observable<boolean>;
     quantityChoices: { id: string; label: string }[];
     form: FormGroup;
+    formBulkPrice: FormArray;
     variantForm: FormGroup;
     productPhotos: FormArray;
     productOldPhotos: FormArray;
@@ -194,6 +208,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     subBrandLoading: boolean = false;
     taxes: CatalogueTax[];
 
+    bulkPrice = null;
+    statusAddBulkFirst: boolean = false;
+    bulkPriceSettingStatus: string = null;
+    statusFormBulk: boolean = false;
+    statusDeleteCondition: boolean = false;
+
     readonly variantListColumns: string[] = ['name', 'price', 'stock', 'sku'];
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -216,11 +236,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private catalogueSvc: CataloguesService,
         private readonly subBrandApiService: SubBrandApiService,
         private readonly catalogueTaxFacade: CatalogueTaxFacadeService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        @Inject(LOCALE_ID) public locale: string,
+        private calculateAfterTaxPipe: CalculateAfterTaxPipe,
+        private calculateBeforeTaxPipe: CalculateBeforeTaxPipe,
+        private calculateTaxBulkTaxPipe: CalculateTaxBulkPipe,
+        private formatPricePipe: FormatPricePipe
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
+        this.store.dispatch(CatalogueActions.fetchPricingSettingsRequest());
 
         /* this.store.dispatch(
             UiActions.setFooterActionConfig({
@@ -313,6 +340,24 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productCount.maxQtyValue').markAsDirty({ onlySelf: false });
             this.form.get('productCount.maxQtyValue').markAllAsTouched();
             this.form.get('productCount.maxQtyValue').markAsPristine();
+        }
+
+        //jika min order qty > bulk price min Qty level 1 maka minQty level 1 error
+        if (this.bulkPriceSettingStatus === 'bulk_pricing') {
+            if (this.form.get('bulkPrices').value.length > 0) {
+                if (document.getElementById(`bulkPrice.minQty.${0}`)) {
+                    if (minQty > this.form.get('bulkPrices').value[0].minQty) {
+                        this._onChangeInputStyle(`bulkPrice.minQty.${0}`, 'error', 348);
+                        this._checkConditionsBulkPrices(
+                            this.form.get('bulkPrices'),
+                            'product',
+                            'minQty'
+                        );
+                        this.comparedata(this.form.get('bulkPrices').value);
+                        this.statusFormBulk = true;
+                    }
+                }
+            }
         }
     }
 
@@ -451,6 +496,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.store.dispatch(FormActions.setFormStatusInvalid());
         /** Mendapatkan seluruh nilai dari form. */
         const formValues = this.form.getRawValue();
+
+        // SALES INFORMATION BULK PRICING
+        const newBulkpricing = formValues['bulkPrices'];
+        if (newBulkpricing.length > 0) {
+            for (var i = 0; i < newBulkpricing.length; i++) {
+                newBulkpricing[i].level = i + 1;
+                newBulkpricing[i].minQty = parseInt(newBulkpricing[i].minQty);
+                newBulkpricing[i].price = parseInt(newBulkpricing[i].price);
+                delete newBulkpricing[i].priceAfterTax;
+            }
+        }
+
         /** Mengambil foto-foto produk yang diperoleh dari back-end. */
         const oldPhotos = formValues.productMedia.oldPhotos;
 
@@ -529,8 +586,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 String(formValues.productSale.retailPrice) !== 'null'
                     ? formValues.productSale.retailPrice
                     : null,
-            retailBuyingPrice: formValues.productSale.productPrice,
+            retailBuyingPrice: formValues.productSale.productPrice
+                .replace('.', '')
+                .replace(',', '.'),
             catalogueKeywords: formValues.productSale.tags,
+
+            //bulk pricing
+            bulkPrices: newBulkpricing,
 
             // MEDIA SETTING
             catalogueImages: formValues.productMedia.photos
@@ -591,6 +653,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // CatalogueTaxId
             catalogueTaxId: taxId,
+            pricingInputWithTaxFlag:
+                formValues.productSale.typePricing === 'exclude' ? false : true,
         };
 
         // if (this.formMode === 'edit') {
@@ -688,6 +752,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         };
     }
 
+    onSelectedBrand(value: SinbadAutocompleteSource): void {
+        if (value && value.id) {
+            this.form.get('productInfo.brandId').setValue(value.id);
+            this._getSubBrandByBrandId(value.id);
+        } else {
+            this.form.get('productInfo.brandId').setValue(value);
+        }
+    }
+
+    onClickBrandField(): void {
+        this.form.get('productInfo.brandId').markAsTouched()
+        
+    }
+
     ngOnInit(): void {
         if (this.route.snapshot.url.filter((url) => url.path === 'edit').length > 0) {
             this.breadcrumbs.push({
@@ -718,6 +796,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 }
             })
         );
+
+        //data bulk price setting
+        this.store
+            .select(CatalogueSelectors.getCataloguePriceBulkSettings)
+            .pipe(takeUntil(this.unSubs$))
+            .subscribe((payload) => {
+                this.bulkPriceSettingStatus = payload.code;
+                if (payload.code !== 'group_pricing') {
+                    this.footerConfig.action.save.label = 'Save';
+                    this.catalogueFacade.setFooterConfig(this.footerConfig);
+                }
+            });
 
         /** Mulai mengambil data kategori katalog. */
         this.store
@@ -753,6 +843,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Menyiapkan form. */
         this._initForm();
 
+        this.statusAddBulkFirst = false;
         /** Menyiapkan form untuk varian. */
         this.variantForm = this.fb.group({
             variants: this.fb.array([]),
@@ -767,7 +858,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         ).controls;
         this.productVariantControls = (this.form.get('productSale.variants') as FormArray).controls;
         this.productVariantFormControls = (this.variantForm.get('variants') as FormArray).controls;
-
+        this.formBulkPrice = this.form.get('bulkPricing') as FormArray;
         /** Melakukan subscribe ke pengambilan data brand dari state. */
         combineLatest([
             this.store.select(BrandSelectors.getAllBrands),
@@ -889,11 +980,92 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         )
             .pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.unSubs$))
             .subscribe(() => {
-                if (this.form.status === 'VALID') {
-                    this.store.dispatch(FormActions.setFormStatusValid());
-                } else {
+                if (this.statusFormBulk === true) {
                     this.store.dispatch(FormActions.setFormStatusInvalid());
+                } else {
+                    if (this.form.status === 'VALID') {
+                        this.store.dispatch(FormActions.setFormStatusValid());
+                    } else {
+                        this.store.dispatch(FormActions.setFormStatusInvalid());
+                    }
                 }
+
+                this.bulkPrice = this.form.get('productSale.productPrice').value;
+                if (!this.bulkPrice || this.bulkPrice === '0') {
+                    this.statusAddBulkFirst = false;
+                } else {
+                    this.statusAddBulkFirst = true;
+                }
+                let countDataBulk = this.form.get('bulkPrices').value;
+                if (countDataBulk.length > 1) {
+                    this.comparedata(countDataBulk);
+                }
+
+                this.form
+                    .get('productSale.typePricing')
+                    .valueChanges.pipe(
+                        distinctUntilChanged(),
+                        debounceTime(100),
+                        takeUntil(this.unSubs$)
+                    )
+                    .subscribe((value) => {
+                        let retailBP = parseFloat(
+                            String(this.form.get('productSale.productPrice').value)
+                                .replace(new RegExp('Rp', 'g'), '')
+                                .split('.')
+                                .join('')
+                                .replace(new RegExp(',', 'g'), '.')
+                        );
+
+                        let retailBPAft = parseFloat(
+                            String(this.form.get('productSale.retailBuyingPriceAfterTax').value)
+                                .replace(new RegExp('Rp', 'g'), '')
+                                .split('.')
+                                .join('')
+                                .replace(new RegExp(',', 'g'), '.')
+                        );
+
+                        if (this.form.get('bulkPrices').value.length > 0) {
+                            let dataPriceBulk = parseFloat(
+                                this.form.get('bulkPrices').value[0].price
+                            );
+
+                            let dataPriceBulkAftTax = parseFloat(
+                                this.form.get('bulkPrices').value[0].priceAfterTax
+                            );
+
+                            if (this.form.get('bulkPrices').value.length < 2) {
+                                if (dataPriceBulk <= 0 && value === 'exclude') {
+                                    this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 1019);
+                                    this.statusFormBulk = true;
+                                } else if (dataPriceBulkAftTax <= 0 && value === 'include') {
+                                    this._onChangeInputStyle(
+                                        `bulkPrice.priceAfterTax.${0}`,
+                                        'error',
+                                        1030
+                                    );
+                                    this.statusFormBulk = true;
+                                } else if (dataPriceBulk >= retailBP && value === 'exclude') {
+                                    this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 1025);
+                                    this.statusFormBulk = true;
+                                } else if (
+                                    dataPriceBulkAftTax >= retailBPAft &&
+                                    value === 'include'
+                                ) {
+                                    this._onChangeInputStyle(
+                                        `bulkPrice.priceAfterTax.${0}`,
+                                        'error',
+                                        1043
+                                    );
+                                    this.statusFormBulk = true;
+                                }
+                            } else {
+                                this.comparedata(this.form.get('bulkPrices').value);
+                            }
+                        }
+                    });
+
+                this.checkFormBulkPrice();
 
                 /** Melakukan update render pada front-end. */
                 this._cd.markForCheck();
@@ -1209,6 +1381,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this._checkRoute();
     }
 
+    ngAfterViewInit(): void {
+        this.requestBrands();
+        this._cd.markForCheck();
+    }
+
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
@@ -1221,6 +1398,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             smallId: '',
         });
         this.uomNames$.complete();
+        // this.subBrandCollections$.complete();
 
         this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
         this.store.dispatch(CatalogueActions.resetSelectedCategories());
@@ -1228,11 +1406,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.store.dispatch(UiActions.hideCustomToolbar());
         this.store.dispatch(FormActions.resetFormStatus());
-    }
-
-    ngAfterViewInit(): void {
-        this.requestBrands();
-        this._cd.markForCheck();
     }
 
     private requestBrands(): void {
@@ -1554,6 +1727,72 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
     }
 
+    checkFormBulkPrice() {
+        this.form
+            .get('bulkPrices')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
+            .subscribe((value) => {
+                let retailBP = parseFloat(
+                    String(this.form.get('productSale.productPrice').value)
+                        .replace(new RegExp('Rp', 'g'), '')
+                        .split('.')
+                        .join('')
+                        .replace(new RegExp(',', 'g'), '.')
+                );
+                let retailBPAft = parseFloat(
+                    String(this.form.get('productSale.retailBuyingPriceAfterTax').value)
+                        .replace(new RegExp('Rp', 'g'), '')
+                        .split('.')
+                        .join('')
+                        .replace(new RegExp(',', 'g'), '.')
+                );
+
+                if (this.form.get('bulkPrices').value.length > 0) {
+                    let dataPriceBulk = parseFloat(
+                        String(this.form.get('bulkPrices').value[0].price)
+                            .replace(new RegExp('Rp', 'g'), '')
+                            .replace(new RegExp(',', 'g'), '.')
+                    );
+
+                    let dataPriceBulkAftTax = parseInt(
+                        this.form.get('bulkPrices').value[0].priceAfterTax
+                    );
+
+                    if (this.form.get('bulkPrices').value.length < 2) {
+                        if (
+                            dataPriceBulk <= 0 &&
+                            dataPriceBulk <= retailBP &&
+                            this.form.get('productSale.typePricing').value === 'exclude'
+                        ) {
+                            this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 1739);
+                            this.store.dispatch(FormActions.setFormStatusInvalid());
+                        } else if (
+                            dataPriceBulkAftTax <= 0 &&
+                            dataPriceBulkAftTax <= retailBPAft &&
+                            this.form.get('productSale.typePricing').value === 'include'
+                        ) {
+                            this._onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'error', 1759);
+                            this.store.dispatch(FormActions.setFormStatusInvalid());
+                        } else if (
+                            dataPriceBulk >= retailBP &&
+                            this.form.get('productSale.typePricing').value === 'exclude'
+                        ) {
+                            this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 1752);
+                            this.store.dispatch(FormActions.setFormStatusInvalid());
+                        } else if (
+                            dataPriceBulkAftTax >= retailBPAft &&
+                            this.form.get('productSale.typePricing').value === 'include'
+                        ) {
+                            this._onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'error', 1771);
+                            this.store.dispatch(FormActions.setFormStatusInvalid());
+                        }
+                    } else {
+                        this.comparedata(this.form.get('bulkPrices').value);
+                    }
+                }
+            });
+    }
+
     onAddVariant(): void {
         const $index = this.productVariantControls.push(this.fb.array([this.fb.control('')]));
 
@@ -1568,9 +1807,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.productVariantSelectionData.push(
             new MatTableDataSource((this.productVariantControls[$index - 1] as FormArray).controls)
         );
-        // console.log(this.productVariants);
-        // console.log(this.form.get('productSale.variants'));
-        // console.log(this.productVariantSelections);
     }
 
     onFileBrowse($event: Event, index: number): void {
@@ -1669,7 +1905,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     printLog(val: any): void {
-        console.log(val);
+        // console.log(val);
     }
 
     getFormError(form: any): string {
@@ -1843,6 +2079,749 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
     }
 
+    convertType(type: string) {
+        if (type === 'exclude') {
+            this.bulkPriceSettingCtrl.forEach((element) => {
+                element.get('price').enable();
+                element.get('priceAfterTax').disable();
+            });
+        } else if (type === 'include') {
+            this.bulkPriceSettingCtrl.forEach((element) => {
+                element.get('priceAfterTax').enable();
+                element.get('price').disable();
+            });
+        }
+    }
+
+    get bulkPriceSetting(): Readonly<FormArray> {
+        return this.form.get('bulkPrices') as FormArray;
+    }
+
+    get bulkPriceSettingCtrl(): AbstractControl[] {
+        return this.bulkPriceSetting.controls;
+    }
+
+    isBulkPriceInputDisabled(conditionIdx, propertyName: string): boolean {
+        return (
+            this.bulkPriceSettingCtrl[conditionIdx]['controls'][propertyName].status === 'DISABLED'
+        );
+    }
+
+    addCondition(idx?: number): void {
+        this.statusAddBulkFirst = true;
+
+        const conditions = this.bulkPriceSetting.getRawValue();
+
+        if (conditions && conditions.length > 0) {
+            const nextIdx = conditions.length;
+            const prevIdx = conditions.length - 1;
+
+            if (prevIdx >= 0) {
+                const prevCondition = conditions[prevIdx];
+
+                //setting auto fill if add minQty+2 dan price -1
+
+                //jika pny min Qty dan > 0
+                if (prevCondition && prevCondition.minQty > 0) {
+                    prevCondition.minQty = parseInt(prevCondition.minQty);
+                } else {
+                    //jika min Qty kosong "" atau 0
+                    prevCondition.minQty = nextIdx * 2;
+                }
+
+                //jika pny price dan > 0
+                if (prevCondition && prevCondition.price > 0) {
+                    prevCondition.price = parseFloat(prevCondition.price);
+                } else {
+                    let produkBasePrice = this.form.get('retailBuyingPrice').value;
+                    prevCondition.price = parseFloat(produkBasePrice) - nextIdx;
+                }
+
+                this.bulkPriceSetting.push(
+                    this._createConditionsBulk(new ConditionBulkDto(prevCondition), nextIdx + 1)
+                );
+            }
+
+            this.bulkPriceSettingCtrl.forEach((data, idx) => {
+                if (data.value.price < 1 || data.value.priceAfterTax < 1) {
+                    this._onChangeInputStyle(`bulkPrice.price.${idx}`, 'error', 2124);
+                    this._onChangeInputStyle(`bulkPrice.priceAfterTax.${idx}`, 'error', 2125);
+                } else {
+                    this._onChangeInputStyle(`bulkPrice.price.${idx}`, 'success');
+                    this._onChangeInputStyle(`bulkPrice.priceAfterTax.${idx}`, 'success');
+                }
+            });
+
+            return;
+        }
+
+        this.bulkPriceSetting.push(this._createConditionsBulk());
+
+        this.bulkPriceSettingCtrl.forEach((data, idx) => {
+            if (data.value.price < 1 || data.value.priceAfterTax < 1) {
+                this._onChangeInputStyle(`bulkPrice.price.${idx}`, 'error', 2139);
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${idx}`, 'error', 2140);
+            } else {
+                this._onChangeInputStyle(`bulkPrice.price.${idx}`, 'success');
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${idx}`, 'success');
+            }
+        });
+    }
+
+    deleteCondition(idx: number) {
+        if (typeof idx !== 'number') {
+            return;
+        }
+
+        let lastIdx = idx;
+        let prevLastIdx = idx;
+
+        this.bulkPriceSetting.removeAt(idx);
+
+        const pricingType = this.form.get('productSale.typePricing').value;
+        const tax = this.form.get('productSale.tax').value;
+
+        const config =
+            pricingType === 'exclude'
+                ? {
+                      bulkPriceProperty: 'price',
+                      priceProperty: 'productSale.productPrice',
+                  }
+                : {
+                      bulkPriceProperty: 'priceAfterTax',
+                      priceProperty: 'productSale.retailBuyingPriceAfterTax',
+                  };
+
+        const conditionsBulknya = this.bulkPriceSetting.getRawValue();
+
+        if (conditionsBulknya && conditionsBulknya.length > 0) {
+            const nextIdx = conditionsBulknya.length;
+            lastIdx = nextIdx - 1;
+            prevLastIdx = nextIdx;
+            let newValue = [];
+            let retailBuyingPrice = 0;
+
+            if (this.form.get(config.priceProperty).value) {
+                retailBuyingPrice = isNaN(
+                    parseInt(
+                        String(this.form.get(config.priceProperty).value)
+                            .replace(new RegExp('Rp', 'g'), '')
+                            .split('.')
+                            .join('')
+                    )
+                )
+                    ? 0
+                    : parseInt(
+                          String(this.form.get(config.priceProperty).value)
+                              .replace(new RegExp('Rp', 'g'), '')
+                              .split('.')
+                              .join('')
+                      );
+            }
+
+            for (var i = 0; i < conditionsBulknya.length; i++) {
+                conditionsBulknya[i].level = i + 1;
+                newValue.push(conditionsBulknya[i]);
+
+                const currentPrice = parseInt(
+                    String(conditionsBulknya[i][config.bulkPriceProperty]).replace(/\.00/g, ''),
+                    10
+                );
+                const previousLevelPrice = conditionsBulknya[i - 1]
+                    ? parseInt(
+                          String(conditionsBulknya[i - 1][config.bulkPriceProperty]).replace(
+                              /\.00/g,
+                              ''
+                          ),
+                          10
+                      )
+                    : retailBuyingPrice;
+
+                /** pengecekan level saat ini ke level sebelumnya */
+                if (pricingType === 'exclude') {
+                    if (currentPrice >= previousLevelPrice) {
+                        newValue[i].price = previousLevelPrice - 1;
+                    } else {
+                        newValue[i].price = currentPrice;
+                    }
+                    newValue[i].priceAfterTax = this.calculateAfterTaxPipe.transform(
+                        newValue[i].price.toString(),
+                        tax
+                    );
+                } else {
+                    if (currentPrice >= previousLevelPrice) {
+                        newValue[i].priceAfterTax = previousLevelPrice - 1;
+                    } else {
+                        newValue[i].priceAfterTax = currentPrice;
+                    }
+                    newValue[i].price = this.calculateBeforeTaxPipe.transform(
+                        newValue[i].priceAfterTax.toString(),
+                        tax
+                    );
+                }
+
+                this._onChangeInputStyle(`bulkPrice.price.${i}`, 'success');
+                this._onChangeInputStyle(`bulkPrice.price.${i + 1}`, 'success');
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${i}`, 'success');
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${i + 1}`, 'success');
+            }
+
+            if (newValue.length) {
+                this.bulkPriceSetting.setValue(newValue);
+            }
+        } else {
+            while (idx <= lastIdx) {
+                // this._newTierValidation(idx);
+                idx++;
+            }
+        }
+
+        if (conditionsBulknya.length > 0) {
+            this.comparedata(this.form.get('bulkPrices').value);
+        }
+
+        if (this.form.status === 'VALID' && !this.statusFormBulk) {
+            this.store.dispatch(FormActions.setFormStatusValid());
+        } else if (this.form.status === 'VALID' && this.statusFormBulk) {
+            this.store.dispatch(FormActions.setFormStatusInvalid());
+        }
+    }
+
+    onChangeMinQtyBulk(val: string, idx): void {
+        const minQtyBulk = val ? parseInt(val.split('.').join('')) : 0;
+        const minQtyAmount = this.form.get('productCount.minQtyValue').value;
+
+        if (document.getElementById(`bulkPrice.minQty.${0}`)) {
+            if (idx === 0) {
+                if (minQtyBulk <= minQtyAmount) {
+                    this._onChangeInputStyle(`bulkPrice.minQty.${0}`, 'error');
+                    this._checkConditionsBulkPrices(
+                        this.form.get('bulkPrices'),
+                        'product',
+                        'minQty'
+                    );
+                    this.statusFormBulk = true;
+                } else {
+                    if (this.form.get('bulkPrices').value.length < 2) {
+                        this.statusFormBulk = false;
+                        this._onChangeInputStyle(`bulkPrice.minQty.${0}`, 'success');
+                        this._checkConditionsBulkPrices(
+                            this.form.get('bulkPrices'),
+                            null,
+                            'minQty'
+                        );
+                    } else {
+                        if (idx === 0) {
+                            this._onChangeInputStyle(`bulkPrice.minQty.${0}`, 'success');
+                        }
+                        // } else {
+                        this.comparedata(this.form.get('bulkPrices').value);
+                        // }
+                    }
+                }
+            } else {
+                if (this.form.get('bulkPrices').value.length > 1) {
+                    this.comparedata(this.form.get('bulkPrices').value);
+                }
+            }
+        }
+    }
+
+    selectPPN(value: number) {
+        const pricingType = this.form.get('productSale.typePricing').value;
+        const retailBuyingPrice = this._getPriceNumber('productSale.productPrice');
+        const rbpAfterTax = this._getPriceNumber('productSale.retailBuyingPriceAfterTax');
+        if (pricingType === 'exclude') {
+            this.form
+                .get('productSale.retailBuyingPriceAfterTax')
+                .setValue(
+                    this.calculateAfterTaxPipe.transform(retailBuyingPrice.toString(), value)
+                );
+            this.bulkPriceSettingCtrl.forEach((element) => {
+                const price = parseInt(String(element.get('price').value).replace(/\.00/g, ''), 10);
+                element
+                    .get('priceAfterTax')
+                    .setValue(this.calculateAfterTaxPipe.transform(price.toString(), value));
+            });
+        } else {
+            this.form
+                .get('productSale.productPrice')
+                .setValue(this.calculateBeforeTaxPipe.transform(rbpAfterTax.toString(), value));
+
+            this.bulkPriceSettingCtrl.forEach((element) => {
+                const price = parseInt(
+                    String(element.get('priceAfterTax').value).replace(/\.00/g, ''),
+                    10
+                );
+                element
+                    .get('price')
+                    .setValue(this.calculateBeforeTaxPipe.transform(price.toString(), value));
+            });
+        }
+
+        this._cd.markForCheck();
+        this._cd.detectChanges();
+    }
+
+    onChangeretailBuyingPrice(val: string) {
+        const retailBP = val
+            ? parseFloat(
+                  val
+                      .replace(new RegExp('Rp', 'g'), '')
+                      .split('.')
+                      .join('')
+                      .replace(new RegExp(',', 'g'), '.')
+              )
+            : 0;
+
+        const tax = this.form.get('productSale.tax').value;
+
+        let rbpAftTransform = this.calculateAfterTaxPipe.transform(retailBP.toString(), tax);
+
+        let rbpAfter = rbpAftTransform.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.');
+        this.form.get('productSale.retailBuyingPriceAfterTax').setValue(rbpAftTransform);
+    }
+
+    onChangeretailBuyingPriceAft(val: string) {
+        const retailPriceAft = val
+            ? parseFloat(
+                  val
+                      .replace(new RegExp('Rp', 'g'), '')
+                      .split('.')
+                      .join('')
+                      .replace(new RegExp(',', 'g'), '.')
+              )
+            : 0;
+
+        const tax = this.form.get('productSale.tax').value;
+        this.form
+            .get('productSale.productPrice')
+            .setValue(this.calculateBeforeTaxPipe.transform(retailPriceAft.toString(), tax));
+    }
+
+    onChangeBulkPrice(val: string, idx, type = 'beforeTax') {
+        const bulkPrice = val
+            ? parseFloat(
+                  val
+                      .replace(new RegExp('Rp', 'g'), '')
+                      .split('.')
+                      .join('')
+                      .replace(new RegExp(',', 'g'), '.')
+              )
+            : 0;
+
+        const retailBuyingPrice = this._getPriceNumber(
+            type === 'beforeTax'
+                ? 'productSale.productPrice'
+                : 'productSale.retailBuyingPriceAfterTax'
+        );
+
+        const tax = this.form.get('productSale.tax').value;
+
+        if (idx === 0) {
+            if (bulkPrice >= retailBuyingPrice) {
+                this.statusFormBulk = true;
+
+                this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 2481);
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'error', 2411);
+                this._checkConditionsBulkPrices(this.form.get('bulkPrices'));
+                this.comparedata(this.form.get('bulkPrices').value);
+            } else if (isNaN(bulkPrice) || bulkPrice === 0) {
+                this._onChangeInputStyle(`bulkPrice.price.${0}`, 'error', 2486);
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'error', 2416);
+                this.comparedata(this.form.get('bulkPrices').value);
+            } else {
+                this._onChangeInputStyle(`bulkPrice.price.${0}`, 'success', 2490);
+                this._onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'success');
+                this.comparedata(this.form.get('bulkPrices').value);
+                this._checkConditionsBulkPrices(this.form.get('bulkPrices'));
+            }
+        } else {
+            if (this.form.get('bulkPrices').value.length > 1) {
+                this.comparedata(this.form.get('bulkPrices').value);
+                this._checkConditionsBulkPrices(this.form.get('bulkPrices'));
+            }
+        }
+
+        if (type === 'beforeTax') {
+            this.bulkPriceSettingCtrl[idx].patchValue({
+                priceAfterTax: this.calculateAfterTaxPipe.transform(bulkPrice.toString(), tax),
+            });
+        } else {
+            this.bulkPriceSettingCtrl[idx].patchValue({
+                price: this.calculateBeforeTaxPipe.transform(bulkPrice.toString(), tax),
+            });
+        }
+    }
+
+    _getPriceNumber(formName: string): number {
+        let price = 0;
+
+        if (this.form.get(formName).value) {
+            price = isNaN(
+                parseInt(
+                    String(this.form.get(formName).value)
+                        .replace(new RegExp('Rp', 'g'), '')
+                        .split('.')
+                        .join('')
+                )
+            )
+                ? 0
+                : parseInt(
+                      String(this.form.get(formName).value)
+                          .replace(new RegExp('Rp', 'g'), '')
+                          .split('.')
+                          .join('')
+                  );
+        }
+
+        return price;
+    }
+
+    //Exclude
+    onChangePriceBulk(val, idx): void {}
+
+    //Include
+    onChangePriceBulkInclude(val, idx): void {}
+
+    comparedata(data) {
+        const onCheckPrice = (
+            { curItem, prevItem },
+            elementId: string,
+            propertyName: string,
+            callback: Function,
+            comparePriceValue: number
+        ) => {
+            if (parseFloat(curItem[propertyName]) >= parseFloat(prevItem[propertyName])) {
+                callback();
+                this._onChangeInputStyle(elementId, 'error', 2480);
+            } else if (parseFloat(curItem[propertyName]) < 1) {
+                callback();
+                this._onChangeInputStyle(elementId, 'error', 2483);
+            } else if (parseFloat(prevItem[propertyName]) < 1) {
+                callback();
+                this._onChangeInputStyle(elementId, 'error', 2486);
+            } else if (parseFloat(curItem[propertyName]) >= comparePriceValue) {
+                callback();
+                this._onChangeInputStyle(elementId, 'error', 2489);
+            } else if (parseFloat(prevItem[propertyName]) >= comparePriceValue) {
+                callback();
+                this._onChangeInputStyle(elementId, 'error', 2492);
+            }
+        };
+        let retailBuyingPrice = 0;
+        let retailBuyingPriceAfterTax = 0;
+        if (this.form.get('productSale.productPrice').value) {
+            retailBuyingPrice = this._getPriceNumber('productSale.productPrice');
+            retailBuyingPriceAfterTax = this._getPriceNumber(
+                'productSale.retailBuyingPriceAfterTax'
+            );
+        }
+        const invalidPrice = [];
+        const invalidMinQty = [];
+
+        const minQtyValue = this.form.get('productCount.minQtyValue').value;
+
+        if (data) {
+            if (data.length > 1) {
+                data.forEach(
+                    (
+                        curItem: {
+                            level: any;
+                            minQty: string;
+                            price: string;
+                            priceAfterTax: string;
+                        },
+                        index: number,
+                        arr: Array<{
+                            level: any;
+                            minQty: string;
+                            price: string;
+                            priceAfterTax: string;
+                        }>
+                    ) => {
+                        if (!index) {
+                            return;
+                        }
+
+                        const prevItem = arr[index - 1];
+                        if (
+                            Number(curItem.minQty) <= Number(prevItem.minQty) ||
+                            Number(curItem.minQty) <= minQtyValue ||
+                            Number(prevItem.minQty) <= minQtyValue
+                        ) {
+                            invalidMinQty.push(index);
+                        }
+
+                        if (curItem.price && prevItem.price) {
+                            onCheckPrice(
+                                { curItem, prevItem },
+                                `bulkPrice.price.${index}`,
+                                'price',
+                                () => invalidPrice.push(index),
+                                retailBuyingPrice
+                            );
+                        }
+                        if (curItem.priceAfterTax && prevItem.priceAfterTax) {
+                            onCheckPrice(
+                                { curItem, prevItem },
+                                `bulkPrice.priceAfterTax.${index}`,
+                                'priceAfterTax',
+                                () => invalidPrice.push(index),
+                                retailBuyingPriceAfterTax
+                            );
+                        }
+                    }
+                );
+
+                if (parseInt(data[0].minQty) <= minQtyValue) {
+                    invalidMinQty.push(0);
+                }
+                if (data[0].price) {
+                    if (parseFloat(data[0].price) >= retailBuyingPrice) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.price.0`, 'error', 2566);
+                    } else if (parseFloat(data[0].price) === 0) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.price.0`, 'error', 2569);
+                    }
+                }
+                if (data[0].priceAfterTax) {
+                    if (parseFloat(data[0].priceAfterTax) >= retailBuyingPriceAfterTax) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.priceAfterTax.0`, 'error', 2575);
+                    } else if (parseFloat(data[0].priceAfterTax) === 0) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.priceAfterTax.0`, 'error', 2578);
+                    }
+                }
+            } else if (data.length === 1) {
+                if (parseInt(data[0].minQty) <= minQtyValue) {
+                    invalidMinQty.push(0);
+                }
+                if (data[0].price) {
+                    if (parseFloat(data[0].price) >= retailBuyingPrice) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.price.0`, 'error', 2588);
+                    } else if (parseFloat(data[0].price) === 0) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.price.0`, 'error', 2591);
+                    }
+                }
+                if (data[0].priceAfterTax) {
+                    if (parseFloat(data[0].priceAfterTax) >= retailBuyingPriceAfterTax) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.priceAfterTax.0`, 'error', 2597);
+                    } else if (parseFloat(data[0].priceAfterTax) === 0) {
+                        invalidPrice.push(0);
+                        this._onChangeInputStyle(`bulkPrice.priceAfterTax.0`, 'error', 2600);
+                    }
+                }
+            }
+        }
+
+        if (invalidMinQty.length > 0 || invalidPrice.length > 0) {
+            this.statusFormBulk = true;
+        } else {
+            this.statusFormBulk = false;
+        }
+    }
+
+    private _createConditionsBulk(condition?: ConditionBulkDto, id?: number): FormGroup {
+        let produkPrice = this.form
+            .get('productSale.productPrice')
+            .value.replace(new RegExp('Rp', 'g'), '')
+            .split('.')
+            .join('');
+
+        let priceDefaultFirst = parseInt(produkPrice) - 1;
+        let minQtyProductCount = parseInt(this.form.get('productCount.minQtyValue').value);
+
+        let minQtyBulkCompare = 0;
+        if (!id) {
+            if (minQtyProductCount > 1) {
+                minQtyBulkCompare = minQtyProductCount + 2;
+            } else {
+                minQtyBulkCompare = +2;
+            }
+        }
+
+        const price =
+            id && condition.price > 0
+                ? condition.price - 1
+                : id && !condition.price
+                ? parseInt(produkPrice) - (id - 1)
+                : priceDefaultFirst;
+
+        const pricingType = this.form.get('productSale.typePricing').value;
+
+        // event.value
+        return this.fb.group({
+            level: id ? id : 1,
+            minQty: id ? condition.minQty + 2 : minQtyBulkCompare,
+            price: { value: price, disabled: pricingType === 'include' },
+            priceAfterTax: {
+                value: this.calculateAfterTaxPipe.transform(
+                    price.toString(),
+                    this.form.get('productSale.tax').value
+                ),
+                disabled: pricingType === 'exclude',
+            },
+        });
+    }
+
+    _onChangeInputStyle(elementId, type, tracker: any = '') {
+        HelperService.debug(
+            '[CataloguesFormComponent - Add] input style called: ',
+            `${tracker} - elementId: ${elementId} - type: ${type}`
+        );
+        const attribute =
+            type === 'success'
+                ? {
+                      color: 'black',
+                      border: '1px solid lightgray',
+                      borderRadius: '4px',
+                  }
+                : {
+                      color: 'red',
+                      border: '1px solid red',
+                      borderRadius: '4px',
+                  };
+        if (document.getElementById(elementId)) {
+            try {
+                document.getElementById(elementId).style.color = attribute.color;
+                document.getElementById(elementId).style.border = attribute.border;
+                document.getElementById(elementId).style.borderRadius = attribute.borderRadius;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+
+    private _checkConditionsBulkPrices(
+        control: AbstractControl,
+        type?: string,
+        typeInvalid?: string,
+        priceType?: string
+        // priceRbp?: any
+    ): ValidationErrors {
+        const onChangeInputStyle = (elementId, type) => {
+            const attribute =
+                type === 'success'
+                    ? {
+                          color: 'black',
+                          border: '1px solid lightgray',
+                          borderRadius: '4px',
+                      }
+                    : {
+                          color: 'red',
+                          border: '1px solid red',
+                          borderRadius: '4px',
+                      };
+            if (document.getElementById(elementId)) {
+                try {
+                    document.getElementById(elementId).style.color = attribute.color;
+                    document.getElementById(elementId).style.border = attribute.border;
+                    document.getElementById(elementId).style.borderRadius = attribute.borderRadius;
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+
+        const values = control.value;
+
+        const invalidMinQty = [];
+        const invalidPrice = [];
+        const invalidPriceAfterTax = [];
+        let statusnya = false;
+
+        if (values.length === 1) {
+            if (Math.floor(Number(values[values.length - 1].minQty)) === 0) {
+                onChangeInputStyle(`bulkPrice.minQty.${0}`, 'error');
+                invalidMinQty.push(0);
+            }
+            if (Math.floor(Number(values[values.length - 1].price)) === 0) {
+                onChangeInputStyle(`bulkPrice.price.${0}`, 'error');
+                invalidPrice.push(0);
+            }
+            if (Math.floor(Number(values[values.length - 1].priceAfterTax)) === 0) {
+                onChangeInputStyle(`bulkPrice.priceAfterTax.${0}`, 'error');
+                invalidPriceAfterTax.push(0);
+            }
+        } else {
+            values.forEach(
+                (
+                    curItem: { level: any; minQty: string; price: string; priceAfterTax: string },
+                    index: number,
+                    arr: Array<{ level: any; minQty: string; price: string; priceAfterTax: string }>
+                ) => {
+                    if (!index) {
+                        return;
+                    }
+
+                    const prevItem = arr[index - 1];
+
+                    if (parseFloat(curItem.minQty) <= parseFloat(prevItem.minQty)) {
+                        invalidMinQty.push(index);
+                        statusnya = true;
+                        onChangeInputStyle(`bulkPrice.minQty.${index}`, 'error');
+                    } else {
+                        onChangeInputStyle(`bulkPrice.minQty.${index}`, 'success');
+                    }
+
+                    if (parseFloat(curItem.price) >= parseFloat(prevItem.price)) {
+                        invalidPrice.push(index);
+                        statusnya = true;
+                        onChangeInputStyle(`bulkPrice.price.${index}`, 'error');
+                    } else {
+                        onChangeInputStyle(`bulkPrice.price.${index}`, 'success');
+                    }
+
+                    if (parseFloat(curItem.priceAfterTax) >= parseFloat(prevItem.priceAfterTax)) {
+                        invalidPrice.push(index);
+                        statusnya = true;
+                        onChangeInputStyle(`bulkPrice.priceAfterTax.${index}`, 'error');
+                    } else {
+                        onChangeInputStyle(`bulkPrice.priceAfterTax.${index}`, 'success');
+                    }
+                }
+            );
+        }
+
+        if (!invalidMinQty.length && !invalidPrice.length && !invalidPriceAfterTax.length) {
+            return null;
+        }
+
+        const errors = new Map();
+
+        invalidMinQty.forEach((item) => {
+            errors.set(item, {
+                invalidMinQty: true,
+            });
+        });
+
+        invalidPrice.forEach((item) => {
+            const co = errors.get(item) || {};
+
+            errors.set(item, {
+                ...co,
+                invalidPrice: true,
+            });
+        });
+
+        invalidPriceAfterTax.forEach((item) => {
+            const co = errors.get(item) || {};
+
+            errors.set(item, {
+                ...co,
+                invalidPriceAfterTax: true,
+            });
+        });
+
+        return errors;
+    }
+
     private _checkRoute(): void {
         this.route.url.pipe(take(1)).subscribe((urls) => {
             if (urls.filter((url) => url.path === 'edit').length > 0) {
@@ -1948,6 +2927,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // SALES INFORMATION
             productSale: this.fb.group({
+                typePricing: [
+                    'exclude' || 'include',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
                 tax: [
                     0,
                     [
@@ -1962,6 +2952,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 retailPrice: null,
                 productPrice: [
                     null,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
+                retailBuyingPriceAfterTax: [
+                    0,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -1991,6 +2992,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ),
                 variants: this.fb.array([]),
             }),
+
+            // SALES INFORMATION BULK PRICING
+            bulkPrices: this.fb.array([], this._checkConditionsBulkPrices as ValidatorFn),
 
             // MEDIA SETTING
             productMedia: this.fb.group({
@@ -2213,8 +3217,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             }),
         });
     }
-
-    private _initFormCheck(): void {}
 
     private _getSubBrandByBrandId(brandId: string): void {
         this.subBrandLoading = true;

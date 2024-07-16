@@ -47,6 +47,12 @@ export class BrandAutocompleteComponent implements OnChanges, OnInit, OnDestroy 
     @Input()
     loading: boolean;
 
+    @Input()
+    error: boolean;
+
+    @Input()
+    errorMessage: string;
+
     @Output()
     loadingChange: EventEmitter<boolean> = new EventEmitter();
 
@@ -54,6 +60,8 @@ export class BrandAutocompleteComponent implements OnChanges, OnInit, OnDestroy 
     selectedValue: EventEmitter<
         SinbadAutocompleteSource | SinbadAutocompleteSource[]
     > = new EventEmitter();
+
+    @Output() onOpen = new EventEmitter<void>();
 
     @Input()
     brand: SinbadAutocompleteType = 'single';
@@ -144,6 +152,8 @@ export class BrandAutocompleteComponent implements OnChanges, OnInit, OnDestroy 
 
     onOpenedAutocomplete(): void {
         HelperService.debug('[BrandAutocompleteComponent] onOpenedAutocomplete');
+
+        this.onOpen.emit();
 
         this.authFacade.getUserSupplier$
             .pipe(

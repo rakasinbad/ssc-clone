@@ -17,6 +17,7 @@ export class CatalogueTaxService {
     constructor(private readonly catalogueTaxApi: CatalogueTaxApiService) {}
 
     fetchCatalogueTaxesRequest$(queryParams: IQueryParams): Observable<Action> {
+        queryParams.limit = 20;
         return this.catalogueTaxApi
             .getWithQuery<PaginateResponse<CatalogueTaxResponseProps>>(queryParams)
             .pipe(

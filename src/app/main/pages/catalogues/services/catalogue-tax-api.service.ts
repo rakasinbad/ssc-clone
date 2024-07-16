@@ -16,6 +16,8 @@ export class CatalogueTaxApiService {
     getWithQuery<T>(queryParams: IQueryParams): Observable<T> {
         const params = this.helperService.handleParams(this.url, queryParams);
 
-        return this.http.get<T>(this.url, { params });
+        return this.http.get<T>(this.url, { params, headers: {
+            "X-Replica": "true",
+        } });
     }
 }

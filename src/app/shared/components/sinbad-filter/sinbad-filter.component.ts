@@ -49,6 +49,7 @@ export class SinbadFilterComponent implements OnInit {
     filterPaymentStatus: boolean = false;
     filterWarehouses: boolean = false;
     filterOrderSource: boolean = false;
+    filterStoreData: boolean = false;
 
     selectedSuppliers: any[] = [];
 
@@ -87,6 +88,10 @@ export class SinbadFilterComponent implements OnInit {
                             if (config.by['status'].sources) {
                                 this.sourceStatus = [...config.by['status'].sources];
                             }
+                        }
+
+                        if (typeof config.by['storeData'] !== 'undefined') {
+                            this.filterStoreData = true;
                         }
 
                         if (typeof config.by['type'] !== 'undefined') {

@@ -33,7 +33,9 @@ export class CatalogueMssSettingsApiService {
         this.url = this.helperService.handleApiRouter(this.endpoint); 
         const params = this.helperService.handleParams(this.url, queryParams);
         
-        return this.http.get<T>(this.url, { params });
+        return this.http.get<T>(this.url, { params, headers: {
+            "X-Replica": "true",
+        }});
     }
 
     getWithQueryCustom<T>(queryParams: IQueryParamsCustom): Observable<T> {
@@ -42,7 +44,9 @@ export class CatalogueMssSettingsApiService {
         Object.keys(queryParams).forEach(k => {
             params = params.set(k, queryParams[k]);
         });
-        return this.http.get<T>(this.url, { params });
+        return this.http.get<T>(this.url, { params, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     upsertMssSettings<T>(body: Partial<UpsertMssSettings>): Observable<T> {
@@ -55,17 +59,25 @@ export class CatalogueMssSettingsApiService {
         this.url = this.helperService.handleApiRouter(this.segmentationEndpoint);
         const params = this.helperService.handleParams(this.url, queryParams);
 
-        return this.http.get<T>(this.url, { params });
+        return this.http.get<T>(this.url, { params, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     getMssTypes<T>(): Observable<T> {
         this.url = this.helperService.handleApiRouter(this.mssTypeEndpoint);
-        return this.http.get<T>(this.url);
+        return this.http.get<T>(this.url, { headers: {
+            "X-Replica": "true",
+        }});
     }
 
     getMssBase<T>(supplierId: string): Observable<T> {
         this.url = this.helperService.handleApiRouter(`${this.mssBaseEndpoint}/${supplierId}`);
-        return this.http.get<T>(this.url);
+        return this.http.get<T>(this.url, { 
+            headers: {
+                "X-Replica": "true",
+            }
+        });
     }
 
     getMssBaseList<T>(): Observable<T> {

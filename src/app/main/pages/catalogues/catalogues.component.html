@@ -1,6 +1,22 @@
 <div id="catalogues" class="page-layout carded fullwidth inner-scroll">
     <!-- CENTER -->
     <div class="center p-8">
+
+        <!-- Tab bar -->
+        <mat-tab-group
+          color="accent"
+          style="border-radius: 4px"
+          class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+          animationDuration="0ms"
+          (selectedIndexChange)="onSelectedTab($event)">
+            <mat-tab aria-label="All" [label]="'All (' + totalDataAllStatus + ')'"></mat-tab>
+            <mat-tab aria-label="Active" [label]="'Active (' + totalDataActive + ')'"></mat-tab>
+            <mat-tab aria-label="Bonus" [label]="'Bonus (' + totalDataBonus + ')'"></mat-tab>
+            <mat-tab aria-label="Regular" [label]="'Regular (' + totalDataRegular + ')'"></mat-tab>
+            <mat-tab aria-label="Inactive" [label]="'Inactive (' + totalDataInactive + ')'"></mat-tab>
+            <mat-tab aria-label="Exclusive" [label]="'Exclusive (' + totalDataExclusive + ')'"></mat-tab>
+        </mat-tab-group>
+
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header
@@ -70,7 +86,7 @@
                             </div>
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
-                                    <p class="catalogue-name">
+                                    <p class="catalogue-name" style="white-space: pre-wrap;">
                                         {{ row?.name }}
                                     </p>
                                     <!-- <p class="text-truncate" style="color: grey">

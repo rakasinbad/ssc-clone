@@ -3,35 +3,20 @@
         <div class="box-info horizontal" fxLayout="column">
             <div fxLayout="row">
                 <div fxLayout="column" fxFlex>
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="start center"
-                        fxLayoutGap="15px"
-                    >
-                        <label
-                            class="custom-field__label"
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            [class.mat-error]="hasError('mode')"
-                        >
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                        <label class="custom-field__label" fxFlexAlign="center" fxFlex="18"
+                            [class.mat-error]="hasError('mode')">
                             *Import Mode
                         </label>
 
                         <div class="custom-field__field" fxFlex="100">
-                            <mat-form-field
-                                class="sinbad-file-field"
-                                appearance="outline"
-                                fxFlex="60"
-                            >
+                            <mat-form-field class="sinbad-file-field" appearance="outline" fxFlex="60">
                                 <ng-container *ngIf="modes$ | async as modes; else noModes">
-                                    <mat-select
-                                        id="select__mode"
-                                        formControlName="mode"
-                                        placeholder="Choose Import Mode"
-                                    >
-                                        <mat-option id="select__mode-none" >None</mat-option>
-                                        <mat-option [id]="'select__mode-' + row.id" *ngFor="let row of modes" [value]="row?.id">
+                                    <mat-select id="select__mode" formControlName="mode"
+                                        placeholder="Choose Import Mode">
+                                        <mat-option id="select__mode-none">None</mat-option>
+                                        <mat-option [id]="'select__mode-' + row.id" *ngFor="let row of modes"
+                                            [value]="row?.id">
                                             {{ row.label | translate }}
                                         </mat-option>
                                     </mat-select>
@@ -53,27 +38,14 @@
                             </div>
 
                             <ng-container *ngIf="!(isLoading$ | async)">
-                                <button
-                                    id="btn__upload-file"
-                                    mat-flat-button
-                                    class="single-file-btn ml-16"
-                                    color="accent"
-                                    type="button"
-                                    fxFlexAlign="center"
-                                    (click)="filePicker.click()"
-                                    [disabled]="form.invalid"
-                                >
+                                <button id="btn__upload-file" mat-flat-button class="single-file-btn ml-16"
+                                    color="accent" type="button" fxFlexAlign="center" (click)="filePicker.click()"
+                                    [disabled]="form.invalid">
                                     Upload file
                                 </button>
 
-                                <input
-                                    id="input__file"
-                                    type="file"
-                                    #filePicker
-                                    class="custom-file"
-                                    (click)="filePicker.value = null"
-                                    (change)="onFileBrowse($event, 'docs')"
-                                />
+                                <input id="input__file" type="file" #filePicker class="custom-file"
+                                    (click)="filePicker.value = null" (change)="onFileBrowse($event, 'docs')" />
                             </ng-container>
                         </div>
                     </div>
@@ -92,29 +64,17 @@
         </div>
 
         <ng-container *ngIf="!(isLoading$ | async)">
-            <div
-                class="section__bottom--contents"
-                fxLayout="column"
-                fxLayoutGap="12px"
-                *ngIf="templates$ | async as templates; noTemplates"
-            >
+            <div class="section__bottom--contents" fxLayout="column" fxLayoutGap="12px"
+                *ngIf="templates$ | async as templates; noTemplates">
                 <div fxLayout="row" fxLayoutAlign="start start" *ngFor="let template of templates">
                     <div class="section__subtitle" fxFlex="15">
                         Template {{ template.type ? (template.type | translate) : '-' }}
                     </div>
 
-                    <div
-                        class="section__sources"
-                        fxLayout="column"
-                        fxLayoutGap="12px"
-                        *ngIf="template.sources as sources; noSources"
-                    >
-                        <a
-                            id="btn__download"
-                            href="javascript:;"
-                            *ngFor="let source of sources"
-                            (click)="onDownload(source)"
-                        >
+                    <div class="section__sources" fxLayout="column" fxLayoutGap="12px"
+                        *ngIf="template.sources as sources; noSources">
+                        <a id="btn__download" href="javascript:;" *ngFor="let source of sources"
+                            (click)="onDownload(source)">
                             {{ source.name ? (source.name | translate) : '-' }}
                         </a>
                     </div>
@@ -129,5 +89,40 @@
                 Template not found.
             </ng-template>
         </ng-container>
+
+        <!-- multi column -->
+        <!-- <ng-container *ngIf="!(isLoading$ | async)">
+            <div class="section__bottom--contents" fxLayout="column" fxLayoutGap="12px"
+                *ngIf="templates$ | async as templates; noTemplates">
+                <div fxLayout="row wrap">
+                    <ng-container fxLayoutAlign="flex-start" *ngFor="let template of templates">
+                        <div fxFlex="0 1 calc(50% - 32px)">
+                            <div class="section__subtitle" fxFlex="50">
+                                Template {{ template.type ? (template.type | translate) : '-' }}
+                            </div>
+
+                            <div class="section__sources" fxLayout="column" fxLayoutGap="12px"
+                                *ngIf="template.sources as sources; noSources">
+                                <a id="btn__download" href="javascript:;" *ngFor="let source of sources"
+                                    (click)="onDownload(source)">
+                                    {{ source.name ? (source.name | translate) : '-' }}
+                                </a>
+                            </div>
+
+                            <ng-template #noSources>
+                                Sources not found.
+                            </ng-template>
+                        </div>
+
+
+                    </ng-container>
+                </div>
+            </div>
+
+            <ng-template #noTemplates>
+                Template not found.
+            </ng-template>
+        </ng-container> -->
+
     </div>
 </form>

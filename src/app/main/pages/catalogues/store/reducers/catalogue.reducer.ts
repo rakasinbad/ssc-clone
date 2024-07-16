@@ -50,6 +50,8 @@ export interface State {
     totalRegular: number;
     totalExclusive: number;
     errors: ErrorState;
+    code: string;
+    name: string;
 }
 
 /**
@@ -104,6 +106,8 @@ const initialState: State = {
     totalRegular: 0,
     totalExclusive: 0,
     errors: initialErrorState,
+    code: '',
+    name: ''
 };
 
 const catalogueReducer = createReducer(
@@ -369,6 +373,12 @@ const catalogueReducer = createReducer(
         totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
         totalRegular: isNaN(+payload.totalRegular) ? 0 : +payload.totalRegular,
         totalExclusive: isNaN(+payload.totalExclusive) ? 0 : +payload.totalExclusive,
+    })),
+    on(CatalogueActions.fetchPricingSettingsSuccess, (state, { payload }) => ({
+        ...state,
+        // isLoading: false,
+        code: payload.code,
+        name: payload.name,
     })),
     on(CatalogueDetailPageActions.adjustPriceSettingSuccess, (state) => ({
         ...state,

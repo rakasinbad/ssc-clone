@@ -1,8 +1,74 @@
 // .mat-column-name, .mat-column-price, .mat-column-stock, .mat-column-sku {
 //     flex: 0 0 25%;
 // }
+
+@import 'src/@fuse/scss/fuse';
+@import 'src/@sinbad/scss/helper';
+
 app-catalogues-form {
+    .mat-stepper-horizontal-container {
+        padding: 10px;
+    }
+
+    mat-horizontal-stepper {
+        .mat-horizontal-stepper-header {
+            pointer-events: none !important;
+        }
+
+        .mat-horizontal-stepper-header:not(:last-child)::after {
+            top: 40px !important;
+        }
+
+        .mat-horizontal-stepper-header:not(:first-child)::before {
+            top: 40px !important;
+        }
+
+        .mat-horizontal-content-container {
+            padding: 0 !important;
+        }
+
+        .mat-horizontal-stepper-header-container {
+            justify-content: center;
+        }
+
+        .mat-horizontal-stepper-header-container-edit {
+            .mat-horizontal-stepper-header-container {
+                display: none;
+            }
+        }
+
+        .mat-stepper-horizontal-line {
+            max-width: 20rem !important;
+            top: 40px !important;
+        }
+
+        .mat-step-icon {
+            width: 36px;
+            height: 36px;
+            background-color: white !important;
+            border-color: #dae0e7 !important;
+            color: #677a8e !important;
+            border-width: 1px;
+        }
+
+        .mat-step-icon-selected {
+            width: 36px;
+            height: 36px;
+            background-color: #ec1a24 !important;
+            border-color: #ec1a24 !important;
+            color: white !important;
+        }
+    }
+
     #catalogues-form {
+        .bulkTax, .mat-form-field-infix {
+            // height: 60px !important;
+        }
+
+        .mat-error {
+            font-size: 12px;
+        }
+
         .view-field-right {
             label {
                 font-weight: 600;
@@ -121,5 +187,93 @@ app-catalogues-form {
         .mat-form-field-appearance-outline .mat-form-field-outline {
             background-color: white;
         }
+
+      
+        .btnBulkPrice {
+            &-active {
+                border: 1px solid #F0444C;
+                color: #F0444C;
+                width: 129px;
+                border-radius: 4px;
+                text-align: center;
+                background-color: white;
+                height: 44px;
+                margin-top: 10px;
+                padding: 3px 0;
+            }
+            &-disabled {
+                border: 1px solid #FBC9CC;
+                color: #FBC9CC;
+                width: 129px;
+                border-radius: 4px;
+                text-align: center;
+                background-color: white;
+                height: 44px;
+                margin-top: 10px;
+                padding: 3px 0;
+            }
+            &-active-box {
+                border: 1px solid #F0444C;
+                color: #F0444C;
+                width: 129px;
+                border-radius: 4px;
+                text-align: center;
+                background-color: white;
+                height: 44px;
+                padding: 3px 0;
+            }
+        }
+
+        .levelmore {
+            color: #ACB8C3;
+            background: transparent;
+            border: 1px solid #DAE0E7;
+            width: 50px;
+            height: 44px;
+            padding: 7px 0;
+            border-radius: 4px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .bulkTax {
+            display: inline-grid;
+            color:#ACB8C3;
+            background: transparent;
+            border: 1px solid #DAE0E7;
+            width: 141px;
+            // height: 44px;
+            padding: 7px;
+            border-radius: 4px;
+            margin: 0 8px;
+            word-break: break-all;
+        }
+
+        .box-bulk-price {
+            background: #f3f5f7;
+            border-radius: 4px;
+            padding: 1em;
+            height: fit-content;
+            margin-top: 10px;
+        }
+
+        .minQtyBulk, .priceBulk, .priceBulkAft {
+            width: 25%;
+            margin-right: 5px;
+            margin-left: 5px;
+            height: 44px;
+            background-color: white;
+            color: black;
+            border: 1px solid lightgray;
+            padding-left: 10px;
+            border-radius: 4px;
+        }
+
+        .btn-delete-bulk {
+            float: right;
+            display: inline-flex;
+            margin-left: 18px;
+        }
+
     }
 }

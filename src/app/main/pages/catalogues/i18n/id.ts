@@ -16,6 +16,9 @@ export const locale = {
         BULK_CREATE_GUIDE: 'Guide',
         BULK_CREATE_TEMPLATE: 'Import Example',
         UPDATE_MSS_TYPE: 'MSS Type Upload',
+        UPDATE_CATALOGUE_TEMPLATE: 'Catalogue Bulk Update',
+        BULK_UPDATE_GUIDE: 'Catalogue Bulk Update Guide',
+        BULK_UPDATE_TEMPLATE: 'Catalogue Bulk Update',
         FORM: {
             ...globalIdLang.FORM,
             MAIN_PRODUCT_PHOTO: 'Main Product Photo',

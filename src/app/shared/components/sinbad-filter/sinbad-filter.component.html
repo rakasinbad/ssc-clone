@@ -7,14 +7,8 @@
                 </span>
             </div>
 
-            <button
-                type="button"
-                mat-icon-button
-                class="sinbad__filter-close"
-                fxFlexAlign="center"
-                disableRipple
-                (click)="close()"
-            >
+            <button type="button" mat-icon-button class="sinbad__filter-close" fxFlexAlign="center" disableRipple
+                (click)="close()">
                 <mat-icon>close</mat-icon>
             </button>
         </div>
@@ -28,57 +22,28 @@
     </mat-list>
 
     <ng-container *ngIf="(config$ | async)?.by">
-        
+
         <!-- ORDER DATE -->
         <mat-list *ngIf="filterDate">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.date?.title as dateTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.date?.title as dateTitle">
                     <mat-panel-title class="sinbad__filter-title">{{ dateTitle }}</mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('startDate')"
-                                [matDatepicker]="startDatePicker"
-                                autocomplete="off"
-                                name="startDate"
-                                placeholder="Start Date"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="startDatePicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                touchUi
-                                #startDatePicker
-                                [disabled]="false"
-                            ></mat-datepicker>
+                            <input matInput [formControl]="form.get('startDate')" [matDatepicker]="startDatePicker"
+                                autocomplete="off" name="startDate" placeholder="Start Date" [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #startDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('endDate')"
-                                [matDatepicker]="endDatePicker"
-                                autocomplete="off"
-                                name="endDate"
-                                placeholder="End Date"
-                                [max]="maxDate"
-                                [min]="form.get('startDate').value ? form.get('startDate').value : null"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="endDatePicker"
-                            ></mat-datepicker-toggle>
+                            <input matInput [formControl]="form.get('endDate')" [matDatepicker]="endDatePicker"
+                                autocomplete="off" name="endDate" placeholder="End Date" [max]="maxDate"
+                                [min]="form.get('startDate').value ? form.get('startDate').value : null" />
+                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                             <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
                     </div>
@@ -87,56 +52,28 @@
         </mat-list>
         <!-- / ORDER DATE -->
 
-         <!-- PAYMENT ORDER DATE -->
-         <mat-list *ngIf="filterPaymentOrderDate">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentOrderDate?.title as dateTitle"
-                >
+        <!-- PAYMENT ORDER DATE -->
+        <mat-list *ngIf="filterPaymentOrderDate">
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.paymentOrderDate?.title as dateTitle">
                     <mat-panel-title class="sinbad__filter-title">{{ dateTitle }}</mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('startDate')"
-                                [matDatepicker]="startDatePicker"
-                                autocomplete="off"
-                                name="startDate"
-                                placeholder="Start Date"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="startDatePicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                touchUi
-                                #startDatePicker
-                                [disabled]="false"
-                            ></mat-datepicker>
+                            <input matInput [formControl]="form.get('startDate')" [matDatepicker]="startDatePicker"
+                                autocomplete="off" name="startDate" placeholder="Start Date" [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #startDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('endDate')"
-                                [matDatepicker]="endDatePicker"
-                                autocomplete="off"
-                                name="endDate"
-                                placeholder="End Date"
+                            <input matInput [formControl]="form.get('endDate')" [matDatepicker]="endDatePicker"
+                                autocomplete="off" name="endDate" placeholder="End Date"
                                 [min]="form.get('startDate').value ? form.get('startDate').value : null"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="endDatePicker"
-                            ></mat-datepicker-toggle>
+                                [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                             <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
                     </div>
@@ -147,54 +84,28 @@
 
         <!-- PAYMENT DUE DATE -->
         <mat-list *ngIf="filterPaymentDueDate">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentDueDate?.title as dateTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.paymentDueDate?.title as dateTitle">
                     <mat-panel-title class="sinbad__filter-title">{{ dateTitle }}</mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('startPaymentDueDate')"
-                                [matDatepicker]="startDatePicker"
-                                autocomplete="off"
-                                name="startPaymentDueDate"
-                                placeholder="Start Date"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="startDatePicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                touchUi
-                                #startDatePicker
-                                [disabled]="false"
-                            ></mat-datepicker>
+                            <input matInput [formControl]="form.get('startPaymentDueDate')"
+                                [matDatepicker]="startDatePicker" autocomplete="off" name="startPaymentDueDate"
+                                placeholder="Start Date" [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #startDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('endPaymentDueDate')"
-                                [matDatepicker]="endDatePicker"
-                                autocomplete="off"
-                                name="endPaymentDueDate"
+                            <input matInput [formControl]="form.get('endPaymentDueDate')"
+                                [matDatepicker]="endDatePicker" autocomplete="off" name="endPaymentDueDate"
                                 placeholder="End Date"
                                 [min]="form.get('startPaymentDueDate').value ? form.get('startPaymentDueDate').value : null"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="endDatePicker"
-                            ></mat-datepicker-toggle>
+                                [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                             <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
                     </div>
@@ -205,54 +116,27 @@
 
         <!-- PAYMENT DATE -->
         <mat-list *ngIf="filterPaymentDate">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentDate?.title as dateTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.paymentDate?.title as dateTitle">
                     <mat-panel-title class="sinbad__filter-title">{{ dateTitle }}</mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('startPaymentDate')"
-                                [matDatepicker]="startDatePicker"
-                                autocomplete="off"
-                                name="startPaymentDate"
-                                placeholder="Start Date"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="startDatePicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                touchUi
-                                #startDatePicker
-                                [disabled]="false"
-                            ></mat-datepicker>
+                            <input matInput [formControl]="form.get('startPaymentDate')"
+                                [matDatepicker]="startDatePicker" autocomplete="off" name="startPaymentDate"
+                                placeholder="Start Date" [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #startDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                matInput
-                                [formControl]="form.get('endPaymentDate')"
-                                [matDatepicker]="endDatePicker"
-                                autocomplete="off"
-                                name="endPaymentDate"
-                                placeholder="End Date"
+                            <input matInput [formControl]="form.get('endPaymentDate')" [matDatepicker]="endDatePicker"
+                                autocomplete="off" name="endPaymentDate" placeholder="End Date"
                                 [min]="form.get('startPaymentDate').value ? form.get('startPaymentDate').value : null"
-                                [max]="maxDate"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="endDatePicker"
-                            ></mat-datepicker-toggle>
+                                [max]="maxDate" />
+                            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                             <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
                         </mat-form-field>
                     </div>
@@ -263,13 +147,8 @@
 
         <!-- STATUS -->
         <mat-list *ngIf="sourceStatus && sourceStatus.length > 0">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.status?.title as statusTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.status?.title as statusTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ statusTitle }}
                     </mat-panel-title>
@@ -277,17 +156,10 @@
 
                 <ng-template matExpansionPanelContent>
                     <div [class.sinbad__filter-checkbox--container]="sourceStatus.length > 2">
-                        <div
-                            class="sinbad__filter-checkbox"
-                            [class.reset]="sourceStatus.length < 3"
-                        >
-                            <mat-checkbox
-                                *ngFor="let status of sourceStatus; trackBy: trackByStatus"
-                                [(ngModel)]="status.checked"
-                                [matTooltip]="status?.label"
-                                (change)="onChangeStatus($event)"
-                                disableRipple
-                            >
+                        <div class="sinbad__filter-checkbox" [class.reset]="sourceStatus.length < 3">
+                            <mat-checkbox *ngFor="let status of sourceStatus; trackBy: trackByStatus"
+                                [(ngModel)]="status.checked" [matTooltip]="status?.label"
+                                (change)="onChangeStatus($event)" disableRipple>
                                 {{ status?.label }}
                             </mat-checkbox>
                         </div>
@@ -299,10 +171,7 @@
 
         <!-- TYPE -->
         <mat-list *ngIf="sourceType && sourceType.length > 0">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
                 <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.type?.title as typeTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ typeTitle }}
@@ -312,13 +181,9 @@
                 <ng-template matExpansionPanelContent>
                     <div [class.sinbad__filter-checkbox--container]="sourceType.length > 2">
                         <div class="sinbad__filter-checkbox" [class.reset]="sourceType.length < 3">
-                            <mat-checkbox
-                                *ngFor="let type of sourceType; trackBy: trackByType"
-                                [formControl]="form.get('type')"
-                                [value]="type?.id"
-                                [matTooltip]="type?.label"
-                                disableRipple
-                            >
+                            <mat-checkbox *ngFor="let type of sourceType; trackBy: trackByType"
+                                [formControl]="form.get('type')" [value]="type?.id" [matTooltip]="type?.label"
+                                disableRipple>
                                 {{ type?.label }}
                             </mat-checkbox>
                         </div>
@@ -330,23 +195,16 @@
 
         <!-- BRAND -->
         <mat-list *ngIf="filterBrand">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.brand?.title as brandTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.brand?.title as brandTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ brandTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <brand-autocomplete
-                        [(reset)]="resetBrand"
-                        (selectedValue)="onSelectedBrand($event)"
-                    ></brand-autocomplete>
+                    <brand-autocomplete [(reset)]="resetBrand"
+                        (selectedValue)="onSelectedBrand($event)"></brand-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -354,13 +212,8 @@
 
         <!--SUB BRAND -->
         <mat-list *ngIf="filterSubBrand">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.subBrand?.title as subBrandTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.subBrand?.title as subBrandTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ subBrandTitle }}
                     </mat-panel-title>
@@ -370,18 +223,13 @@
                     <div class="custom-field" fxLayout="row">
                         <mat-form-field appearance="outline" fxFlex>
                             <mat-select [formControl]="form.get('subBrand')">
-                                <ng-container
-                                    *ngIf="
+                                <ng-container *ngIf="
                                         (config$ | async)?.by?.subBrand?.sources as subBrands;
                                         else noSubBrands
-                                    "
-                                >
+                                    ">
                                     <ng-container *ngIf="subBrands?.length > 0; else noSubBrands">
                                         <mat-option>-</mat-option>
-                                        <mat-option
-                                            *ngFor="let subBrand of subBrands"
-                                            [value]="subBrand.id"
-                                        >
+                                        <mat-option *ngFor="let subBrand of subBrands" [value]="subBrand.id">
                                             {{ subBrand.code + ' - ' + subBrand.name }}
                                         </mat-option>
                                     </ng-container>
@@ -398,25 +246,48 @@
         </mat-list>
         <!-- / SUB BRAND -->
 
+        <!--STORE DATA -->
+        <mat-list *ngIf="filterStoreData">
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.storeData?.title as storeDataTitle">
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ storeDataTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div class="custom-field" fxLayout="row">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('storeData')">
+
+                                <ng-container>
+                                    <mat-option value="new">
+                                        New
+                                    </mat-option>
+                                    <mat-option value="data_change">
+                                        Changed
+                                    </mat-option>
+                                </ng-container>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / STORE DATA -->
+
         <!-- FAKTUR -->
         <mat-list *ngIf="filterFaktur">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.faktur?.title as fakturTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.faktur?.title as fakturTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ fakturTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <faktur-autocomplete
-                        [(reset)]="resetFaktur"
-                        (selectedValue)="onSelectedFaktur($event)"
-                    ></faktur-autocomplete>
+                    <faktur-autocomplete [(reset)]="resetFaktur"
+                        (selectedValue)="onSelectedFaktur($event)"></faktur-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -424,13 +295,8 @@
 
         <!-- BASE PRICE -->
         <mat-list *ngIf="filterbasePrice">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.basePrice?.title as basePriceTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.basePrice?.title as basePriceTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ basePriceTitle }}
                     </mat-panel-title>
@@ -439,45 +305,25 @@
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
-                            <input
-                                #minTargetInput
-                                matInput
-                                [formControl]="form.get('minAmount')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #minTargetInput matInput [formControl]="form.get('minAmount')" mask="separator.2"
+                                thousandSeparator="." placeholder="Rp" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !minTargetInput?.value ||
                                     minTargetInput?.value === 'Rp' ||
                                     !minTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Minimum
                             </span>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                #maxTargetInput
-                                matInput
-                                [formControl]="form.get('maxAmount')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #maxTargetInput matInput [formControl]="form.get('maxAmount')" mask="separator.2"
+                                thousandSeparator="." placeholder="Rp" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !maxTargetInput?.value ||
                                     maxTargetInput?.value === 'Rp' ||
                                     !maxTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Maximum
                             </span>
                         </mat-form-field>
@@ -489,13 +335,9 @@
 
         <!-- STORE ORDER TOTAL -->
         <mat-list *ngIf="filterStoreOrderTotal">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
                 <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.storeOrderTotal?.title as storeOrderTotalTitle"
-                >
+                    *ngIf="(config$ | async)?.by?.storeOrderTotal?.title as storeOrderTotalTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ storeOrderTotalTitle }}
                     </mat-panel-title>
@@ -504,47 +346,27 @@
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
-                            <input
-                                #minTargetInput
-                                matInput
-                                [formControl]="form.get('minStoreOrderTotal')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                                separatorLimit="{{filterStoreOrderTotalLimitNumber}}"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #minTargetInput matInput [formControl]="form.get('minStoreOrderTotal')"
+                                mask="separator.2" thousandSeparator="." placeholder="Rp"
+                                separatorLimit="{{filterStoreOrderTotalLimitNumber}}" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !minTargetInput?.value ||
                                     minTargetInput?.value === 'Rp' ||
                                     !minTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Minimum
                             </span>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                #maxTargetInput
-                                matInput
-                                [formControl]="form.get('maxStoreOrderTotal')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                                separatorLimit="{{filterStoreOrderTotalLimitNumber}}"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #maxTargetInput matInput [formControl]="form.get('maxStoreOrderTotal')"
+                                mask="separator.2" thousandSeparator="." placeholder="Rp"
+                                separatorLimit="{{filterStoreOrderTotalLimitNumber}}" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !maxTargetInput?.value ||
                                     maxTargetInput?.value === 'Rp' ||
                                     !maxTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Maximum
                             </span>
                         </mat-form-field>
@@ -556,13 +378,9 @@
 
         <!-- SUPPLIER DELIVERED TOTAL -->
         <mat-list *ngIf="filterSupplierDeliveredTotal">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
                 <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.supplierDeliveredTotal?.title as supplierDeliveredTotalTitle"
-                >
+                    *ngIf="(config$ | async)?.by?.supplierDeliveredTotal?.title as supplierDeliveredTotalTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ supplierDeliveredTotalTitle }}
                     </mat-panel-title>
@@ -571,47 +389,27 @@
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
-                            <input
-                                #minTargetInput
-                                matInput
-                                [formControl]="form.get('minSupplierDeliveredTotal')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                                separatorLimit="{{filterSupplierDeliveredTotalLimitNumber}}"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #minTargetInput matInput [formControl]="form.get('minSupplierDeliveredTotal')"
+                                mask="separator.2" thousandSeparator="." placeholder="Rp"
+                                separatorLimit="{{filterSupplierDeliveredTotalLimitNumber}}" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !minTargetInput?.value ||
                                     minTargetInput?.value === 'Rp' ||
                                     !minTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Minimum
                             </span>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
-                            <input
-                                #maxTargetInput
-                                matInput
-                                [formControl]="form.get('maxSupplierDeliveredTotal')"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                placeholder="Rp"
-                                separatorLimit="{{filterSupplierDeliveredTotalLimitNumber}}"
-                            />
-                            <span
-                                class="text-suffix"
-                                matSuffix
-                                *ngIf="
+                            <input #maxTargetInput matInput [formControl]="form.get('maxSupplierDeliveredTotal')"
+                                mask="separator.2" thousandSeparator="." placeholder="Rp"
+                                separatorLimit="{{filterSupplierDeliveredTotalLimitNumber}}" />
+                            <span class="text-suffix" matSuffix *ngIf="
                                     !maxTargetInput?.value ||
                                     maxTargetInput?.value === 'Rp' ||
                                     !maxTargetInput?.value?.length
-                                "
-                            >
+                                ">
                                 Maximum
                             </span>
                         </mat-form-field>
@@ -623,18 +421,13 @@
 
         <!-- WAREHOUSE -->
         <mat-list *ngIf="filterWarehouse">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
                 <mat-expansion-panel-header>
                     <mat-panel-title class="sinbad__filter-title">Warehouse</mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <select-single-warehouse
-                        (selected)="onSelectedWarehouse($event)"
-                    ></select-single-warehouse>
+                    <select-single-warehouse (selected)="onSelectedWarehouse($event)"></select-single-warehouse>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -642,23 +435,16 @@
 
         <!-- SEGMENTATION TYPE -->
         <mat-list *ngIf="filterSegmentType">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.segmentType?.title as segmentTypeTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.segmentType?.title as segmentTypeTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ segmentTypeTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <segment-type-autocomplete
-                        [(reset)]="resetSegmentType"
-                        (selectedValue)="onSelectedSegmentType($event)"
-                    ></segment-type-autocomplete>
+                    <segment-type-autocomplete [(reset)]="resetSegmentType"
+                        (selectedValue)="onSelectedSegmentType($event)"></segment-type-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -666,23 +452,16 @@
 
         <!-- SEGMENTATION GROUP -->
         <mat-list *ngIf="filterSegmentGroup">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.segmentGroup?.title as segmentGroupTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.segmentGroup?.title as segmentGroupTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ segmentGroupTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <segment-group-autocomplete
-                        [(reset)]="resetSegmentGroup"
-                        (selectedValue)="onSelectedSegmentGroup($event)"
-                    ></segment-group-autocomplete>
+                    <segment-group-autocomplete [(reset)]="resetSegmentGroup"
+                        (selectedValue)="onSelectedSegmentGroup($event)"></segment-group-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -690,23 +469,16 @@
 
         <!-- SEGMENTATION CHANNEL -->
         <mat-list *ngIf="filterSegmentChannel">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.segmentChannel?.title as segmentChannelTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.segmentChannel?.title as segmentChannelTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ segmentChannelTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <segment-channel-autocomplete
-                        [(reset)]="resetSegmentChannel"
-                        (selectedValue)="onSelectedSegmentChannel($event)"
-                    ></segment-channel-autocomplete>
+                    <segment-channel-autocomplete [(reset)]="resetSegmentChannel"
+                        (selectedValue)="onSelectedSegmentChannel($event)"></segment-channel-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -714,23 +486,16 @@
 
         <!-- SEGMENTATION CLUSTER -->
         <mat-list *ngIf="filterSegmentCluster">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.segmentCluster?.title as segmentClusterTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.segmentCluster?.title as segmentClusterTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ segmentClusterTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <segment-cluster-autocomplete
-                        [(reset)]="resetSegmentCluster"
-                        (selectedValue)="onSelectedSegmentCluster($event)"
-                    ></segment-cluster-autocomplete>
+                    <segment-cluster-autocomplete [(reset)]="resetSegmentCluster"
+                        (selectedValue)="onSelectedSegmentCluster($event)"></segment-cluster-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -738,13 +503,8 @@
 
         <!-- PAYMENT TYPE -->
         <mat-list *ngIf="sourcePaymentType && sourcePaymentType.length > 0">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentType?.title as paymentTypeTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.paymentType?.title as paymentTypeTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ paymentTypeTitle }}
                     </mat-panel-title>
@@ -753,17 +513,10 @@
                 <ng-template matExpansionPanelContent>
                     <!-- <div [class.sinbad__filter-checkbox--container]="sourcePaymentType.length > 2"> -->
                     <div>
-                        <div
-                            class="sinbad__filter-checkbox"
-                            [class.reset]="sourcePaymentType.length < 3"
-                        >
-                            <mat-checkbox
-                                *ngFor="let paymentType of sourcePaymentType; trackBy: trackByPaymentType"
-                                [(ngModel)]="paymentType.checked"
-                                [matTooltip]="paymentType?.label"
-                                (change)="onChangePaymentType($event)"
-                                disableRipple
-                            >
+                        <div class="sinbad__filter-checkbox" [class.reset]="sourcePaymentType.length < 3">
+                            <mat-checkbox *ngFor="let paymentType of sourcePaymentType; trackBy: trackByPaymentType"
+                                [(ngModel)]="paymentType.checked" [matTooltip]="paymentType?.label"
+                                (change)="onChangePaymentType($event)" disableRipple>
                                 {{ paymentType?.label }}
                             </mat-checkbox>
                         </div>
@@ -775,13 +528,8 @@
 
         <!-- PAY LATER TYPE -->
         <mat-list *ngIf="sourcePayLaterType && sourcePayLaterType.length > 0">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.payLaterType?.title as payLaterTypeTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.payLaterType?.title as payLaterTypeTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ payLaterTypeTitle }}
                     </mat-panel-title>
@@ -790,17 +538,10 @@
                 <ng-template matExpansionPanelContent>
                     <!-- <div [class.sinbad__filter-checkbox--container]="sourcePayLaterType.length > 2"> -->
                     <div>
-                        <div
-                            class="sinbad__filter-checkbox"
-                            [class.reset]="sourcePayLaterType.length < 3"
-                        >
-                            <mat-checkbox
-                                *ngFor="let payLaterType of sourcePayLaterType; trackBy: trackByPayLaterType"
-                                [(ngModel)]="payLaterType.checked"
-                                [matTooltip]="payLaterType?.label"
-                                (change)="onChangePayLaterType($event)"
-                                disableRipple
-                            >
+                        <div class="sinbad__filter-checkbox" [class.reset]="sourcePayLaterType.length < 3">
+                            <mat-checkbox *ngFor="let payLaterType of sourcePayLaterType; trackBy: trackByPayLaterType"
+                                [(ngModel)]="payLaterType.checked" [matTooltip]="payLaterType?.label"
+                                (change)="onChangePayLaterType($event)" disableRipple>
                                 {{ payLaterType?.label }}
                             </mat-checkbox>
                         </div>
@@ -812,13 +553,8 @@
 
         <!-- ORDER STATUS -->
         <mat-list *ngIf="filterOrderStatus">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.orderStatus?.title as orderStatusTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.orderStatus?.title as orderStatusTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ orderStatusTitle }}
                     </mat-panel-title>
@@ -827,7 +563,8 @@
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
-                            <mat-select [formControl]="form.get('orderStatus')" placeholder="Choose Order Status" multiple>
+                            <mat-select [formControl]="form.get('orderStatus')" placeholder="Choose Order Status"
+                                multiple>
                                 <mat-option *ngFor="let sources of sourceOrderStatus" [value]="sources?.id">
                                     {{ sources?.label | titlecase }}
                                 </mat-option>
@@ -841,13 +578,8 @@
 
         <!-- PAYMENT STATUS -->
         <mat-list *ngIf="filterPaymentStatus">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentStatus?.title as paymentStatusTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.paymentStatus?.title as paymentStatusTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ paymentStatusTitle }}
                     </mat-panel-title>
@@ -856,7 +588,8 @@
                 <ng-template matExpansionPanelContent>
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
-                            <mat-select [formControl]="form.get('paymentStatus')" placeholder="Choose Payment Status" multiple>
+                            <mat-select [formControl]="form.get('paymentStatus')" placeholder="Choose Payment Status"
+                                multiple>
                                 <mat-option *ngFor="let sources of sourcePaymentStatus" [value]="sources?.id">
                                     {{ sources?.label | titlecase }}
                                 </mat-option>
@@ -870,13 +603,8 @@
 
         <!-- ORDER WAREHOUSES -->
         <mat-list *ngIf="filterWarehouses">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.warehouses?.title as warehousesTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.warehouses?.title as warehousesTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ warehousesTitle }}
                     </mat-panel-title>
@@ -899,13 +627,8 @@
 
         <!-- ORDER SOURCE -->
         <mat-list *ngIf="filterOrderSource">
-            <mat-expansion-panel
-                class="sinbad__expansion-panel--filter mat-elevation-z0"
-                [expanded]="showPanel"
-            >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.orderSource?.title as orderSourceTitle"
-                >
+            <mat-expansion-panel class="sinbad__expansion-panel--filter mat-elevation-z0" [expanded]="showPanel">
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.orderSource?.title as orderSourceTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ orderSourceTitle }}
                     </mat-panel-title>
@@ -1091,12 +814,8 @@
     <!-- FILTER ACTION -->
     <mat-list fxLayout="column" fxLayoutAlign="end stretch" class="sinbad__filter-action--wrapper">
         <mat-divider></mat-divider>
-        <app-sinbad-filter-action
-            [form]="form"
-            [config]="(config$ | async)?.actions"
-            (clickReset)="onClickReset()"
-            (clickSubmit)="onClickSubmit()"
-        ></app-sinbad-filter-action>
+        <app-sinbad-filter-action [form]="form" [config]="(config$ | async)?.actions" (clickReset)="onClickReset()"
+            (clickSubmit)="onClickSubmit()"></app-sinbad-filter-action>
     </mat-list>
     <!-- / FILTER ACTION -->
 

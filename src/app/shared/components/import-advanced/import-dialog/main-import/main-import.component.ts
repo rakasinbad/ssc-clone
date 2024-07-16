@@ -4,7 +4,7 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -22,7 +22,7 @@ import {
     IConfigImportAdvanced,
     IConfigMode,
     IConfigTemplate,
-    IConfigTemplateSource
+    IConfigTemplateSource,
 } from '../../models';
 import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actions';
 import { fromImportAdvanced } from '../../store/reducers';
@@ -33,7 +33,7 @@ import { ImportAdvancedSelectors } from '../../store/selectors';
     templateUrl: './main-import.component.html',
     styleUrls: ['./main-import.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainImportComponent implements OnInit, OnDestroy {
     form: FormGroup;
@@ -142,19 +142,18 @@ export class MainImportComponent implements OnInit, OnDestroy {
                     page: this.pageType,
                     type: 'export_template',
                     status: 'done',
-                    userId: null
-                }
+                    userId: null,
+                },
             })
         );
 
         this.urlDownload = url;
-           
     }
 
     onFileBrowse(ev: Event, type: string): void {
         this.importSub$.next({
             $event: ev,
-            type
+            type,
         });
         // const inputEl = ev.target as HTMLInputElement;
 
@@ -206,16 +205,16 @@ export class MainImportComponent implements OnInit, OnDestroy {
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
-                this.store.dispatch(ImportAdvancedActions.resetImportConfig());
-
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
 
             default:
+                this.store.dispatch(ImportAdvancedActions.resetImportConfig());
+
                 this.store.dispatch(
                     ImportAdvancedActions.importConfigRequest({
-                        payload: this.pageType.toLowerCase()
+                        payload: this.pageType.toLowerCase(),
                     })
                 );
 
@@ -228,7 +227,7 @@ export class MainImportComponent implements OnInit, OnDestroy {
                 this.store
                     .select(ImportAdvancedSelectors.getIsLoading)
                     .pipe(takeUntil(this._unSubs$))
-                    .subscribe(isLoading => {
+                    .subscribe((isLoading) => {
                         if (isLoading) {
                             this.form.disable();
                         } else {
@@ -251,9 +250,13 @@ export class MainImportComponent implements OnInit, OnDestroy {
 
                             if (file) {
                                 if (config.mode) {
-                                    const modeIds = config.mode.map(configMode => configMode.id);
-                                    const selectedMode = config.mode.find(item => item.id === mode);
-                                    const fileType = selectedMode.fileType ? selectedMode.fileType : null;
+                                    const modeIds = config.mode.map((configMode) => configMode.id);
+                                    const selectedMode = config.mode.find(
+                                        (item) => item.id === mode
+                                    );
+                                    const fileType = selectedMode.fileType
+                                        ? selectedMode.fileType
+                                        : null;
 
                                     if (modeIds.includes(mode)) {
                                         this._handlePage(file, mode, fileType);
@@ -263,17 +266,14 @@ export class MainImportComponent implements OnInit, OnDestroy {
                         }
                     });
 
-                    this.store
-                        .select(ImportAdvancedSelectors.getIsDownload)
-                        .pipe(
-                            takeUntil(this._unSubs$)
-                        )
-                        .subscribe(isDownload => {
-                            if (isDownload && (this.urlDownload)) {
-                                window.open(this.urlDownload, '_blank');
-                            }
+                this.store
+                    .select(ImportAdvancedSelectors.getIsDownload)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe((isDownload) => {
+                        if (isDownload && this.urlDownload) {
+                            window.open(this.urlDownload, '_blank');
                         }
-                    );
+                    });
                 break;
         }
     }
@@ -283,9 +283,9 @@ export class MainImportComponent implements OnInit, OnDestroy {
             mode: [
                 '',
                 RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                })
-            ]
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ],
         });
     }
 
@@ -299,8 +299,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             file,
                             page: this.pageType,
                             type: mode,
-                            endpoint: 'import-order-parcels'
-                        }
+                            endpoint: 'import-order-parcels',
+                        },
                     })
                 );
                 break;
@@ -313,8 +313,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             page: this.pageType,
                             type: mode,
                             endpoint: 'import-catalogues',
-                            fileType
-                        }
+                            fileType,
+                        },
                     })
                 );
                 break;
@@ -326,8 +326,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             file,
                             page: this.pageType,
                             type: mode,
-                            endpoint: 'import-journey-plans'
-                        }
+                            endpoint: 'import-journey-plans',
+                        },
                     })
                 );
                 break;
@@ -339,8 +339,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             file,
                             page: this.pageType,
                             type: mode,
-                            endpoint: 'import-sales'
-                        }
+                            endpoint: 'import-sales',
+                        },
                     })
                 );
                 break;
@@ -353,8 +353,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                                 file,
                                 page: this.pageType,
                                 type: mode,
-                                endpoint: 'import-supplier-stores'
-                            }
+                                endpoint: 'import-supplier-stores',
+                            },
                         })
                     );
                 } else {
@@ -364,8 +364,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                                 file,
                                 page: this.pageType,
                                 type: mode,
-                                endpoint: 'import-stores'
-                            }
+                                endpoint: 'import-stores',
+                            },
                         })
                     );
                 }
@@ -379,8 +379,8 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             file,
                             page: this.pageType,
                             type: mode,
-                            endpoint: 'import-portfolios'
-                        }
+                            endpoint: 'import-portfolios',
+                        },
                     })
                 );
                 break;
