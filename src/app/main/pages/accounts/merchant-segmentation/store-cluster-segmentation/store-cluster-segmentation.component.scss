@@ -1,0 +1,79 @@
+@import 'src/@sinbad/scss/helper';
+
+app-store-cluster-segmentation {
+    .sinbad-nav-item {
+        .sinbad-nav-action {
+            &.sinbad-nav-action__disabled {
+                pointer-events: none;
+            }
+        }
+
+        .sinbad-nav-link {
+            &:hover {
+                color: sinbad-color('red', '10');
+            }
+
+            &.sinbad-nav-link__disabled {
+                pointer-events: none;
+
+                &:hover {
+                    color: unset !important;
+                }
+            }
+
+            &.sinbad-nav-link__readonly {
+                input {
+                    cursor: pointer;
+
+                    &:hover {
+                        color: sinbad-color('red', '10');
+                    }
+                }
+
+                &:hover {
+                    input {
+                        cursor: pointer;
+                        color: sinbad-color('red', '10');
+                    }
+
+                    mat-icon {
+                        color: sinbad-color('red', '10');
+                    }
+                }
+            }
+
+            &.sinbad-nav-link__focus {
+                &:hover {
+                    color: unset !important;
+                }
+            }
+
+            &.sinbad-nav-link__inactive {
+                pointer-events: none;
+                opacity: 0.5;
+
+                input {
+                    cursor: pointer;
+
+                    &:hover {
+                        color: unset !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .btn-sinbad-dashed {
+        border: 1.8px dashed sinbad-color('green', '60');
+    }
+
+    .btn-sinbad-disabled {
+        opacity: 0.5;
+    }
+
+    .add-wrapper {
+        display: flex;
+        place-content: center;
+        align-items: center;
+    }
+}

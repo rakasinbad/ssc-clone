@@ -1,0 +1,60 @@
+dialog-warehouse {
+    .container-title {
+        display: flex;
+        justify-content: space-between;
+    }
+    .container-filter {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .container-content {
+        display: flex;
+        flex-direction: row;
+    }
+    .container-region {
+        width: 180px;
+
+        .select-region {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 12px 16px 16px;
+            cursor: pointer;
+            &:hover {
+                background-color: #f3f5f7;
+            }
+            .label {
+                font-weight: 600;
+                font-size: 14px;
+                color: #677a8e;
+            }
+            .total-select {
+                padding: 6px;
+                border-radius: 4px;
+                background-color: #f3f5f7;
+                color: #677a8e;
+            }
+        }
+        .active-select-region {
+            background-color: #0b1a28;
+            color: #ffffff !important;
+        }
+    }
+
+    .container-table {
+        margin: 16px;
+    }
+    .loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 56px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.15);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

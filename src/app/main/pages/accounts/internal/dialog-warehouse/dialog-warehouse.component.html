@@ -1,0 +1,125 @@
+<div mat-dialog-title>
+  <div class="container-title">
+    <span class="font-bold">Add Region</span>
+    <button mat-button mat-dialog-close>X</button>
+  </div>
+</div>
+
+<mat-dialog-content class="mat-typography">
+  <div class="container-content">
+    <!-- select region branch warehouse -->
+    <div class="container-region">
+      <div *ngFor="let item of listSelectRegion">
+        <div class="select-region" [ngClass]="{'active-select-region':item == activeSelectRegion }"
+          (click)="selectTypeRegion(item)">
+          <span class="label">{{ item }}</span>
+          <span class="total-select" *ngIf="item == 'Region'">{{selectedRegion.length}}</span>
+          <span class="total-select" *ngIf="item == 'Branch'">{{selectedBranch.length}}</span>
+          <span class="total-select" *ngIf="item == 'Warehouse'">{{selectedWarehouse.length}}</span>
+        </div>
+      </div>
+    </div>
+    <!-- list data table -->
+    <div class="container-table">
+      <div class="container-filter">
+        <mat-checkbox [checked]="isCheckedAll()" (change)="handleSelectAll($event.checked)">Select All</mat-checkbox>
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applySearch($event)" placeholder="Search" #inputSearch>
+        </mat-form-field>
+      </div>
+      <div class="mat-elevation-z8">
+        <!-- loading -->
+        <div class="loading" *ngIf="loading$ | async">
+          <mat-spinner></mat-spinner>
+        </div>
+
+        <!-- table Region -->
+        <table mat-table [dataSource]="dataSource" style="width: 100%;" *ngIf="activeSelectRegion === 'Region'">
+          <!-- checkbox Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox (change)="handleCheckbox($event.checked, element)"
+                [checked]="isRegionChecked(element.id)"></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Region Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Region Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <!-- table Branch -->
+        <table mat-table [dataSource]="dataSourceBranch" style="width: 100%;" *ngIf="activeSelectRegion === 'Branch'">
+          <!-- checkbox Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox [checked]="isBranchChecked(element.id)"
+                (change)="handleCheckbox($event.checked, element)"></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Branch Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Branch Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+          </ng-container>
+
+          <!-- Branch Column -->
+          <ng-container matColumnDef="regionName">
+            <th mat-header-cell *matHeaderCellDef> Region </th>
+            <td mat-cell *matCellDef="let element"> {{element.regionName}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnBranch"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnBranch;"></tr>
+        </table>
+        <!-- table Warehouse -->
+        <table mat-table [dataSource]="dataSourceWarehouse" style="width: 100%;"
+          *ngIf="activeSelectRegion === 'Warehouse'">
+          <!-- checkbox Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox [checked]="isWarehouseChecked(element.id)"
+                (change)="handleCheckbox($event.checked, element)"></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- warehouse Name Column -->
+          <ng-container matColumnDef="warehouseName">
+            <th mat-header-cell *matHeaderCellDef> Warehouse Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.warehouseName}} </td>
+          </ng-container>
+
+          <!-- Branch Column -->
+          <ng-container matColumnDef="branch">
+            <th mat-header-cell *matHeaderCellDef> Branch </th>
+            <td mat-cell *matCellDef="let element"> {{element.branchName}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnWarehouse"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnWarehouse;"></tr>
+        </table>
+
+        <mat-paginator (page)="handlePaginate($event)" [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons
+          aria-label="Select page" [length]="lengthPaginator()">
+        </mat-paginator>
+      </div>
+
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close (click)="handleCancel()">Cancel</button>
+  <button (click)="handleSaveSelectedWarehouseData()" mat-flat-button [mat-dialog-close]="true" cdkFocusInitial
+    color="accent" [disabled]="selectedWarehouse.length <1">Add</button>
+</mat-dialog-actions>

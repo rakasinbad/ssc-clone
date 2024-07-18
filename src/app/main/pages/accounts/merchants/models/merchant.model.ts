@@ -176,6 +176,7 @@ export class Store implements IStore {
     phoneNo: string;
     portfolio?: Partial<Portfolio>;
     reason: string;
+    salesRepId?: string;
     status: TStatus;
     storeClusters?: Array<StoreCluster>;
     storeCode: string;
@@ -190,6 +191,7 @@ export class Store implements IStore {
     supplierStores?: Array<SupplierStore>;
     taxImageUrl: TNullable<string>;
     taxNo: string;
+    taxStatus?: string;
     urban: Urban;
     urbanId: string;
     userStores: Array<UserStore>;
@@ -227,6 +229,7 @@ export class Store implements IStore {
             phoneNo,
             portfolio,
             reason,
+            salesRepId,
             status,
             storeClusters,
             storeCode,
@@ -241,6 +244,7 @@ export class Store implements IStore {
             supplierStores,
             taxImageUrl,
             taxNo,
+            taxStatus,
             urban,
             urbanId,
             userStores,
@@ -271,6 +275,7 @@ export class Store implements IStore {
         this.parentId = parentId;
         this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
         this.reason = reason ? String(reason).trim() : null;
+        this.salesRepId = salesRepId ? String(salesRepId).trim() : null;
         this.status = status;
         this.storeCode = storeCode ? String(storeCode).trim() : null;
         this.storeGroupId = storeGroupId;
@@ -278,6 +283,7 @@ export class Store implements IStore {
         this.storeTypeId = storeTypeId;
         this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
         this.taxNo = taxNo ? String(taxNo).trim() : null;
+        this.taxStatus = taxStatus;
         this.urbanId = urbanId;
         this.vehicleAccessibilityId = vehicleAccessibilityId;
         this.warehouseId = warehouseId;
