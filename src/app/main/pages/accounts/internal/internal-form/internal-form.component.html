@@ -9,72 +9,111 @@
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/account/internal']">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/account/internal']"
+                >
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
-                <div *ngIf="employee$ | async" class="employee-image mr-8 mr-sm-16"
-                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }">
-                    <img [defaultImage]="sinbadProfileDefault" [useSrcset]="true"
-                        [lazyLoad]="(employee$ | async)?.imageUrl" [errorImage]="sinbadProfileDefault" />
+                <div
+                    *ngIf="employee$ | async"
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        [defaultImage]="sinbadProfileDefault"
+                        [useSrcset]="true"
+                        [lazyLoad]="(employee$ | async)?.imageUrl"
+                        [errorImage]="sinbadProfileDefault"
+                    />
                 </div>
 
-                <div *ngIf="pageType === 'new'" class="employee-image mr-8 mr-sm-16"
-                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }">
+                <div
+                    *ngIf="pageType === 'new'"
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
                     <img src="assets/images/avatars/profile.jpg" />
                 </div>
 
-                <div *ngIf="
+                <div
+                    *ngIf="
                         (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
                         pageType === 'edit'
-                    " class="mr-8 mr-sm-16" [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }">
-                    <ngx-skeleton-loader appearance="circle"
-                        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"></ngx-skeleton-loader>
+                    "
+                    class="mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <ngx-skeleton-loader
+                        appearance="circle"
+                        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"
+                    ></ngx-skeleton-loader>
                 </div>
 
-                <div fxLayout="column" fxLayoutAlign="start start"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
                     <div class="h2" *ngIf="!(isLoading$ | async) && (employee$ | async)">
                         {{ (employee$ | async)?.fullName }}
                     </div>
 
                     <div class="h2" *ngIf="!(isLoading$ | async) && !(employee$ | async)">
-                        {{
-                        form?.value?.fullName ? form?.value?.fullName : 'New User Management'
-                        }}
+                        {{ form?.value?.fullName ? form?.value?.fullName : 'New User Management' }}
                     </div>
 
-                    <ngx-skeleton-loader *ngIf="
+                    <ngx-skeleton-loader
+                        *ngIf="
                             (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
                             pageType === 'edit'
-                        " [theme]="{ width: '150px', height: '25px', margin: 0 }"></ngx-skeleton-loader>
+                        "
+                        [theme]="{ width: '150px', height: '25px', margin: 0 }"
+                    ></ngx-skeleton-loader>
 
                     <div class="subtitle secondary-text">
-                        <span *ngIf="!(isLoading$ | async)">
-                            Account Detail
-                        </span>
-                        <ngx-skeleton-loader *ngIf="
+                        <span *ngIf="!(isLoading$ | async)"> Account Detail </span>
+                        <ngx-skeleton-loader
+                            *ngIf="
                                 (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
                                 pageType === 'edit'
-                            " [theme]="{ width: '70px', margin: 0 }"></ngx-skeleton-loader>
+                            "
+                            [theme]="{ width: '70px', margin: 0 }"
+                        ></ngx-skeleton-loader>
                     </div>
                 </div>
             </div>
             <!-- / APP TITLE -->
 
-            <ngx-skeleton-loader *ngIf="
+            <ngx-skeleton-loader
+                *ngIf="
                     (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
                     pageType === 'edit'
-                " [theme]="{ width: '70px', height: '30px', margin: 0 }"></ngx-skeleton-loader>
+                "
+                [theme]="{ width: '70px', height: '30px', margin: 0 }"
+            ></ngx-skeleton-loader>
 
             <ng-container *ngIf="(employee$ | async) || pageType">
-                <button mat-raised-button type="button" class="accent-fg" (click)="onEdit(isEdit)"
-                    *ngIf="isEdit && pageType === 'edit'">
+                <button
+                    mat-raised-button
+                    type="button"
+                    class="accent-fg"
+                    (click)="onEdit(isEdit)"
+                    *ngIf="isEdit && pageType === 'edit'"
+                >
                     <span>Save</span>
                 </button>
 
-                <button mat-raised-button type="submit" class="accent-fg" [disabled]="form.invalid || form.pristine"
-                    form="internal-form" *ngIf="!isEdit && pageType === 'new'">
+                <button
+                    mat-raised-button
+                    type="submit"
+                    class="accent-fg"
+                    [disabled]="form.invalid || form.pristine"
+                    form="internal-form"
+                    *ngIf="!isEdit && pageType === 'new'"
+                >
                     <span>Save</span>
                 </button>
             </ng-container>
@@ -89,60 +128,94 @@
                     {{ pageType === 'new' ? 'Create' : isEdit ? 'Edit' : 'Detail' }} User
                 </span>
 
-                <form id="internal-form" name="internalForm" class="internal w-100-p" [formGroup]="form"
-                    (ngSubmit)="onSubmit()" fxLayout="column" fxFlex novalidate>
+                <form
+                    id="internal-form"
+                    name="internalForm"
+                    class="internal w-100-p"
+                    [formGroup]="form"
+                    (ngSubmit)="onSubmit()"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
                                 form.get('fullName').errors &&
                                 !form.get('fullName').untouched &&
                                 (form.get('fullName').dirty || form.get('fullName').touched)
-                            ">
+                            "
+                        >
                             <b class="required">*</b> Nama
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="fullName" formControlName="fullName" maxlength="30" />
+                            <input
+                                matInput
+                                name="fullName"
+                                formControlName="fullName"
+                                maxlength="30"
+                            />
 
-                            <mat-error *ngIf="
+                            <mat-error
+                                *ngIf="
                                     form.get('fullName').errors &&
                                     (form.get('fullName').dirty || form.get('fullName').touched)
-                                ">
+                                "
+                            >
                                 {{ getErrorMessage('fullName') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
                                 form.get('platform').errors &&
                                 !form.get('platform').untouched &&
                                 (form.get('platform').dirty || form.get('platform').touched)
-                            ">
+                            "
+                        >
                             <span class="required">*</span>
                             Platform
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
-                            <mat-select name="platform" formControlName="platform" placeholder="Choose Platform">
-                                <mat-option [value]="'Sinbad Seller Center'">
+                            <mat-select
+                                name="platform"
+                                formControlName="platform"
+                                placeholder="Choose Platform"
+                            >
+                                <mat-option [value]="seller_center">
                                     Sinbad Seller Center
                                 </mat-option>
+                                <mat-option [value]="delivery_app">Delivery App </mat-option>
                             </mat-select>
-                            <mat-error *ngIf="
+                            <mat-error
+                                *ngIf="
                                     form.get('platform').errors &&
                                     (form.get('platform').dirty || form.get('platform').touched)
-                                ">
+                                "
+                            >
                                 {{ getErrorMessage('platform') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
                                 form.get('roles').errors &&
                                 !form.get('roles').untouched &&
                                 (form.get('roles').dirty || form.get('roles').touched)
-                            ">
+                            "
+                        >
                             <b class="required">*</b> Role
                         </label>
 
@@ -158,10 +231,12 @@
                                 </mat-option>
                             </mat-select>
 
-                            <mat-error *ngIf="
+                            <mat-error
+                                *ngIf="
                                     form.get('roles').errors &&
                                     (form.get('roles').dirty || form.get('roles').touched)
-                                ">
+                                "
+                            >
                                 {{ getErrorMessage('roles') }}
                             </mat-error>
                         </mat-form-field>
@@ -175,40 +250,53 @@
                         <mat-form-field appearance="outline" fxFlex="30">
                             <input matInput name="email" formControlName="email" />
 
-                            <mat-error *ngIf="
+                            <mat-error
+                                *ngIf="
                                     form.get('email').errors &&
                                     (form.get('email').dirty || form.get('email').touched)
-                                ">
+                                "
+                            >
                                 {{ getErrorMessage('email') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12"><b class="required">*</b> Phone Number</label>
+                        <label fxFlexAlign="center" fxFlex="12"
+                            ><b class="required">*</b> Phone Number</label
+                        >
 
                         <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput type="tel" name="phoneNumber" formControlName="phoneNumber" />
+                            <input
+                                matInput
+                                type="tel"
+                                name="phoneNumber"
+                                formControlName="phoneNumber"
+                            />
 
-                            <mat-error *ngIf="
+                            <mat-error
+                                *ngIf="
                                     form.get('phoneNumber').errors &&
                                     (form.get('phoneNumber').dirty ||
                                         form.get('phoneNumber').touched)
-                                ">
+                                "
+                            >
                                 {{ getErrorMessage('phoneNumber') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- Access Control -->
-                    <span class="mat-title">
-                        Access Control
-                    </span>
+                    <span class="mat-title"> Access Control </span>
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
                                 form.get('platform').errors &&
                                 !form.get('platform').untouched &&
                                 (form.get('platform').dirty || form.get('platform').touched)
-                            ">
+                            "
+                        >
                             <span class="required">*</span>
                             Warehouse
                         </label>
@@ -223,9 +311,13 @@
                                 (click)="showDialogWarehouse()"
                                 class="click-pointer"
                             />
-        
+
                             <mat-error
-                                *ngIf="form.get('warehouses').errors && (form.get('warehouses').dirty || form.get('warehouses').touched)">
+                                *ngIf="
+                                    form.get('warehouses').errors &&
+                                    (form.get('warehouses').dirty || form.get('warehouses').touched)
+                                "
+                            >
                                 {{ getErrorMessage('warehouses') }}
                             </mat-error>
                         </mat-form-field>

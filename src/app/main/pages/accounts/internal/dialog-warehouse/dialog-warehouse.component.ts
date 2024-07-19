@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
+    Inject,
     OnDestroy,
     OnInit,
     QueryList,
@@ -13,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { MatPaginator, MatTableDataSource, PageEvent } from '@angular/material';
+import { MAT_DIALOG_DATA, MatPaginator, MatTableDataSource, PageEvent } from '@angular/material';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { fromInternal } from '../store/reducers';
 import { InternalActions, TeritoryActions } from '../store/actions';
@@ -23,6 +24,7 @@ import { MetaV2 } from 'app/shared/models/global.model';
 import { Region } from 'app/shared/models';
 import { WHDialogService } from '../services';
 import { FormGroup } from '@angular/forms';
+import { DELIVERY_APP, SELLER_CENTER } from '../internal-form/internal-form.const';
 
 @Component({
     selector: 'dialog-warehouse',
@@ -55,11 +57,15 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
     pageSize = 10;
     isEdit: boolean;
     pageType: string;
+    delivery_app = DELIVERY_APP;
+    seller_center = SELLER_CENTER;
+
     constructor(
         private store: Store<fromInternal.FeatureState>,
         private route: ActivatedRoute,
         private router: Router,
         private _$whDialog: WHDialogService,
+        @Inject(MAT_DIALOG_DATA) public data: { platform: string }
     ) {
         const { type } = this.route.snapshot.data;
 
@@ -112,9 +118,15 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
         });
 
         if (this.pageType === 'edit') {
-            this.selectedRegion$ = this._$whDialog.currentSelectedRegions.subscribe((csr) => this.selectedRegion = csr);
-            this.selectedBranch$ = this._$whDialog.currentSelectedBranches.subscribe((csb) => this.selectedBranch = csb);
-            this.selectedWarehouse$ = this._$whDialog.currentSelectedWarehouses.subscribe((csw) => this.selectedWarehouse = csw);
+            this.selectedRegion$ = this._$whDialog.currentSelectedRegions.subscribe(
+                (csr) => (this.selectedRegion = csr)
+            );
+            this.selectedBranch$ = this._$whDialog.currentSelectedBranches.subscribe(
+                (csb) => (this.selectedBranch = csb)
+            );
+            this.selectedWarehouse$ = this._$whDialog.currentSelectedWarehouses.subscribe(
+                (csw) => (this.selectedWarehouse = csw)
+            );
             // this.store.select(InternalSelectors.getSelectedInternalRegionIds).subscribe((data) => {
             //     this.selectedRegion = data.map(d => Number(d));
             // });
@@ -122,10 +134,16 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
             // this.store.select(InternalSelectors.getSelectedInternalBranchIds).subscribe((data) => {
             //     this.selectedBranch = data.map(d => Number(d));
             // });
-            
+
             // this.store.select(InternalSelectors.getSelectedInternalWarehouses).subscribe((data) => {
             //     this.selectedWarehouse = data;
             // });
+        }
+
+        if (this.data.platform === this.delivery_app) {
+            this.selectedRegion = [];
+            this.selectedBranch = [];
+            this.selectedWarehouse = [];
         }
     }
 
@@ -210,7 +228,7 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
                 if (this.pageType === 'new') {
                     this.selectedBranch = [];
                 }
-                
+
                 if (this.selectedRegion.length) {
                     this.store.dispatch(
                         TeritoryActions.fetchTeritoryBranchesRequest({
@@ -223,7 +241,7 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
                 if (this.pageType === 'new') {
                     this.selectedWarehouse = [];
                 }
-                
+
                 if (this.selectedBranch.length) {
                     this.store.dispatch(
                         TeritoryActions.fetchTeritoryWarehousesRequest({
@@ -266,6 +284,20 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
             } else {
                 this.selectedBranch.push(row.id);
             }
+        }
+    }
+
+    handleSelect(row: Region | Branch | BranchWarehouse) {
+        if (this.activeSelectRegion == 'Region') {
+            this.selectedRegion = [row.id];
+        }
+
+        if (this.activeSelectRegion == 'Warehouse') {
+            const warehouse = row as BranchWarehouse;
+            this.selectedWarehouse = [warehouse];
+        }
+        if (this.activeSelectRegion == 'Branch') {
+            this.selectedBranch = [row.id];
         }
     }
 
@@ -380,7 +412,6 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
                 this.selectedWarehouse = [];
             } else {
                 this.selectedBranch = this.dataSourceBranch.data.map((i) => i.id);
-                
             }
             return void 0;
         }
@@ -395,9 +426,11 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
     }
 
     handleCancel() {
-        this._$whDialog.currentSelectedRegions.subscribe(csr => this.selectedRegion = csr);
-        this._$whDialog.currentSelectedBranches.subscribe(csb => this.selectedBranch = csb);
-        this._$whDialog.currentSelectedWarehouses.subscribe(csw => this.selectedWarehouse = csw);
+        this._$whDialog.currentSelectedRegions.subscribe((csr) => (this.selectedRegion = csr));
+        this._$whDialog.currentSelectedBranches.subscribe((csb) => (this.selectedBranch = csb));
+        this._$whDialog.currentSelectedWarehouses.subscribe(
+            (csw) => (this.selectedWarehouse = csw)
+        );
     }
 
     handleSaveSelectedWarehouseData(): void {
@@ -407,5 +440,13 @@ export class DialogWarehouseComponent implements OnInit, OnDestroy {
         this.store.dispatch(
             TeritoryActions.saveSelectedWarehouse({ payload: this.selectedWarehouse })
         );
+    }
+
+    showCheckbox(): boolean {
+        return this.data.platform === SELLER_CENTER;
+    }
+
+    showRadioButton(): boolean {
+        return this.data.platform === DELIVERY_APP;
     }
 }

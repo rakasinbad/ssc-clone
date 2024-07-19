@@ -15,6 +15,7 @@ import {
     MatDialogModule,
     MatTableModule,
     MatPaginatorModule,
+    MatRadioModule,
 } from '@angular/material';
 import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
@@ -51,6 +52,7 @@ import { MatDatetimepickerModule } from '@mat-datetimepicker/core';
         MatToolbarModule,
         MatDialogModule,
         RxReactiveFormsModule,
+        MatRadioModule,
 
         ApplyDialogModule,
     ],

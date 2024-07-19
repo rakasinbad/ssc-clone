@@ -36,6 +36,8 @@ import { assetUrl } from 'single-spa/asset-url';
 import { DialogWarehouseComponent } from '../dialog-warehouse/dialog-warehouse.component';
 import { BranchWarehouse } from 'app/shared/models/branch.model';
 import { WHDialogService } from '../services';
+import { DELIVERY_APP, SELLER_CENTER } from './internal-form.const';
+import { platform } from 'os';
 
 @Component({
     selector: 'app-internal-form',
@@ -58,7 +60,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
     selectedWarehouse: BranchWarehouse[] = [];
     selectedWarehouses$: Subscription;
-
+    delivery_app = DELIVERY_APP;
+    seller_center = SELLER_CENTER;
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
@@ -76,7 +79,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         private _$errorMessage: ErrorMessageService,
         private _$notice: NoticeService,
         private matDialog: MatDialog,
-        private _$whDialog: WHDialogService,
+        private _$whDialog: WHDialogService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -159,8 +162,6 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             this.isEdit = true;
         }
 
-        
-        
         this.initForm();
 
         if (this.pageType === 'edit') {
@@ -171,28 +172,53 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             this.store.dispatch(InternalActions.fetchInternalWarehousesRequest({ payload: id }));
         }
 
-        this.roles$ = this.store.pipe(select(DropdownSelectors.getRoleDropdownStateByType('2')));
         this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
 
         this.selectedWarehouses$ = this._$whDialog.currentSelectedWarehouses.subscribe((csw) => {
             this.selectedWarehouse = csw;
-            
+
             const warehouses = this.form.get('warehouses');
             if (this.selectedWarehouse && this.selectedWarehouse.length > 0) {
                 if (this.pageType === 'edit') {
-                    warehouses.patchValue(`${this.selectedWarehouse[0].warehouseName}${this.selectedWarehouse.length - 1 > 1 ? ` & ${this.selectedWarehouse.length - 1} others` : `${this.selectedWarehouse.length - 1 === 1 ? ` & 1 other` : '' }`}`);
-                    warehouses.updateValueAndValidity(); 
+                    warehouses.patchValue(
+                        `${this.selectedWarehouse[0].warehouseName}${
+                            this.selectedWarehouse.length - 1 > 1
+                                ? ` & ${this.selectedWarehouse.length - 1} others`
+                                : `${this.selectedWarehouse.length - 1 === 1 ? ` & 1 other` : ''}`
+                        }`
+                    );
+                    warehouses.updateValueAndValidity();
 
                     if (warehouses.errors) {
                         warehouses.markAsTouched();
                     }
                 } else {
-                    warehouses.setValue(`${this.selectedWarehouse[0].warehouseName}${this.selectedWarehouse.length - 1 > 1 ? ` & ${this.selectedWarehouse.length - 1} others` : `${this.selectedWarehouse.length - 1 === 1 ? ` & 1 other` : '' }`}`)
-                }          
+                    warehouses.setValue(
+                        `${this.selectedWarehouse[0].warehouseName}${
+                            this.selectedWarehouse.length - 1 > 1
+                                ? ` & ${this.selectedWarehouse.length - 1} others`
+                                : `${this.selectedWarehouse.length - 1 === 1 ? ` & 1 other` : ''}`
+                        }`
+                    );
+                }
             }
         });
 
-        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);  
+        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
+
+        this.form.controls['platform'].valueChanges.subscribe((value) => {
+            const platform = value === 'Sinbad Seller Center' ? '2' : value;
+            this.roles$ = this.store.pipe(
+                select(DropdownSelectors.getRoleDropdownStateByType(platform))
+            );
+
+            if (value === this.delivery_app) {
+                this.form.get('email').reset();
+                this.form.get('email').disable();
+            } else {
+                this.form.get('email').enable();
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -203,7 +229,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(InternalActions.resetInternalEmployee());
         this.store.dispatch(TeritoryActions.saveSelectedWarehouse({ payload: [] }));
-        
+
         this.selectedWarehouses$.unsubscribe();
         this._$whDialog.reset();
 
@@ -213,8 +239,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         this._unSubs$.complete();
     }
 
-    ngAfterViewInit(): void {
-    }
+    ngAfterViewInit(): void {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -222,7 +247,12 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
     showDialogWarehouse() {
         const dialogWarehouseRef = this.matDialog.open<DialogWarehouseComponent, any, string>(
-            DialogWarehouseComponent
+            DialogWarehouseComponent,
+            {
+                data: {
+                    platform: this.form.get('platform').value,
+                },
+            }
         );
         return dialogWarehouseRef.afterClosed();
     }
@@ -262,7 +292,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         // const emailField = this.form.get('email');
         // const phoneNumberField = this.form.get('phoneNumber');
         const body = this.form.value;
-        
+
         const {
             fullName: fullNameField,
             roles: rolesField,
@@ -286,7 +316,9 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                                     email: body.email,
                                     roles: body.roles,
                                     supplierId: supplierId,
-                                    warehouses: this.selectedWarehouse.map(sw => sw.id.toString()),
+                                    warehouses: this.selectedWarehouse.map((sw) =>
+                                        sw.id.toString()
+                                    ),
                                 };
 
                                 this.store.dispatch(
@@ -366,7 +398,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                                 mobilePhoneNo: body.phoneNumber,
                                 email: body.email,
                                 roles: body.roles,
-                                warehouses: this.selectedWarehouse.map(sw => sw.id.toString())
+                                warehouses: this.selectedWarehouse.map((sw) => sw.id.toString()),
                             };
 
                             if (!body.fullName) {
@@ -561,13 +593,14 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         this.form.get('email').markAsTouched();
                     }
 
-
                     this.store
                         .select(InternalSelectors.getSelectedInternalRegionIds)
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe((selectedRegion) => {
                             if (selectedRegion && selectedRegion.length > 0) {
-                                this._$whDialog.changeRegions(selectedRegion.map(sr => Number(sr)));       
+                                this._$whDialog.changeRegions(
+                                    selectedRegion.map((sr) => Number(sr))
+                                );
                             }
                         });
                     this.store
@@ -575,21 +608,22 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe((selectedBranch) => {
                             if (selectedBranch && selectedBranch.length > 0) {
-                                this._$whDialog.changeBranches(selectedBranch.map(sb => Number(sb)));       
+                                this._$whDialog.changeBranches(
+                                    selectedBranch.map((sb) => Number(sb))
+                                );
                             }
                         });
-        
+
                     this.store
                         .select(InternalSelectors.getSelectedInternalWarehouses)
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe((selectedWarehouses) => {
                             if (selectedWarehouses && selectedWarehouses.length > 0) {
-                                this._$whDialog.changeWarehouses(selectedWarehouses);       
+                                this._$whDialog.changeWarehouses(selectedWarehouses);
                             }
                         });
                 }
             });
-        
     }
 
     private formStatus(): void {
