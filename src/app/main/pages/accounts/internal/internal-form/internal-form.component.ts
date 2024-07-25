@@ -17,14 +17,14 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
-import { Role } from 'app/shared/models/role.model';
+import { Role, RolePlatform } from 'app/shared/models/role.model';
 import { User } from 'app/shared/models/user.model';
 import { DropdownActions, RegionActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { delay, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
+import { distinctUntilChanged, map, retry, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -37,7 +37,8 @@ import { DialogWarehouseComponent } from '../dialog-warehouse/dialog-warehouse.c
 import { BranchWarehouse } from 'app/shared/models/branch.model';
 import { WHDialogService } from '../services';
 import { DELIVERY_APP, SELLER_CENTER } from './internal-form.const';
-import { platform } from 'os';
+import { RoleApiService } from 'app/shared/helpers/role-api.service';
+import { catchOffline } from '@ngx-pwa/offline';
 
 @Component({
     selector: 'app-internal-form',
@@ -56,6 +57,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     // selectedWarehouse$: Observable<BranchWarehouse[]>;
     employee$: Observable<IInternalEmployeeDetails>;
     isLoading$: Observable<boolean>;
+
+    allRoles: Array<Role>;
     roles$: Observable<Array<Role>>;
 
     selectedWarehouse: BranchWarehouse[] = [];
@@ -79,7 +82,9 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         private _$errorMessage: ErrorMessageService,
         private _$notice: NoticeService,
         private matDialog: MatDialog,
-        private _$whDialog: WHDialogService
+        private _$whDialog: WHDialogService,
+
+        private _$roleApi: RoleApiService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -206,11 +211,20 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
         this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
 
+        this.getRoles()
+            .pipe(
+                map(([rolesSsc, rolesDeliveryApp]) => {
+                    return [...rolesSsc, ...rolesDeliveryApp];
+                })
+            )
+            .subscribe((res) => {
+                this.allRoles = res;
+
+                this.roles$ = of(this.filterRolesByPlatform(res, SELLER_CENTER));
+            });
+
         this.form.controls['platform'].valueChanges.subscribe((value) => {
-            const platform = value === 'Sinbad Seller Center' ? '2' : value;
-            this.roles$ = this.store.pipe(
-                select(DropdownSelectors.getRoleDropdownStateByType(platform))
-            );
+            this.roles$ = of(this.filterRolesByPlatform(this.allRoles, value));
 
             if (value === this.delivery_app) {
                 this.form.get('email').reset();
@@ -245,6 +259,44 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    private filterRolesByPlatform(data: Role[], platform: RolePlatform): Role[] {
+        return data.filter((item) => item.platform === platform);
+    }
+
+    private getRoles(): Observable<any> {
+        let supplierId = '';
+        this.store
+            .select(AuthSelectors.getUserState)
+            .subscribe((res) => (supplierId = res.user.userSupplier.supplierId));
+
+        const getRoleSsc = this._$roleApi
+            .findAll<Role[]>(supplierId, { paginate: false, platform: 'sc' })
+            .pipe(
+                catchOffline(),
+                retry(3),
+                // map(resp => (!resp['data'] ? (resp as Role[]) : null)),
+                map((resp) => {
+                    const newResp = resp && resp.length > 0 ? resp.map((row) => new Role(row)) : [];
+
+                    return newResp;
+                })
+            );
+
+        const getRoleDeliveryApp = this._$roleApi
+            .findAll<Role[]>(supplierId, { paginate: false, platform: 'delivery-app' })
+            .pipe(
+                catchOffline(),
+                retry(3),
+                // map(resp => (!resp['data'] ? (resp as Role[]) : null)),
+                map((resp) => {
+                    const newResp = resp && resp.length > 0 ? resp.map((row) => new Role(row)) : [];
+
+                    return newResp;
+                })
+            );
+
+        return combineLatest([getRoleSsc, getRoleDeliveryApp]);
+    }
     showDialogWarehouse() {
         const dialogWarehouseRef = this.matDialog.open<DialogWarehouseComponent, any, string>(
             DialogWarehouseComponent,
@@ -298,6 +350,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             roles: rolesField,
             phoneNumber: phoneNumberField,
             email: emailField,
+            platform: platformField,
         } = this.form.controls;
 
         if (this.pageType === 'new') {
@@ -319,6 +372,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                                     warehouses: this.selectedWarehouse.map((sw) =>
                                         sw.id.toString()
                                     ),
+                                    platform: body.platform,
                                 };
 
                                 this.store.dispatch(
@@ -385,6 +439,14 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                                 delete body.email;
                             }
 
+                            if (
+                                (platformField.dirty && platformField.value === prev.platform) ||
+                                (platformField.touched && platformField.value === prev.platform) ||
+                                (platformField.pristine && platformField.value === prev.platform)
+                            ) {
+                                delete body.platform;
+                            }
+
                             // if (
                             //     (warehouseField.dirty) ||
                             //     (warehouseField.touched) ||
@@ -399,6 +461,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                                 email: body.email,
                                 roles: body.roles,
                                 warehouses: this.selectedWarehouse.map((sw) => sw.id.toString()),
+                                platform: body.platform,
                             };
 
                             if (!body.fullName) {
@@ -415,6 +478,10 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
                             if (!body.roles) {
                                 delete payload.roles;
+                            }
+
+                            if (!body.platform) {
+                                delete payload.platform;
                             }
 
                             // if (!body.warehouses) {

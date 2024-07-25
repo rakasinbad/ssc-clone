@@ -100,7 +100,13 @@
                             <mat-checkbox
                                 [checked]="isBranchChecked(element.id)"
                                 (change)="handleCheckbox($event.checked, element)"
+                                *ngIf="showCheckbox()"
                             ></mat-checkbox>
+                            <mat-radio-button
+                                (change)="handleSelect(element)"
+                                [checked]="isBranchChecked(element.id)"
+                                *ngIf="showRadioButton()"
+                            ></mat-radio-button>
                         </td>
                     </ng-container>
 
@@ -133,7 +139,13 @@
                             <mat-checkbox
                                 [checked]="isWarehouseChecked(element.id)"
                                 (change)="handleCheckbox($event.checked, element)"
+                                *ngIf="showCheckbox()"
                             ></mat-checkbox>
+                            <mat-radio-button
+                                (change)="handleSelect(element)"
+                                [checked]="isWarehouseChecked(element.id)"
+                                *ngIf="showRadioButton()"
+                            ></mat-radio-button>
                         </td>
                     </ng-container>
 

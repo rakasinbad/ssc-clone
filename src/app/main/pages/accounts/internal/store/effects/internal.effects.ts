@@ -11,7 +11,10 @@ import { PaginateResponse, TStatus } from 'app/shared/models/global.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
-import { InternalEmployeeDetails, InternalWarehouses } from 'app/main/pages/accounts/internal/models';
+import {
+    InternalEmployeeDetails,
+    InternalWarehouses,
+} from 'app/main/pages/accounts/internal/models';
 import { of } from 'rxjs';
 import {
     catchError,
@@ -20,7 +23,7 @@ import {
     map,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { InternalApiService } from '../../services';
@@ -41,8 +44,8 @@ export class InternalEffects {
     createInternalEmployeeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.createInternalEmployeeRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$internalApi
                     .create<{
                         fullName: string;
@@ -50,15 +53,16 @@ export class InternalEffects {
                         mobilePhoneNo: string;
                         email?: string;
                         supplierId: string;
+                        platform: string;
                     }>(payload)
                     .pipe(
-                        map(resp => {
+                        map((resp) => {
                             return InternalActions.createInternalEmployeeSuccess({ payload: resp });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 InternalActions.createInternalEmployeeFailure({
-                                    payload: { id: 'createInternalEmployeeFailure', errors: err }
+                                    payload: { id: 'createInternalEmployeeFailure', errors: err },
                                 })
                             )
                         )
@@ -76,11 +80,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.createInternalEmployeeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Data gagal ditambah', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -96,12 +100,12 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.createInternalEmployeeSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this.router.navigate(['/pages/account/internal']).finally(() => {
                         this._$notice.open('Data berhasil ditambah', 'success', {
                             verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
+                            horizontalPosition: 'right',
                         });
                     });
                 })
@@ -117,7 +121,7 @@ export class InternalEffects {
     updateInternalEmployeeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.updateInternalEmployeeRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ body, id }) => {
                 // return this._$userApi
                 // .patchCustom<{
@@ -149,20 +153,21 @@ export class InternalEffects {
                         roles?: number[];
                         mobilePhoneNo?: string;
                         email?: string;
+                        platform?: string;
                     }>(body, id)
                     .pipe(
-                        map(resp => {
+                        map((resp) => {
                             return InternalActions.updateInternalEmployeeSuccess({
-                                payload: resp
+                                payload: resp,
                             });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 InternalActions.updateInternalEmployeeFailure({
                                     payload: {
                                         id: 'updateInternalEmployeeFailure',
-                                        errors: err
-                                    }
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
@@ -180,11 +185,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.updateInternalEmployeeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Data gagal diupdate', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -200,12 +205,12 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.updateInternalEmployeeSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this.router.navigate(['/pages/account/internal']).finally(() => {
                         this._$notice.open('Data berhasil diupdate', 'success', {
                             verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
+                            horizontalPosition: 'right',
                         });
                     });
                 })
@@ -221,23 +226,23 @@ export class InternalEffects {
     confirmDeleteInternalEmployee$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.confirmDeleteInternalEmployee),
-            map(action => action.payload),
-            exhaustMap(params => {
+            map((action) => action.payload),
+            exhaustMap((params) => {
                 const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
                     DeleteConfirmationComponent,
                     {
                         data: {
                             title: 'Delete',
                             message: `Are you sure want to delete <strong>${params.user.fullName}</strong> ?`,
-                            id: params.id
+                            id: params.id,
                         },
-                        disableClose: true
+                        disableClose: true,
                     }
                 );
 
                 return dialogRef.afterClosed();
             }),
-            map(id => {
+            map((id) => {
                 if (id) {
                     return InternalActions.deleteInternalEmployeeRequest({ payload: id });
                 } else {
@@ -255,16 +260,16 @@ export class InternalEffects {
     deleteInternalEmployeeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.deleteInternalEmployeeRequest),
-            map(action => action.payload),
-            switchMap(id => {
+            map((action) => action.payload),
+            switchMap((id) => {
                 return this._$internalApi.delete(id).pipe(
-                    map(resp => {
+                    map((resp) => {
                         return InternalActions.deleteInternalEmployeeSuccess({ payload: id });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             InternalActions.deleteInternalEmployeeFailure({
-                                payload: { id: 'deleteInternalEmployeeFailure', errors: err }
+                                payload: { id: 'deleteInternalEmployeeFailure', errors: err },
                             })
                         )
                     ),
@@ -285,11 +290,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.deleteInternalEmployeeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Data gagal dihapus', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -305,11 +310,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.deleteInternalEmployeeSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Data berhasil dihapus', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -324,8 +329,8 @@ export class InternalEffects {
     confirmChangeStatusInternalEmployee$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.confirmChangeStatusInternalEmployee),
-            map(action => action.payload),
-            exhaustMap(params => {
+            map((action) => action.payload),
+            exhaustMap((params) => {
                 const title = params.status === 'active' ? 'Inactive' : 'Active';
                 const body = params.status === 'active' ? 'inactive' : 'active';
                 const dialogRef = this.matDialog.open<
@@ -337,9 +342,9 @@ export class InternalEffects {
                         title: `Set ${title}`,
                         message: `Are you sure want to change <strong>${params.user.fullName}</strong> status ?`,
                         id: params.id,
-                        change: body
+                        change: body,
                     },
-                    disableClose: true
+                    disableClose: true,
                 });
 
                 return dialogRef.afterClosed();
@@ -347,7 +352,7 @@ export class InternalEffects {
             map(({ id, change }) => {
                 if (id && change) {
                     return InternalActions.updateStatusInternalEmployeeRequest({
-                        payload: { body: change, id: id }
+                        payload: { body: change, id: id },
                     });
                 } else {
                     return UiActions.resetHighlightRow();
@@ -364,29 +369,29 @@ export class InternalEffects {
     updateStatusInternalEmployeeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.updateStatusInternalEmployeeRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             switchMap(({ body, id }) => {
                 const change = UserSupplier.patch({ status: body });
 
                 return this._$internalApi.patch(change, id).pipe(
-                    map(resp => {
+                    map((resp) => {
                         return InternalActions.updateStatusInternalEmployeeSuccess({
                             payload: {
                                 id,
                                 changes: {
                                     ...change,
-                                    updatedAt: resp.updatedAt
-                                }
-                            }
+                                    updatedAt: resp.updatedAt,
+                                },
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             InternalActions.updateStatusInternalEmployeeFailure({
                                 payload: {
                                     id: 'updateStatusInternalEmployeeFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     ),
@@ -407,11 +412,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.updateStatusInternalEmployeeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Update status gagal', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -427,11 +432,11 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.updateStatusInternalEmployeeSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open('Update status berhasil', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -450,7 +455,7 @@ export class InternalEffects {
     fetchInternalEmployeesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(InternalActions.fetchInternalEmployeesRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([params, { supplierId }]) => {
                 if (!supplierId) {
@@ -458,8 +463,8 @@ export class InternalEffects {
                         InternalActions.fetchInternalEmployeesFailure({
                             payload: {
                                 id: 'fetchInternalEmployeesFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
@@ -468,12 +473,12 @@ export class InternalEffects {
                     .findAll<PaginateResponse<UserSupplier>>(params, supplierId)
                     .pipe(
                         catchOffline(),
-                        map(resp => {
+                        map((resp) => {
                             const newResp = {
                                 total: resp.total,
                                 data:
                                     resp && resp.data && resp.data.length > 0
-                                        ? resp.data.map(row => {
+                                        ? resp.data.map((row) => {
                                               const newUserSupplier = new UserSupplier(
                                                   row.id,
                                                   row.userId,
@@ -491,11 +496,11 @@ export class InternalEffects {
 
                                               return newUserSupplier;
                                           })
-                                        : []
+                                        : [],
                             };
 
                             return InternalActions.fetchInternalEmployeesSuccess({
-                                payload: newResp
+                                payload: newResp,
                             });
 
                             // let newResp = {
@@ -529,10 +534,10 @@ export class InternalEffects {
                             //     payload: { internalEmployees: newResp.data, total: newResp.total }
                             // });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 InternalActions.fetchInternalEmployeesFailure({
-                                    payload: { id: 'fetchInternalEmployeesFailure', errors: err }
+                                    payload: { id: 'fetchInternalEmployeesFailure', errors: err },
                                 })
                             )
                         )
@@ -550,8 +555,8 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.fetchInternalEmployeesFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const message =
                         typeof resp.errors === 'string'
                             ? resp.errors
@@ -559,7 +564,7 @@ export class InternalEffects {
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -595,29 +600,29 @@ export class InternalEffects {
     //     )
     // );
 
-        fetchInternalEmployeeRequest$ = createEffect(() =>
-            this.actions$.pipe(
-                ofType(InternalActions.fetchInternalEmployeeRequest),
-                map(action => action.payload),
-                switchMap(id => {
-                    return this._$internalApi.findById(id).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            return InternalActions.fetchInternalEmployeeSuccess({
-                                payload: new InternalEmployeeDetails(resp)
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                InternalActions.fetchInternalEmployeeFailure({
-                                    payload: { id: 'fetchInternalEmployeeFailure', errors: err }
-                                })
-                            )
+    fetchInternalEmployeeRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(InternalActions.fetchInternalEmployeeRequest),
+            map((action) => action.payload),
+            switchMap((id) => {
+                return this._$internalApi.findById(id).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        return InternalActions.fetchInternalEmployeeSuccess({
+                            payload: new InternalEmployeeDetails(resp),
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            InternalActions.fetchInternalEmployeeFailure({
+                                payload: { id: 'fetchInternalEmployeeFailure', errors: err },
+                            })
                         )
-                    );
-                })
-            )
-        );
+                    )
+                );
+            })
+        )
+    );
 
     /**
      *
@@ -628,8 +633,8 @@ export class InternalEffects {
         () =>
             this.actions$.pipe(
                 ofType(InternalActions.fetchInternalEmployeeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const message =
                         typeof resp.errors === 'string'
                             ? resp.errors
@@ -638,7 +643,7 @@ export class InternalEffects {
                     this.router.navigate(['/pages/orders']).finally(() => {
                         this._$notice.open(message, 'error', {
                             verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
+                            horizontalPosition: 'right',
                         });
                     });
                 })
@@ -653,54 +658,54 @@ export class InternalEffects {
      */
 
     fetchInternalWarehousesRequest$ = createEffect(() =>
-    this.actions$.pipe(
-        ofType(InternalActions.fetchInternalWarehousesRequest),
-        map(action => action.payload),
-        switchMap(id => {
-            return this._$internalApi.findSelectedWarehousesById(id).pipe(
-                catchOffline(),
-                map(resp => {
-                    return InternalActions.fetchInternalWarehousesSuccess({
-                        payload: new InternalWarehouses(resp)
-                    });
-                }),
-                catchError(err =>
-                    of(
-                        InternalActions.fetchInternalWarehousesFailure({
-                            payload: { id: 'fetchInternalWarehousesFailure', errors: err }
-                        })
+        this.actions$.pipe(
+            ofType(InternalActions.fetchInternalWarehousesRequest),
+            map((action) => action.payload),
+            switchMap((id) => {
+                return this._$internalApi.findSelectedWarehousesById(id).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        return InternalActions.fetchInternalWarehousesSuccess({
+                            payload: new InternalWarehouses(resp),
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            InternalActions.fetchInternalWarehousesFailure({
+                                payload: { id: 'fetchInternalWarehousesFailure', errors: err },
+                            })
+                        )
                     )
-                )
-            );
-        })
-    )
+                );
+            })
+        )
     );
 
     /**
-    *
-    * [REQUEST - FAILURE] Internal Selected Warehouses
-    * @memberof InternalEffects
-    */
+     *
+     * [REQUEST - FAILURE] Internal Selected Warehouses
+     * @memberof InternalEffects
+     */
     fetchInternalWarehousesFailure$ = createEffect(
-    () =>
-    this.actions$.pipe(
-        ofType(InternalActions.fetchInternalWarehousesFailure),
-        map(action => action.payload),
-        tap(resp => {
-            const message =
-                typeof resp.errors === 'string'
-                    ? resp.errors
-                    : resp.errors.error.message || resp.errors.message;
+        () =>
+            this.actions$.pipe(
+                ofType(InternalActions.fetchInternalWarehousesFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-            this.router.navigate(['/pages/orders']).finally(() => {
-                this._$notice.open(message, 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
-            });
-        })
-    ),
-    { dispatch: false }
+                    this.router.navigate(['/pages/orders']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     constructor(

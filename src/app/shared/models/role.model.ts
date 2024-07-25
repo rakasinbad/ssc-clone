@@ -4,6 +4,11 @@ import { EStatus, IResponsePaginate, TNullable } from './global.model';
 import { Privilege } from './privilege.model';
 import { ITimestamp } from './timestamp.model';
 
+export type DELIVERY_APP = 'Delivery App';
+export type SELLER_CENTER = 'Sinbad Seller Center';
+
+export type RolePlatform = DELIVERY_APP | SELLER_CENTER;
+
 export interface IRole extends ITimestamp {
     readonly id: NonNullable<string>;
     role: string;
@@ -11,6 +16,7 @@ export interface IRole extends ITimestamp {
     status: EStatus;
     roleTypeId: string;
     privileges?: Privilege[];
+    platform: RolePlatform;
 }
 
 export interface IRoleResponse extends IResponsePaginate {
@@ -27,6 +33,7 @@ export class Role implements IRole {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    platform: RolePlatform;
 
     constructor(data: IRole) {
         const {
@@ -38,7 +45,8 @@ export class Role implements IRole {
             privileges,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
+            platform,
         } = data;
 
         this.id = id;
@@ -50,11 +58,12 @@ export class Role implements IRole {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.platform = platform;
     }
 
     set setPrivileges(value: Privilege[]) {
         if (value && value.length > 0) {
-            const newPrivileges = value.map(row => new Privilege(row));
+            const newPrivileges = value.map((row) => new Privilege(row));
 
             this.privileges = sortBy(newPrivileges, ['privilege'], ['asc']);
         } else {

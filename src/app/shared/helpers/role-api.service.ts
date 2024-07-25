@@ -12,7 +12,7 @@ import { HelperService } from './helper.service';
  * @class RoleApiService
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class RoleApiService {
     /**
@@ -50,7 +50,10 @@ export class RoleApiService {
      * @returns {Observable<T>}
      * @memberof RoleApiService
      */
-    findAll<T>(supplierId: string, params: IQueryParams): Observable<T> {
+    findAll<T>(
+        supplierId: string,
+        params: IQueryParams & { platform?: 'sc' | 'delivery-app' }
+    ): Observable<T> {
         const newArg = supplierId
             ? [
                   {
@@ -59,23 +62,23 @@ export class RoleApiService {
                   },
                   {
                       key: 'platform',
-                      value: 'sc',
+                      value: params.platform ? params.platform : 'sc',
                   },
               ]
             : [
                   {
                       key: 'platform',
-                      value: 'sc',
+                      value: params.platform ? params.platform : 'sc',
                   },
               ];
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, {
-            params: newParams, 
+            params: newParams,
             headers: {
-                "X-Replica": "true",
-            }
+                'X-Replica': 'true',
+            },
         });
     }
 }

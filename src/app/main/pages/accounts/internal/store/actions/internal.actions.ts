@@ -4,7 +4,10 @@ import { IErrorHandler, TStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
-import { InternalEmployeeDetails, InternalWarehouses } from 'app/main/pages/accounts/internal/models';
+import {
+    InternalEmployeeDetails,
+    InternalWarehouses,
+} from 'app/main/pages/accounts/internal/models';
 
 import { IInternalDemo } from '../../models';
 
@@ -64,6 +67,7 @@ export const createInternalEmployeeRequest = createAction(
             mobilePhoneNo: string;
             email?: string;
             supplierId: string;
+            platform: string;
         };
     }>()
 );
@@ -91,6 +95,7 @@ export const updateInternalEmployeeRequest = createAction(
                 roles?: number[];
                 mobilePhoneNo?: string;
                 email?: string;
+                platform?: string;
             };
             id: string;
         };

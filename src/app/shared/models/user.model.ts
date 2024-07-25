@@ -13,7 +13,7 @@ import { HelperService } from '../helpers';
 export enum UserStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
-    BANNED = 'banned'
+    BANNED = 'banned',
 }
 
 export interface IUser extends ITimestamp {
@@ -48,6 +48,7 @@ export interface IUser extends ITimestamp {
     userSuppliers?: Array<UserSupplier>;
     lastAssociated?: TNullable<string>;
     storeQty?: number;
+    platform?: string;
 }
 
 export class User implements IUser {
@@ -85,6 +86,7 @@ export class User implements IUser {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    platform: string;
 
     constructor(data: IUser) {
         const {
@@ -120,7 +122,8 @@ export class User implements IUser {
             storeQty = 0,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
+            platform,
         } = data;
 
         this.id = id;
@@ -160,6 +163,7 @@ export class User implements IUser {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.platform = platform;
     }
 
     set setUserBank(value: UserBank) {
@@ -168,7 +172,7 @@ export class User implements IUser {
 
     set setPortfolios(value: Array<Portfolio>) {
         if (value && value.length > 0) {
-            this.portfolios = value.map(row => new Portfolio(row));
+            this.portfolios = value.map((row) => new Portfolio(row));
         } else {
             this.portfolios = [];
         }
@@ -176,7 +180,7 @@ export class User implements IUser {
 
     set setRoles(value: Array<Role>) {
         if (value && value.length > 0) {
-            this.roles = value.map(row => new Role(row));
+            this.roles = value.map((row) => new Role(row));
         } else {
             this.roles = [];
         }
@@ -189,7 +193,7 @@ export class User implements IUser {
     set setUserStores(value: Array<UserStore>) {
         this.userStores =
             value && value.length > 0
-                ? value.map(row => {
+                ? value.map((row) => {
                       const newUserStore = new UserStore(
                           row.id,
                           row.userId,
@@ -212,7 +216,7 @@ export class User implements IUser {
     set setUserSuppliers(value: Array<UserSupplier>) {
         this.userSuppliers =
             value && value.length > 0
-                ? value.map(row => {
+                ? value.map((row) => {
                       const newUserSupplier = new UserSupplier(
                           row.id,
                           row.userId,
