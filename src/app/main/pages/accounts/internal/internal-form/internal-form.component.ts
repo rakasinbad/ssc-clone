@@ -39,6 +39,8 @@ import { WHDialogService } from '../services';
 import { DELIVERY_APP, SELLER_CENTER } from './internal-form.const';
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { PasswordInformationComponent } from '../password-information/password-information.component';
 
 @Component({
     selector: 'app-internal-form',
@@ -306,6 +308,39 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                 },
             }
         );
+        return dialogWarehouseRef.afterClosed();
+    }
+
+    onBeforeSubmit() {
+        if (this.form.get('platform').value === DELIVERY_APP) {
+            this.showDialogPassword();
+        } else {
+            this.onSubmit();
+        }
+    }
+
+    showDialogPassword() {
+        const firstName = `${this.form.get('fullName').value.split(' ')[0]}`.toLowerCase();
+        const phoneNumber = this.form.get('phoneNumber').value;
+        const last4DigitPhoneNumber = phoneNumber.substr(phoneNumber.length - 4);
+        const dialogWarehouseRef = this.matDialog.open<PasswordInformationComponent, any, string>(
+            PasswordInformationComponent,
+            {
+                data: {
+                    password: `${firstName}${last4DigitPhoneNumber}`,
+                },
+                width: '40%',
+            }
+        );
+
+        dialogWarehouseRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe((result) => {
+                if (result === 'confirm') {
+                    this.onSubmit();
+                }
+            });
         return dialogWarehouseRef.afterClosed();
     }
 

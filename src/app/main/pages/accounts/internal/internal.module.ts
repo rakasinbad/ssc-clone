@@ -16,6 +16,7 @@ import { InternalComponent } from './internal.component';
 import { InternalEffects, TeritoryEffects } from './store/effects';
 import { fromInternal, teritory } from './store/reducers';
 import { WHDialogService } from './services';
+import { PasswordInformationModule } from './password-information/password-information.module';
 
 /**
  *
@@ -28,6 +29,7 @@ import { WHDialogService } from './services';
     imports: [
         InternalRoutingModule,
         DialogWarehouseModule,
+        PasswordInformationModule,
 
         SharedModule,
         SharedComponentsModule,
@@ -42,8 +44,6 @@ import { WHDialogService } from './services';
         StoreModule.forFeature(teritory.FEATURE_KEY, teritory.reducer),
         EffectsModule.forFeature([InternalEffects, TeritoryEffects]),
     ],
-    providers: [
-        WHDialogService
-    ]
+    providers: [WHDialogService],
 })
 export class InternalModule {}
