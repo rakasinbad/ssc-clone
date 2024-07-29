@@ -41,6 +41,7 @@ import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { PasswordInformationComponent } from '../password-information/password-information.component';
+import { platform } from 'os';
 
 @Component({
     selector: 'app-internal-form',
@@ -60,7 +61,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     employee$: Observable<IInternalEmployeeDetails>;
     isLoading$: Observable<boolean>;
 
-    allRoles: Array<Role>;
+    allRoles: Array<Role> = [];
     roles$: Observable<Array<Role>>;
 
     selectedWarehouse: BranchWarehouse[] = [];
@@ -222,17 +223,46 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             .subscribe((res) => {
                 this.allRoles = res;
 
-                this.roles$ = of(this.filterRolesByPlatform(res, SELLER_CENTER));
+                this.roles$ = of(this.filterRolesByPlatform(res, this.form.get('platform').value));
+
+                if (this.pageType === 'edit') {
+                    this.store
+                        .select(InternalSelectors.getInternalEmployee)
+                        .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                        .subscribe((employee) => {
+                            const rolesGroup = this.form.get('roles');
+                            if (employee.roleIds && employee.roleIds.length > 0) {
+                                const currRoles = employee.roleIds
+                                    .map((v) => {
+                                        return v
+                                            ? this.allRoles.findIndex(
+                                                  (r) => r.id === v.toString()
+                                              ) === -1
+                                                ? null
+                                                : v.toString()
+                                            : null;
+                                    })
+                                    .filter((v) => v !== null);
+                                rolesGroup.patchValue(currRoles);
+                                rolesGroup.updateValueAndValidity();
+                            }
+                            if (this.form.get('roles').errors) {
+                                this.form.get('roles').markAsTouched();
+                            }
+                        });
+                }
             });
 
         this.form.controls['platform'].valueChanges.subscribe((value) => {
-            this.roles$ = of(this.filterRolesByPlatform(this.allRoles, value));
-
             if (value === this.delivery_app) {
                 this.form.get('email').reset();
                 this.form.get('email').disable();
             } else {
                 this.form.get('email').enable();
+            }
+
+            if (this.allRoles && this.allRoles.length) {
+                this.roles$ = of(this.filterRolesByPlatform(this.allRoles, value));
             }
         });
     }
@@ -655,33 +685,13 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         fullName: employee.fullName,
                         phoneNumber: employee.mobilePhoneNo,
                         email: employee.email,
+                        platform:
+                            employee.platform === 'Delivery App'
+                                ? this.delivery_app
+                                : employee.platform === 'Sinbad Seller Center'
+                                ? this.seller_center
+                                : this.seller_center,
                     });
-
-                    const rolesGroup = this.form.get('roles');
-
-                    this.store
-                        .select(DropdownSelectors.getRoleDropdownState)
-                        .pipe(takeUntil(this._unSubs$))
-                        .subscribe((roles) => {
-                            if (employee.roleIds && employee.roleIds.length > 0) {
-                                const currRoles = employee.roleIds
-                                    .map((v) => {
-                                        return v
-                                            ? roles.findIndex((r) => r.id === v.toString()) === -1
-                                                ? null
-                                                : v.toString()
-                                            : null;
-                                    })
-                                    .filter((v) => v !== null);
-
-                                rolesGroup.patchValue(currRoles);
-                                rolesGroup.updateValueAndValidity();
-                            }
-
-                            if (this.form.get('roles').errors) {
-                                this.form.get('roles').markAsTouched();
-                            }
-                        });
 
                     if (this.form.get('fullName').errors) {
                         this.form.get('fullName').markAsTouched();
