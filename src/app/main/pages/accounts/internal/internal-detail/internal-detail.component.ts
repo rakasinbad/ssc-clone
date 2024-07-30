@@ -3,7 +3,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -26,12 +26,12 @@ import { assetUrl } from 'single-spa/asset-url';
     styleUrls: ['./internal-detail.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InternalDetailComponent implements OnInit, OnDestroy {
     private subs$: Subject<void> = new Subject<void>();
 
-    employee$ : Observable<IInternalEmployeeDetails>;
+    employee$: Observable<IInternalEmployeeDetails>;
     isLoading$: Observable<boolean>;
 
     // Assets
@@ -43,7 +43,7 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
             {
                 title: 'Home',
                 // translate: 'BREADCRUMBS.HOME',
-                active: false
+                active: false,
             },
             {
                 title: 'User Management',
@@ -62,7 +62,7 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
         // Memunculkan breadcrumb.
         this.store.dispatch(
             UiActions.createBreadcrumb({
-                payload: breadcrumbs
+                payload: breadcrumbs,
             })
         );
     }
@@ -70,22 +70,21 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
     constructor(
         private store: Store<fromInternal.FeatureState>,
         private route: ActivatedRoute,
-        private router: Router,
+        private router: Router
     ) {
         this.createBreadcrumbs();
     }
 
     ngOnInit(): void {
         const { id } = this.route.snapshot.params;
-        
-        this.employee$ = this.store.select(InternalSelectors.getInternalEmployee)
-                            .pipe(
-                                takeUntil(this.subs$)
-                            );
 
-        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading).pipe(
-            takeUntil(this.subs$)
-        );
+        this.employee$ = this.store
+            .select(InternalSelectors.getInternalEmployee)
+            .pipe(takeUntil(this.subs$));
+
+        this.isLoading$ = this.store
+            .select(InternalSelectors.getIsLoading)
+            .pipe(takeUntil(this.subs$));
 
         this.store.dispatch(InternalActions.fetchInternalEmployeeRequest({ payload: id }));
     }
@@ -95,8 +94,26 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
         this.subs$.complete();
     }
 
-    onEdit() : void {
+    onEdit(): void {
         const { id } = this.route.snapshot.params;
         this.router.navigateByUrl(`/pages/account/internal/${id}/edit`);
+    }
+
+    getWarehouses(): string {
+        const warehouses = [];
+
+        this.employee$.pipe(takeUntil(this.subs$)).subscribe((data) => {
+            if (data && data.warehouses) {
+                data.warehouses.forEach((d) => {
+                    warehouses.push(d);
+                });
+            }
+        });
+
+        if (warehouses.length) {
+            return warehouses.join(', ');
+        }
+
+        return '-';
     }
 }

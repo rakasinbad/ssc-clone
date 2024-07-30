@@ -11,6 +11,7 @@ export interface IInternalEmployeeDetails {
     roleIds: number[];
     platform: string;
     privileges: string;
+    warehouses: string[];
 }
 
 export class InternalEmployeeDetails implements IInternalEmployeeDetails {
@@ -23,6 +24,7 @@ export class InternalEmployeeDetails implements IInternalEmployeeDetails {
     roleIds: number[];
     platform: string;
     privileges: string;
+    warehouses: string[];
 
     constructor(data: IInternalEmployeeDetails) {
         const {
@@ -35,6 +37,7 @@ export class InternalEmployeeDetails implements IInternalEmployeeDetails {
             roleIds,
             platform,
             privileges,
+            warehouses,
         } = data;
 
         HelperService.debug('RESPONSE', data);
@@ -48,6 +51,7 @@ export class InternalEmployeeDetails implements IInternalEmployeeDetails {
         this.roleIds = roleIds;
         this.platform = platform;
         this.privileges = privileges;
+        this.warehouses = warehouses;
     }
 }
 
