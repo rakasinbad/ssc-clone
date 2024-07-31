@@ -1,0 +1,140 @@
+<!-- CONTENT CARD (VISIBILTY) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Visibility</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="true ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- STATUS -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Status </label>
+
+                <mat-radio-group [formControl]="form.get('status')" fxFlex="80">
+                    <mat-radio-button class="pr-36" [value]="'active'">Active</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'inactive'">Inactive</mat-radio-button>
+                </mat-radio-group>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('productInfo.name').value }}
+                </span> -->
+            </div>
+            <!-- / STATUS -->
+
+            <!-- PLATFORM -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Platform </label>
+
+                <mat-radio-group [formControl]="form.get('platformVisibility')" [disabled]="formMode !== 'edit'" fxFlex="80">
+                    <mat-radio-button class="pr-36" [value]="'all'">All</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'mobile-buyer'">Sinbad</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'mobile-agent'">Sinbad Agent</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <!-- / PLATFORM -->
+
+            <!-- TYPE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    [fxFlexAlign]="formMode === 'edit' ? 'baseline' : 'center'"
+                    fxFlex="18"
+                    class="pr-0"
+                >
+                    Type
+                </label>
+
+                <ng-container *ngIf="formMode !== 'edit'">
+                    <span class="grey-fg" fxFlex="80">
+                        {{ form.get('isBonus').value === true ? 'Bonus' : 'Regular' }}
+                    </span>
+                </ng-container>
+
+                <ng-container *ngIf="formMode === 'edit'">
+                    <span
+                        fxLayout="column"
+                        fxLayoutAlign="space-between stretch"
+                        fxLayoutGap="7px"
+                        fxFlex="80"
+                    >
+                        <mat-checkbox
+                            [formControl]="form.get('isBonus')"
+                            [disabled]="formMode !== 'edit'"
+                            labelPosition="after"
+                        >
+                            <ng-container
+                                [class.sinbad-red-fg]="
+                                    !(formMode | hasFormMode: 'view') &&
+                                    (form.get('isBonus').value || form.get('isBonus').touched
+                                        | hasErrorField: form.get('isBonus'):false)
+                                "
+                            >
+                                Bonus
+                            </ng-container>
+                        </mat-checkbox>
+
+                        <span class="mat-caption text-helper">
+                            If the checkbox is checked the SKU type changed to be a bonus and can
+                            not be ordered
+                        </span>
+                    </span>
+                </ng-container>
+            </div>
+            <!-- / TYPE -->
+
+            <!-- EXCLUSIVE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    [fxFlexAlign]="formMode === 'edit' ? 'baseline' : 'center'"
+                    fxFlex="18"
+                    class="pr-0"
+                >
+                    Exclusive
+                </label>
+
+                <ng-container *ngIf="formMode !== 'edit'">
+                    <span class="grey-fg" fxFlex="80">
+                        {{ form.get('isExclusive').value === true ? 'Yes' : 'No' }}
+                    </span>
+                </ng-container>
+
+                <ng-container *ngIf="formMode === 'edit'">
+                    <span
+                        fxLayout="column"
+                        fxLayoutAlign="space-between stretch"
+                        fxLayoutGap="7px"
+                        fxFlex="80"
+                    >
+                        <mat-checkbox
+                            [formControl]="form.get('isExclusive')"
+                            [disabled]="formMode !== 'edit'"
+                            labelPosition="after"
+                        >
+                            <ng-container
+                                [class.sinbad-red-fg]="
+                                    !(formMode | hasFormMode: 'view') &&
+                                    (form.get('isExclusive').value ||
+                                        form.get('isExclusive').touched
+                                        | hasErrorField: form.get('isExclusive'):false)
+                                "
+                            >
+                                Yes
+                            </ng-container>
+                        </mat-checkbox>
+
+                        <span class="mat-caption text-helper">
+                            If the checkbox is checked the SKU change to be a exclusive and only can
+                            order by registered store
+                        </span>
+                    </span>
+                </ng-container>
+            </div>
+            <!-- / EXCLUSIVE -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (VISIBILTY) -->

@@ -1,0 +1,94 @@
+<div id="catalogues-add" class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT CARD -->
+        <div class="content-card" style="margin: 30px 0px;">
+            <!-- CONTENT TOOLBAR -->
+            <!-- <div class="toolbar px-24 py-8">
+                <span>Content toolbar</span>
+            </div> -->
+            <!-- / CONTENT TOOLBAR -->
+
+            <!-- CONTENT -->
+            <!-- <div class="content p-24"></div> -->
+            <!-- / CONTENT -->
+            <div class="p-16">
+                <div class="h1">Add New Product</div>
+                <div class="h4 secondary-text">Choose the right category for your product.</div>
+            </div>
+
+            <div class="p-16 pt-0 line-height-1.75">
+                <!-- NAMA PRODUK -->
+                <div class="custom-field-right" fxLayout="row" fxLayoutAlign="space-between start">
+                    <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="
+                            productName.errors &&
+                            (productName.dirty || productName.touched)
+                        ">
+                        Product Name
+                    </label>
+
+                    <mat-form-field appearance="outline" fxFlex>
+                        <input matInput #productNameInput name="product-name" [formControl]="productName"
+                            cdkFocusInitial />
+                        <mat-error *ngIf="
+                                productName.errors &&
+                                (productName.dirty || productName.touched)
+                            ">
+                            {{ getFormError(productName) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / NAMA PRODUK -->
+            </div>
+
+            <div class="grey-300 p-8 line-height-1.75" fxLayout="row" fxLayoutGap="1px"
+                fxLayoutAlign="space-between stretch" style="margin: 0px 16px 30px; border-radius: 8px;">
+                <ng-container *ngFor="let _ of [0, 1, 2, 3]; index as $catLevel">
+                    <div fxFlex="25" class="fuse-white">
+                        <ng-container *ngIf="$catLevel === 0; else aboveLevel0;">
+                            <a fxLayout="row" fxLayoutAlign="space-between center" class="category"
+                                *ngFor="let category of (categoryTree); index as $index;"
+                                (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                                [class.fuse-black-fg]="selectedCategory.controls[$catLevel].get('id').value != category.id"
+                                [class.red-fg]="selectedCategory.controls[$catLevel].get('id').value == category.id">
+                                <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                                <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                            </a>
+                        </ng-container>
+                        <ng-template #aboveLevel0>
+                            <a fxLayout="row" fxLayoutAlign="space-between center" class="category"
+                                *ngFor="let category of (selectedCategories[$catLevel].data); index as $index;"
+                                (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                                [class.fuse-black-fg]="selectedCategory.controls[$catLevel].get('id').value != category.id"
+                                [class.red-fg]="selectedCategory.controls[$catLevel].get('id').value == category.id">
+                                <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                                <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                            </a>
+                        </ng-template>
+                    </div>
+                </ng-container>
+                <div fxLayout="row" fxLayoutAlign="space-between center">
+
+                </div>
+                <!-- / CATEGORIES -->
+            </div>
+            <div fxLayout="column" fxLayoutGap="30px" fxLayoutAlign="center start" style="margin: 0px 16px 16px;">
+                <!-- SELECTED CATEGORIES -->
+                <strong>Selected: <span class="warn-900-fg">{{ selectedCategories$ | async }}</span></strong>
+                <!-- / SELECTED CATEGORIES -->
+                <!-- CONTINUE BUTTON -->
+                <button mat-raised-button class="warn-900" (click)="addNewCatalogue()"
+                    [disabled]="productName.errors || !isFulfilled">
+                    Next
+                </button>
+                <!-- / CONTINUE BUTTON -->
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

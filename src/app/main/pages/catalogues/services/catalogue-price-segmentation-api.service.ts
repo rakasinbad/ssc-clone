@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
-// import { CataloguesModule } from '../catalogues.module';
+import { CataloguesModule } from '../catalogues.module';
 import { AdjustCataloguePriceDto, CataloguePrice } from '../models';
 
-// @Injectable({ providedIn: CataloguesModule })
+@Injectable({ providedIn: CataloguesModule })
 export class CataloguePriceSegmentationApiService {
     private url: string;
     private readonly endpoint: string = '/price-settings';

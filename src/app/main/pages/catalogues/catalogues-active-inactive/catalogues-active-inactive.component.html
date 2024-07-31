@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Set to {{ data?.mode | titlecase }}</h2>
+
+<mat-dialog-content
+    class="mat-typography"
+    style="min-width: 50em;"
+>
+    <p>Are you sure want to set product {{ data?.catalogue?.name }} to {{ data?.mode | titlecase }}?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button
+        mat-button
+        mat-dialog-close
+        class="warn-A700"
+    >
+        Cancel
+    </button>
+    <button
+        mat-button
+        class="green-800"
+        (click)="onDelete(data?.catalogue?.id)"
+    >
+        OK
+    </button>
+</mat-dialog-actions>

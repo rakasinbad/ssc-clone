@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>Pilih Kategori</h2>
+
+<mat-dialog-content>
+    <div
+        class="grey-300 p-8"
+        fxLayout="row"
+        fxLayoutGap="1px"
+        fxLayoutAlign="space-between stretch"
+        style="margin: 0px 16px 30px; border-radius: 8px;"
+    >
+        <ng-container
+            *ngFor="let _ of selectedCategories; index as $catLevel"
+        >
+            <div
+                fxFlex="25"
+                class="fuse-white"
+            >
+                <ng-container *ngIf="$catLevel === 0; else aboveLevel0;">
+                    <a
+                        fxLayout="row"
+                        fxLayoutAlign="space-between center"
+                        class="category"
+                        *ngFor="let category of (categoryTree); index as $index;"
+                        (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                        [class.fuse-black-fg]="selectedCategoriesForm.controls[$catLevel].get('id').value != category.id"
+                        [class.red-fg]="selectedCategoriesForm.controls[$catLevel].get('id').value == category.id"
+                    >
+                        <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                        <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                    </a>
+                </ng-container>
+                <ng-template #aboveLevel0>
+                    <a
+                        fxLayout="row"
+                        fxLayoutAlign="space-between center"
+                        class="category"
+                        *ngFor="let category of (selectedCategories[$catLevel].data); index as $index;"
+                        (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                        [class.fuse-black-fg]="selectedCategoriesForm.controls[$catLevel].get('id').value != category.id"
+                        [class.red-fg]="selectedCategoriesForm.controls[$catLevel].get('id').value == category.id"
+                    >
+                        <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                        <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                    </a>
+                </ng-template>
+            </div>
+        </ng-container>
+        <!-- / CATEGORIES -->
+    </div>
+    <div
+        fxLayout="column"
+        fxLayoutGap="30px"
+        fxLayoutAlign="center start"
+        style="margin: 0px 16px 16px;"
+    >
+        <!-- SELECTED CATEGORIES -->
+        <strong>Dipilih: <span class="warn-900-fg">{{ selectedCategories$ | async }}</span></strong>
+        <!-- / SELECTED CATEGORIES -->
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions [attr.align]="'end'">
+    <button
+        mat-button
+        mat-dialog-close
+    >
+        Cancel
+    </button>
+    <button
+        mat-button
+        mat-dialog-close
+        class="warn-900"
+        (click)="selectCategory()"
+        [disabled]="!isFulfilled"
+    >
+        OK
+    </button>
+</mat-dialog-actions>

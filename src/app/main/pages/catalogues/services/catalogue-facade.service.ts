@@ -4,7 +4,7 @@ import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.mode
 import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { Observable } from 'rxjs';
-// import { CataloguesModule } from '../catalogues.module';
+import { CataloguesModule } from '../catalogues.module';
 import { Catalogue, CataloguePrice, MaxOrderQtySegmentationDto } from '../models';
 import {
     CatalogueActions,
@@ -14,7 +14,7 @@ import {
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
 
-// @Injectable({ providedIn: CataloguesModule })
+@Injectable({ providedIn: CataloguesModule })
 export class CatalogueFacadeService {
     catalogue$: Observable<Catalogue> = this.store.select(
         CatalogueSelectors.getSelectedCatalogueEntity

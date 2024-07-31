@@ -1,0 +1,52 @@
+app-catalogue-mss-settings {
+    .text-helper {
+      opacity: 0.5;
+    }
+
+    .mss-settings-title {
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      background-color: #FFFFFF;
+    }
+    
+    .mss-table-container {
+      padding: 10px;
+    }
+    .mss-table {
+      display: table;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 4px;
+      width: 100%;
+    }
+    .mss-table-tr {
+      height: unset !important;
+    }
+    .mss-table-th {
+      font-weight: bold;
+    }
+
+    .search-segmentation-wrapper {
+        width: 100%;
+        border-radius: 4px;
+        overflow: hidden;
+
+        .search-segmentation {
+            width: 100%;
+            height: 32px;
+            line-height: 36px;
+
+            input {
+                width: 100%;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
+                font-size: 13px;
+            }
+        }
+    }
+
+    .mss-type-form-field .mat-form-field-wrapper{
+        margin-top: 20px;
+    }
+}

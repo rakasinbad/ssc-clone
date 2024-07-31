@@ -1,0 +1,61 @@
+@import 'src/@fuse/scss/fuse';
+
+app-catalogues-add-new-product {
+    a.category {
+        cursor: pointer;
+        text-decoration: none !important;
+        background: white;
+
+        &:hover {
+            background: #f5f5f5;
+        }
+    }
+
+    .header {
+        height: 80px;
+        min-height: 80px;
+        max-height: 136px;
+        
+        .sinbad {
+            height: 30px !important;
+            min-height: 30px !important;
+        }
+
+        @include media-breakpoint('lt-md') {
+            padding: 8px 0;
+            height: 192px !important;
+            min-height: 192px !important;
+            max-height: 192px !important;
+        }
+    }
+
+    .search-wrapper {
+        width: 100%;
+        max-width: 200px;
+        border-radius: 28px;
+        overflow: hidden;
+        // @include mat-elevation(1);
+
+        @include media-breakpoint('xs') {
+            width: 100%;
+        }
+
+        .search {
+            width: 100%;
+            height: 36px;
+            line-height: 36px;
+            padding: 0 18px;
+
+            input {
+                width: 100%;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
+                padding: 0 16px 0 4px;
+                border: none;
+                outline: none;
+                font-size: 13px;
+            }
+        }
+    }
+}
