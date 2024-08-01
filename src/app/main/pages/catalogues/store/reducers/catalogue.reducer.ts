@@ -49,6 +49,7 @@ export interface State {
     totalInactive: number;
     totalRegular: number;
     totalExclusive: number;
+    totalUnverified: number;
     errors: ErrorState;
     code: string;
     name: string;
@@ -105,9 +106,10 @@ const initialState: State = {
     totalInactive: 0,
     totalRegular: 0,
     totalExclusive: 0,
+    totalUnverified: 0,
     errors: initialErrorState,
     code: '',
-    name: ''
+    name: '',
 };
 
 const catalogueReducer = createReducer(
@@ -373,6 +375,7 @@ const catalogueReducer = createReducer(
         totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
         totalRegular: isNaN(+payload.totalRegular) ? 0 : +payload.totalRegular,
         totalExclusive: isNaN(+payload.totalExclusive) ? 0 : +payload.totalExclusive,
+        totalUnverified: isNaN(+payload.totalUnverified) ? 0 : +payload.totalUnverified,
     })),
     on(CatalogueActions.fetchPricingSettingsSuccess, (state, { payload }) => ({
         ...state,

@@ -332,6 +332,7 @@ export const fetchTotalCatalogueStatusSuccess = createAction(
             totalInactive: string;
             totalRegular: string;
             totalExclusive: string;
+            totalUnverified: string;
         };
     }>()
 );
@@ -512,7 +513,6 @@ export const fetchPricingSettingsSuccess = createAction(
     '[Catalogues API] Fetch Pricing Settings Request Success',
     props<{ payload: { code: string; name: string } }>()
 );
-
 
 /**
  * RESET

@@ -186,16 +186,16 @@ export class CatalogueEffects {
 
     patchCatalogueFailure$ = createEffect(
         () =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.patchCatalogueFailure),
-            map((action) => action.payload),
-            tap((resp) => {
-                this._$notice.open(resp.errors.error.message, 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right',
-                });
-            })
-        ),
+            this.actions$.pipe(
+                ofType(CatalogueActions.patchCatalogueFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    this._$notice.open(resp.errors.error.message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
         { dispatch: false }
     );
 
@@ -494,6 +494,7 @@ export class CatalogueEffects {
                             totalInactive,
                             totalRegular,
                             totalExclusive,
+                            totalUnverified,
                         }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
                                 payload: {
@@ -503,6 +504,7 @@ export class CatalogueEffects {
                                     totalInactive,
                                     totalRegular,
                                     totalExclusive,
+                                    totalUnverified,
                                 },
                             });
                         }
@@ -1193,12 +1195,12 @@ export class CatalogueEffects {
                 tap((response) => {
                     console.log('GAGAL', response);
 
-                    const message = response.errors.error.message
+                    const message = response.errors.error.message;
 
                     const dialogRef = this.matDialog.open(WarningModalComponent, {
                         data: {
                             title: 'Cannot activate SKU',
-                            message
+                            message,
                         },
                         disableClose: true,
                     });
@@ -1383,10 +1385,10 @@ export class CatalogueEffects {
                         return of(
                             CatalogueActions.fetchCataloguePriceSettingsSuccess({
                                 payload: {
-                                    catalogues: ((response as unknown) as Array<CataloguePrice>).map(
+                                    catalogues: (response as unknown as Array<CataloguePrice>).map(
                                         (wh) => new CataloguePrice(wh)
                                     ),
-                                    total: ((response as unknown) as Array<CataloguePrice>).length,
+                                    total: (response as unknown as Array<CataloguePrice>).length,
                                 },
                             })
                         );

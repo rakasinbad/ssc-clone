@@ -43,7 +43,14 @@ import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 
-type TFindCatalogueMode = 'all' | 'live' | 'bonus' | 'regular' | 'inactive' | 'exclusive';
+type TFindCatalogueMode =
+    | 'all'
+    | 'live'
+    | 'bonus'
+    | 'regular'
+    | 'inactive'
+    | 'exclusive'
+    | 'unverified';
 
 @Component({
     selector: 'app-catalogues',
@@ -167,6 +174,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     totalDataRegular: number;
     totalDataInactive: number;
     totalDataExclusive: number;
+    totalDataUnverified: number;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef<HTMLElement>;
@@ -209,7 +217,6 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
         this.store.dispatch(CatalogueActions.fetchPricingSettingsRequest());
-
     }
 
     private updatePrivileges(): void {
@@ -460,17 +467,17 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     totalRegular,
                     totalInactive,
                     totalExclusive,
+                    totalUnverified,
                 } = payload;
 
-                this.totalDataAllStatus =+ totalAllStatus;
-                this.totalDataActive =+ totalActive;
-                this.totalDataBonus =+ totalBonus;
-                this.totalDataRegular =+ totalRegular;
-                this.totalDataInactive =+ totalInactive;
-                this.totalDataExclusive =+ totalExclusive;
-
+                this.totalDataAllStatus = +totalAllStatus;
+                this.totalDataActive = +totalActive;
+                this.totalDataBonus = +totalBonus;
+                this.totalDataRegular = +totalRegular;
+                this.totalDataInactive = +totalInactive;
+                this.totalDataExclusive = +totalExclusive;
+                this.totalDataUnverified = +totalUnverified;
             });
-
     }
 
     onClickFilter(): void {
@@ -556,6 +563,22 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.findCatalogueMode = 'exclusive';
                 break;
 
+            case 6:
+                this.findCatalogueMode = 'unverified';
+                this.router.navigateByUrl(
+                    this.router.createUrlTree(['/catalogues/v2'], {
+                        queryParams: {
+                            sort: 'desc',
+                            sortBy: 'id',
+                            limit: 50,
+                            status: 'inactive',
+                            verified: false,
+                        },
+                    }),
+                    { replaceUrl: true }
+                );
+                break;
+
             default:
                 this.findCatalogueMode = 'all';
                 break;
@@ -565,10 +588,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     viewProduct(id: string): void {
-        this.store.dispatch(
-            CatalogueActions.resetSelectedCatalogue()
-        )
-        
+        this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
+
         this.router.navigate(['/pages/catalogues/view', id]);
     }
 
@@ -690,7 +711,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initTable(): void {
-        localStorage.removeItem('ssc-product-detail')
+        localStorage.removeItem('ssc-product-detail');
         if (this.paginator) {
             // const { pageIndex, limit } = this.route.snapshot.queryParams;
 
