@@ -93,7 +93,6 @@ export class CataloguesService implements OnDestroy {
         totalInactive: string;
         totalRegular: string;
         totalExclusive: string;
-        totalUnverified: string;
     }> {
         const newArgs = [];
 
@@ -115,7 +114,6 @@ export class CataloguesService implements OnDestroy {
             totalInactive: string;
             totalRegular: string;
             totalExclusive: string;
-            totalUnverified: string;
         }>(this._url, { params: newParams });
     }
 
@@ -179,12 +177,9 @@ export class CataloguesService implements OnDestroy {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
-        return this.http.get<ICataloguesResponse>(this._url, {
-            params: newParams,
-            headers: {
-                'X-Replica': 'true',
-            },
-        });
+        return this.http.get<ICataloguesResponse>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     find<T>(params: IQueryParams): Observable<T> {
@@ -221,12 +216,9 @@ export class CataloguesService implements OnDestroy {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
-        return this.http.get<T>(this._url, {
-            params: newParams,
-            headers: {
-                'X-Replica': 'true',
-            },
-        });
+        return this.http.get<T>(this._url, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     patchCatalogue(
@@ -297,12 +289,9 @@ export class CataloguesService implements OnDestroy {
         this._url = this._$helper.handleApiRouter(this._catalogueCategoriesEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
-        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, {
-            params: newParams,
-            headers: {
-                'X-Replica': 'true',
-            },
-        });
+        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     getCategoryTree(): Observable<Array<CatalogueCategory>> {
@@ -315,12 +304,9 @@ export class CataloguesService implements OnDestroy {
     getCatalogueUnitOfMeasurement(params: IQueryParams): Observable<Array<ICatalogueUnitResponse>> {
         this._url = this._$helper.handleApiRouter('/catalogue-units');
         const newParams = this._$helper.handleParams(this._url, params);
-        return this.http.get<Array<ICatalogueUnitResponse>>(`${this._url}`, {
-            params: newParams,
-            headers: {
-                'X-Replica': 'true',
-            },
-        });
+        return this.http.get<Array<ICatalogueUnitResponse>>(`${this._url}`, { params: newParams, headers: {
+            "X-Replica": "true",
+        } });
     }
 
     addNewCatalogue(data: any): Observable<any> {

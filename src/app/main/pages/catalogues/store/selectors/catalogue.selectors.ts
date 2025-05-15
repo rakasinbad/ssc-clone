@@ -12,7 +12,6 @@ export const getAllTotalCatalogue = createSelector(getCatalogueState, (state) =>
     totalInactive: state.totalInactive,
     totalRegular: state.totalRegular,
     totalExclusive: state.totalExclusive,
-    totalUnverified: state.totalUnverified,
 }));
 
 export const getCataloguePriceBulkSettings = createSelector(getCatalogueState, (state) => ({
@@ -144,5 +143,5 @@ export const getIsLoading = createSelector(getCatalogueState, (state) => state.i
 export const getUpdatingActivity = createSelector(getCatalogueState, (state) => state.isUpdating);
 
 export const getBulkPricingStatus = createSelector(getCatalogueState, (state) => ({
-    code: state.code,
+    code: state.code
 }));

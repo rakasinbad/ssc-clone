@@ -290,6 +290,7 @@ export class MainImportComponent implements OnInit, OnDestroy {
     }
 
     private _handlePage(file: File, mode: string, fileType?: string): void {
+        console.log('mode', mode);
         switch (this.pageType) {
             case 'payments':
             case 'orders':
